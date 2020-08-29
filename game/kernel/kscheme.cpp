@@ -318,24 +318,47 @@ u64 make_string_from_c(const char* c_str) {
  * creates a function object on the global heap.
  *
  * The implementation is to create a simple trampoline function which jumps to the C function.
+ *
+ *
  */
 Ptr<Function> make_function_from_c(void* func) {
   // allocate a function object on the global heap
   auto mem = Ptr<u8>(
-      alloc_heap_object(s7.offset + FIX_SYM_GLOBAL_HEAP, *(s7 + FIX_SYM_FUNCTION_TYPE), 0x40));
+      alloc_heap_object(s7.offset + FIX_SYM_GLOBAL_HEAP, *(s7 + FIX_SYM_FUNCTION_TYPE), 0x80));
   auto f = (uint64_t)func;
   auto fp = (u8*)&f;
 
+  int i = 0;
   // we will put the function address in RAX with a movabs rax, imm8
-  mem.c()[0] = 0x48;
-  mem.c()[1] = 0xb8;
-  for (int i = 0; i < 8; i++) {
-    mem.c()[2 + i] = fp[i];
+  mem.c()[i++] = 0x48;
+  mem.c()[i++] = 0xb8;
+  for (int j = 0; j < 8; j++) {
+    mem.c()[i++] = fp[j];
+  }
+
+  /*
+   * push rdi
+   * push rsi
+   * push rdx
+   * push rcx
+   * pop r9
+   * pop r8
+   * pop rdx
+   * pop rcx
+   *
+   * sub rsp, 40
+   * call rax
+   * add rsp, 40
+   * ret
+   */
+  for (auto x : {0x57, 0x56, 0x52, 0x51, 0x41, 0x59, 0x41, 0x58, 0x5A, 0x59, 0x48,
+                 0x83, 0xEC, 0x28, 0xFF, 0xD0, 0x48, 0x83, 0xC4, 0x28, 0xC3}) {
+    mem.c()[i++] = x;
   }
 
   // jmp rax
-  mem.c()[10] = 0xff;
-  mem.c()[11] = 0xe0;
+  //  mem.c()[10] = 0xff;
+  //  mem.c()[11] = 0xe0;
 
   // the C function's ret will return to the caller of this trampoline.
 
@@ -779,6 +802,7 @@ u64 type_typep(Ptr<Type> t1, Ptr<Type> t2) {
  * Return is method
  */
 u64 method_set(u32 type_, u32 method_id, u32 method) {
+  printf("Call to method set\n");
   Ptr<Type> type(type_);
   if (method_id > 127)
     printf("[METHOD SET ERROR] tried to set method %d\n", method_id);

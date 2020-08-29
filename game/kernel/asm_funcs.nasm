@@ -32,10 +32,12 @@ _format:
   push rdi
 
   ; set the first argument register to the stack argument array
-  mov rdi, rsp
+  mov rcx, rsp
+  sub rsp, 32
 
   ; call C function to do format, result will go in RAX
   call format_impl
+  add rsp, 32
 
   ; restore
   ; (note - this could probably just be add rsp 72, we don't care about the value of these register)
@@ -70,29 +72,41 @@ _format:
 global _call_goal_asm
 
 _call_goal_asm:
-  ;; x86 saved registers we need to modify for GOAL should be saved
-  push r13
-  push r14
-  push r15
+push rdx    ; 8
+push rbx    ; 16
+push rbp    ; 24
+push rsi    ; 32
+push rdi    ; 40
+push r8     ; 48
+push r9     ; 56
+push r10    ; 64
+push r11    ; 72
+push r12    ; 80
+push r13    ; 88
+push r14    ; 96
+push r15    ; 104
 
-  ;; RDI - first arg
-  ;; RSI - second arg
-  ;; RDX - third arg
-  ;; RCX - function pointer (goes in r13)
-  ;; R8  - st (goes in r14)
-  ;; R9  - off (goes in r15)
+mov rdi, rcx ;; rdi is GOAL first argument, rcx is windows first argument
+mov rsi, rdx ;; rsi is GOAL second argument, rdx is windows second argument
+mov rdx, r8  ;; rdx is GOAL third argument, r8 is windows third argument
+mov r13, r9  ;; r13 is GOAL fp, r9 is windows fourth argument
+mov r14, [rsp + 144] ;; symbol table
+mov r15, [rsp + 152] ;; offset
 
-  ;; set GOAL function pointer
-  mov r13, rcx
-  ;; offset
-  mov r15, r8
-  ;; symbol table
-  mov r14, r9
-  ;; call GOAL by function pointer
-  call r13
+call r13
 
-  ;; retore x86 registers.
-  pop r15
-  pop r14
-  pop r13
-  ret
+pop r15
+pop r14
+pop r13
+pop r12
+pop r11
+pop r10
+pop r9
+pop r8
+pop rdi
+pop rsi
+pop rbp
+pop rbx
+pop rdx
+
+ret
