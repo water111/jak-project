@@ -187,7 +187,7 @@ std::vector<std::string> Compiler::run_test(const std::string& source_code) {
 
     auto code = m_goos.reader.read_from_file({source_code});
     auto compiled = compile_object_file("test-code", code, true);
-    if(compiled->is_empty()) {
+    if (compiled->is_empty()) {
       return {};
     }
     color_object_file(compiled);
