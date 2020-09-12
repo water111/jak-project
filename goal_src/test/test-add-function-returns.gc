@@ -1,0 +1,16 @@
+(defun return-one ()
+  1)
+
+(defun return-sum ((a integer) (b integer))
+  (+ a b)
+  )
+
+(defun return-plus-two ((in integer))
+  (+ in 2)
+  )
+
+(defun return-plus-three ((in integer))
+  (+ 3 in)
+  )
+
+(+ 2 (return-one) (return-plus-three 2) (return-plus-two 3) (return-sum 1 2) (return-plus-two 3))

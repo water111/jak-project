@@ -10,6 +10,8 @@ class CompilerSettings {
   CompilerSettings();
   bool debug_print_ir = false;
   bool debug_print_regalloc = false;
+  bool disable_math_const_prop = false;
+
   void set(const std::string& name, const goos::Object& value);
 
  private:

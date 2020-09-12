@@ -351,3 +351,40 @@ void IR_FunctionAddr::do_codegen(emitter::ObjectGenerator* gen,
   gen->link_instruction_to_function(instr, gen->get_existing_function_record(m_src->idx_in_file));
   gen->add_instr(IGen::sub_gpr64_gpr64(dr, emitter::gRegInfo.get_offset_reg()), irec);
 }
+
+/////////////////////
+// IntegerMath
+///////////////////
+
+IR_IntegerMath::IR_IntegerMath(IntegerMathKind kind, RegVal* dest, RegVal* arg)
+    : m_kind(kind), m_dest(dest), m_arg(arg) {}
+
+std::string IR_IntegerMath::print() {
+  switch (m_kind) {
+    case IntegerMathKind::ADD_64:
+      return fmt::format("addi {}, {}", m_dest->print(), m_arg->print());
+    default:
+      assert(false);
+  }
+}
+
+RegAllocInstr IR_IntegerMath::to_rai() {
+  RegAllocInstr rai;
+  rai.write.push_back(m_dest->ireg());
+  rai.read.push_back(m_dest->ireg());
+  rai.read.push_back(m_arg->ireg());
+  return rai;
+}
+
+void IR_IntegerMath::do_codegen(emitter::ObjectGenerator* gen,
+                                const AllocationResult& allocs,
+                                emitter::IR_Record irec) {
+  switch (m_kind) {
+    case IntegerMathKind::ADD_64:
+      gen->add_instr(
+          IGen::add_gpr64_gpr64(get_reg(m_dest, allocs, irec), get_reg(m_arg, allocs, irec)), irec);
+      break;
+    default:
+      assert(false);
+  }
+}

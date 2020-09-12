@@ -18,6 +18,7 @@ add_library(compiler
         compiler/compilation/CompilerControl.cpp
         compiler/compilation/Block.cpp
         compiler/compilation/Macro.cpp
+        compiler/compilation/Math.cpp
         compiler/compilation/Define.cpp
         compiler/compilation/Function.cpp
         compiler/Util.cpp

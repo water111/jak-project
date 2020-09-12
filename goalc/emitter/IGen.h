@@ -1199,6 +1199,26 @@ class IGen {
   // TODO, special load/stores of 128 bit values.
 
   // TODO, consider specialized stack loads and stores?
+  static Instruction load64_gpr64_plus_s32(Register dst_reg, int32_t offset, Register src_reg) {
+    assert(dst_reg.is_gpr());
+    assert(src_reg.is_gpr());
+    Instruction instr(0x8b);
+    instr.set_modrm_rex_sib_for_reg_reg_disp32(dst_reg.hw_id(), 2, src_reg.hw_id(), true);
+    instr.set_disp(Imm(4, offset));
+    return instr;
+  }
+
+  /*!
+   * Store 64-bits from gpr into memory located at 64-bit reg + 32-bit signed offset.
+   */
+  static Instruction store64_gpr64_plus_s32(Register addr, int32_t offset, Register value) {
+    assert(addr.is_gpr());
+    assert(value.is_gpr());
+    Instruction instr(0x89);
+    instr.set_modrm_rex_sib_for_reg_reg_disp32(value.hw_id(), 2, addr.hw_id(), true);
+    instr.set_disp(Imm(4, offset));
+    return instr;
+  }
 
   //;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   //   FUNCTION STUFF

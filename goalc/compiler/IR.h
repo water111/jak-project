@@ -173,4 +173,37 @@ class IR_FunctionAddr : public IR {
   FunctionEnv* m_src = nullptr;
 };
 
+enum class IntegerMathKind {
+  ADD_64,
+  SUB_64,
+  IMUL_32,
+  IDIV_32,
+  SHLV_64,
+  SARV_64,
+  SHRV_64,
+  SHL_64,
+  SAR_64,
+  SHR_64,
+  IMOD_32,
+  OR_64,
+  AND_64,
+  XOR_64,
+  NOT_64
+};
+
+class IR_IntegerMath : public IR {
+ public:
+  IR_IntegerMath(IntegerMathKind kind, RegVal* dest, RegVal* arg);
+  std::string print() override;
+  RegAllocInstr to_rai() override;
+  void do_codegen(emitter::ObjectGenerator* gen,
+                  const AllocationResult& allocs,
+                  emitter::IR_Record irec) override;
+
+ protected:
+  IntegerMathKind m_kind;
+  RegVal* m_dest;
+  RegVal* m_arg;
+};
+
 #endif  // JAK_IR_H

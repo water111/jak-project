@@ -1,0 +1,11 @@
+(defun add-five-v2 ((a int32) (b int32) (c int32) (d int32) (e int32))
+  (let* ((total-1 a)
+	 (also-d d)
+	 (total-2 (+ total-1 b))
+	 (total-3 (+ c total-2))
+	 )
+    (+ total-3 e also-d)
+    )
+  )
+
+(add-five 1 2 3 4 5)

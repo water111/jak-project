@@ -1,0 +1,5 @@
+(defun add-five ((a integer) (b integer) (c integer) (d integer) (e integer))
+  (+ c d (+ e a) b)
+  )
+
+(add-five 1 2 3 4 5)

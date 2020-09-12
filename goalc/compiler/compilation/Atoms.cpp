@@ -102,7 +102,7 @@ static const std::unordered_map<
         //        {"cdr", &Compiler::compile_cdr},
         //
         //        // IT IS MATH
-        //        {"+", &Compiler::compile_add},
+        {"+", &Compiler::compile_add},
         //        {"-", &Compiler::compile_sub},
         //        {"*", &Compiler::compile_mult},
         //        {"/", &Compiler::compile_divide},

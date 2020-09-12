@@ -153,6 +153,14 @@ TEST(CompilerAndRuntime, CompilerTests) {
   runner.run_test("test-defun-return-symbol.gc", {"42\n"});
   runner.run_test("test-function-return-arg.gc", {"23\n"});
   runner.run_test("test-nested-function-call.gc", {"2\n"});
+
+  // math
+  runner.run_test("test-add-int-constants.gc", {"13\n"});
+  runner.run_test("test-add-int-vars.gc", {"7\n"});
+  runner.run_test("test-add-int-multiple.gc", {"15\n"});
+  runner.run_test("test-add-int-multiple-2.gc", {"15\n"});
+  runner.run_test("test-add-function-returns.gc", {"21\n"});
+
   compiler.shutdown_target();
   runtime_thread.join();
   runner.print_summary();

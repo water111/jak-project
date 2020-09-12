@@ -86,13 +86,21 @@ void CodeGenerator::do_function(FunctionEnv* env, int f_idx) {
     auto& bonus = allocs.stack_ops.at(ir_idx);
     for (auto& op : bonus.ops) {
       if (op.load) {
-        assert(false);
+        if (op.reg.is_gpr()) {
+          m_gen.add_instr(IGen::load64_gpr64_plus_s32(op.reg, op.slot * GPR_SIZE, RSP), i_rec);
+        } else {
+          assert(false);
+        }
       }
     }
     ir->do_codegen(&m_gen, allocs, i_rec);
     for (auto& op : bonus.ops) {
       if (op.store) {
-        assert(false);
+        if (op.reg.is_gpr()) {
+          m_gen.add_instr(IGen::store64_gpr64_plus_s32(RSP, op.slot * GPR_SIZE, op.reg), i_rec);
+        } else {
+          assert(false);
+        }
       }
     }
   }
