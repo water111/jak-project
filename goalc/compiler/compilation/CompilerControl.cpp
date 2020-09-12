@@ -39,8 +39,6 @@ Val* Compiler::compile_asm_file(const goos::Object& form, const goos::Object& re
   std::vector<std::pair<std::string, float>> timing;
   Timer total_timer;
 
-  fprintf(stderr, "Compile Asm File: %s\n", form.print().c_str());
-
   for_each_in_list(rest, [&](const goos::Object& o) {
     if (i == 0) {
       filename = as_string(o);
@@ -118,8 +116,6 @@ Val* Compiler::compile_asm_file(const goos::Object& form, const goos::Object& re
   }
   printf("\n");
   //  }
-
-  fprintf(stderr, "ASM file done!\n");
 
   return get_none();
 }
@@ -201,7 +197,6 @@ Val* Compiler::compile_in_package(const goos::Object& form, const goos::Object& 
 
 Val* Compiler::compile_build_dgo(const goos::Object& form, const goos::Object& rest, Env* env) {
   (void)env;
-  fprintf(stderr, "Cpmpile build dgo!\n");
   auto args = get_va(form, rest);
   va_check(form, args, {goos::ObjectType::STRING}, {});
   auto dgo_desc = pair_cdr(m_goos.reader.read_from_file({args.unnamed.at(0).as_string()->data}));
@@ -226,7 +221,6 @@ Val* Compiler::compile_build_dgo(const goos::Object& form, const goos::Object& r
     build_dgo(desc);
   });
 
-  fprintf(stderr, "DGO build done!\n");
 
   return get_none();
 }

@@ -114,13 +114,13 @@ struct CompilerTestRunner {
 }  // namespace
 
 TEST(CompilerAndRuntime, BuildGame) {
-//  std::thread runtime_thread([]() { exec_runtime(0, nullptr); });
+  std::thread runtime_thread([]() { exec_runtime(0, nullptr); });
   Compiler compiler;
 
   fprintf(stderr, "about to run test\n");
 
   try {
-    compiler.run_test_no_load("goal_src/test/test-build-game.gc");
+    compiler.run_test("goal_src/test/test-build-game.gc");
   } catch (std::exception& e) {
     fprintf(stderr, "caught exception %s\n", e.what());
     EXPECT_TRUE(false);
@@ -129,8 +129,8 @@ TEST(CompilerAndRuntime, BuildGame) {
 
   // todo, tests after loading the game.
 
-//  compiler.shutdown_target();
-//  runtime_thread.join();
+  compiler.shutdown_target();
+  runtime_thread.join();
 }
 
 TEST(CompilerAndRuntime, CompilerTests) {
@@ -188,4 +188,3 @@ TEST(CompilerAndRuntime, CompilerTests) {
   runtime_thread.join();
   runner.print_summary();
 }
-
