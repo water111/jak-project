@@ -221,6 +221,5 @@ Val* Compiler::compile_build_dgo(const goos::Object& form, const goos::Object& r
     build_dgo(desc);
   });
 
-
   return get_none();
 }

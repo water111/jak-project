@@ -24,7 +24,7 @@ if (CMAKE_COMPILER_IS_GNUCXX)
         -Wshadow \
         -Wsign-promo")
 else ()
-    set(CMAKE_CXX_FLAGS "/EHsc /O2")
+    set(CMAKE_CXX_FLAGS "/EHsc /O2 /F 33554432")
 endif (CMAKE_COMPILER_IS_GNUCXX)
 
 IF (WIN32)
