@@ -365,6 +365,8 @@ std::string IR_IntegerMath::print() {
       return fmt::format("addi {}, {}", m_dest->print(), m_arg->print());
     case IntegerMathKind::SUB_64:
       return fmt::format("subi {}, {}", m_dest->print(), m_arg->print());
+    case IntegerMathKind::IMUL_32:
+      return fmt::format("imul {}, {}", m_dest->print(), m_arg->print());
     default:
       assert(false);
   }
@@ -390,6 +392,13 @@ void IR_IntegerMath::do_codegen(emitter::ObjectGenerator* gen,
       gen->add_instr(
           IGen::sub_gpr64_gpr64(get_reg(m_dest, allocs, irec), get_reg(m_arg, allocs, irec)), irec);
       break;
+    case IntegerMathKind::IMUL_32: {
+      auto dr = get_reg(m_dest, allocs, irec);
+      gen->add_instr(IGen::imul_gpr32_gpr32(dr, get_reg(m_arg, allocs, irec)), irec);
+      gen->add_instr(IGen::movsx_r64_r32(dr, dr), irec);
+    }
+
+    break;
     default:
       assert(false);
   }

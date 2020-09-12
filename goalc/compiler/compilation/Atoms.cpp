@@ -104,7 +104,7 @@ static const std::unordered_map<
         //        // IT IS MATH
         {"+", &Compiler::compile_add},
         {"-", &Compiler::compile_sub},
-        //        {"*", &Compiler::compile_mult},
+        {"*", &Compiler::compile_mul},
         //        {"/", &Compiler::compile_divide},
         //        {"shlv", &Compiler::compile_shlv},
         //        {"shrv", &Compiler::compile_shrv},
