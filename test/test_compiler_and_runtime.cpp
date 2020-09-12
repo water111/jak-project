@@ -163,28 +163,29 @@ TEST(CompilerAndRuntime, CompilerTests) {
   runner.run_test("test-sub-1.gc", {"4\n"});
   runner.run_test("test-sub-2.gc", {"4\n"});
 
+  compiler.run_test("goal_src/test/test-build-game.gc");
+
   compiler.shutdown_target();
   runtime_thread.join();
   runner.print_summary();
 }
 
 TEST(CompilerAndRuntime, BuildGame) {
-  std::thread runtime_thread([]() { exec_runtime(0, nullptr); });
-  Compiler compiler;
-
-  fprintf(stderr, "about to run test\n");
-
-  try {
-    compiler.run_test("goal_src/test/test-build-game.gc");
-  } catch (std::exception& e) {
-    fprintf(stderr, "caught exception %s\n", e.what());
-    EXPECT_TRUE(false);
-  }
-  fprintf(stderr, "DONE!\n");
-
-
-  // todo, tests after loading the game.
-
-  compiler.shutdown_target();
-  runtime_thread.join();
+  //  std::thread runtime_thread([]() { exec_runtime(0, nullptr); });
+  //  Compiler compiler;
+  //
+  //  fprintf(stderr, "about to run test\n");
+  //
+  //  try {
+  //    compiler.run_test("goal_src/test/test-build-game.gc");
+  //  } catch (std::exception& e) {
+  //    fprintf(stderr, "caught exception %s\n", e.what());
+  //    EXPECT_TRUE(false);
+  //  }
+  //  fprintf(stderr, "DONE!\n");
+  //
+  //  // todo, tests after loading the game.
+  //
+  //  compiler.shutdown_target();
+  //  runtime_thread.join();
 }
