@@ -26,6 +26,7 @@ class Compiler {
   None* get_none() { return m_none.get(); }
 
   std::vector<std::string> run_test(const std::string& source_code);
+  std::vector<std::string> run_test_no_load(const std::string& source_code);
   void shutdown_target();
 
  private:

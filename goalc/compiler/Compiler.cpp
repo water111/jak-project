@@ -204,6 +204,12 @@ std::vector<std::string> Compiler::run_test(const std::string& source_code) {
   }
 }
 
+std::vector<std::string> Compiler::run_test_no_load(const std::string& source_code) {
+  auto code = m_goos.reader.read_from_file({source_code});
+  auto compiled = compile_object_file("test-code", code, true);
+  return {};
+}
+
 void Compiler::shutdown_target() {
   if (m_listener.is_connected()) {
     m_listener.send_reset(true);
