@@ -172,7 +172,16 @@ TEST(CompilerAndRuntime, BuildGame) {
   std::thread runtime_thread([]() { exec_runtime(0, nullptr); });
   Compiler compiler;
 
-  compiler.run_test("goal_src/test/test-build-game.gc");
+  fprintf(stderr, "about to run test\n");
+
+  try {
+    compiler.run_test("goal_src/test/test-build-game.gc");
+  } catch (std::exception& e) {
+    fprintf(stderr, "caught exception %s\n", e.what());
+    EXPECT_TRUE(false);
+  }
+  fprintf(stderr, "DONE!\n");
+
 
   // todo, tests after loading the game.
 
