@@ -149,6 +149,7 @@ void ProcessListenerMessage(Ptr<char> msg) {
       // this setup allows listener function execution to clean up after itself.
       ListenerFunction->value =
           link_and_exec(buffer, "*listener*", 0, kdebugheap, LINK_FLAG_FORCE_DEBUG).offset;
+      fprintf(stderr, "ListenerFunction is now 0x%x\n", ListenerFunction->value);
       return;  // don't ack yet, this will happen after the function runs.
     } break;
     default:
