@@ -351,5 +351,12 @@ Val* Compiler::compile_real_function_call(const goos::Object& form,
   }
 
   env->emit(std::make_unique<IR_FunctionCall>(function, return_reg, arg_outs));
-  return return_reg;
+
+  if (m_settings.emit_move_after_return) {
+    auto result_reg = env->make_gpr(return_reg->type());
+    env->emit(std::make_unique<IR_RegSet>(result_reg, return_reg));
+    return result_reg;
+  } else {
+    return return_reg;
+  }
 }

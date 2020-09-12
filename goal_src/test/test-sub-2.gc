@@ -1,0 +1,17 @@
+(defun negative ((a integer))
+  (- a)
+  )
+
+(defun minus-two ((a integer))
+  (- a 2)
+  )
+
+
+(defun sub-test ((a integer) (b integer))
+  (- 1 a b)
+  )
+
+(let ((x (sub-test 1 (minus-two 7))))
+  (- 1 (negative -2) x)
+  )
+

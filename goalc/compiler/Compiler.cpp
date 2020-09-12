@@ -158,6 +158,7 @@ void Compiler::color_object_file(FileEnv* env) {
       input.debug_settings.print_input = true;
       input.debug_settings.print_result = true;
       input.debug_settings.print_analysis = true;
+      input.debug_settings.allocate_log_level = 2;
     }
 
     f->set_allocations(allocate_registers(input));

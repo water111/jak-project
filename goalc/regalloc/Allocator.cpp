@@ -485,7 +485,8 @@ bool can_var_be_assigned(int var,
     if (lr.has_constraint && lr.assignment.at(instr - lr.min).is_assigned()) {
       if (!(ass.occupies_same_reg(lr.assignment.at(instr - lr.min)))) {
         if (debug_trace >= 2) {
-          printf("at idx %d self bad\n", instr);
+          printf("at idx %d self bad (%s) (%s)\n", instr,
+                 lr.assignment.at(instr - lr.min).to_string().c_str(), ass.to_string().c_str());
         }
 
         return false;

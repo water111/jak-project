@@ -1,3 +1,7 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; BUILD SYSTEM
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;; compile, color, and save a file
 (defmacro m (file)
   `(asm-file ,file :color :write)
@@ -7,6 +11,20 @@
 (defmacro ml (file)
   `(asm-file ,file :color :load :write)
   )
+
+(desfun make-build-command (file)
+  `(asm-file ,file :color :write)
+  )
+
+(defmacro build-game ()
+  `(begin
+     ,@(apply make-build-command all-goal-files)
+     (build-dgos "goal_src/build/dgos.txt")
+     )
+  )
+
+;; load list of all goal files
+(asm-file "goal_src/build/all_files.gc")
 
 (defmacro e ()
   `(:exit)

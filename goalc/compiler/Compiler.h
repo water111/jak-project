@@ -116,6 +116,8 @@ class Compiler {
   Val* compile_poke(const goos::Object& form, const goos::Object& rest, Env* env);
   Val* compile_gs(const goos::Object& form, const goos::Object& rest, Env* env);
   Val* compile_set_config(const goos::Object& form, const goos::Object& rest, Env* env);
+  Val* compile_in_package(const goos::Object& form, const goos::Object& rest, Env* env);
+  Val* compile_build_dgo(const goos::Object& form, const goos::Object& rest, Env* env);
 
   // Define
   Val* compile_define(const goos::Object& form, const goos::Object& rest, Env* env);
@@ -128,6 +130,7 @@ class Compiler {
 
   // Math
   Val* compile_add(const goos::Object& form, const goos::Object& rest, Env* env);
+  Val* compile_sub(const goos::Object& form, const goos::Object& rest, Env* env);
 
   // Function
   Val* compile_lambda(const goos::Object& form, const goos::Object& rest, Env* env);

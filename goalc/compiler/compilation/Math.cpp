@@ -96,26 +96,67 @@ Val* Compiler::compile_add(const goos::Object& form, const goos::Object& rest, E
     throw_compile_error(form, "Invalid + form");
   }
 
-  // compile values
-  std::vector<Val*> values;
-  for (auto& x : args.unnamed) {
-    values.push_back(compile_error_guard(x, env));
-  }
-
   // look at the first value to determine the math mode
-  auto first_type = values.at(0)->type();
+  auto first_val = compile_error_guard(args.unnamed.at(0), env);
+  auto first_type = first_val->type();
   auto math_type = get_math_mode(first_type);
   switch (math_type) {
     case MATH_INT: {
       auto result = env->make_gpr(first_type);
-      env->emit(std::make_unique<IR_RegSet>(result, values.at(0)->to_gpr(env)));
+      env->emit(std::make_unique<IR_RegSet>(result, first_val->to_gpr(env)));
 
-      for (size_t i = 1; i < values.size(); i++) {
-        env->emit(std::make_unique<IR_IntegerMath>(IntegerMathKind::ADD_64, result,
-                                                   values.at(i)->to_gpr(env)));
+      for (size_t i = 1; i < args.unnamed.size(); i++) {
+        env->emit(std::make_unique<IR_IntegerMath>(
+            IntegerMathKind::ADD_64, result,
+            to_math_type(compile_error_guard(args.unnamed.at(i), env), math_type, env)
+                ->to_gpr(env)));
       }
       return result;
     }
+    case MATH_INVALID:
+      throw_compile_error(
+          form, "Cannot determine the math mode for object of type " + first_type.print());
+      break;
+    default:
+      assert(false);
+  }
+  assert(false);
+  return get_none();
+}
+
+Val* Compiler::compile_sub(const goos::Object& form, const goos::Object& rest, Env* env) {
+  auto args = get_va(form, rest);
+  if (!args.named.empty() || args.unnamed.empty()) {
+    throw_compile_error(form, "Invalid - form");
+  }
+
+  auto first_val = compile_error_guard(args.unnamed.at(0), env);
+  auto first_type = first_val->type();
+  auto math_type = get_math_mode(first_type);
+  switch (math_type) {
+    case MATH_INT:
+      if (args.unnamed.size() == 1) {
+        auto result = compile_integer(0, env)->to_gpr(env);
+        env->emit(std::make_unique<IR_IntegerMath>(
+            IntegerMathKind::SUB_64, result,
+            to_math_type(compile_error_guard(args.unnamed.at(0), env), math_type, env)
+                ->to_gpr(env)));
+        return result;
+      } else {
+        auto result = env->make_gpr(first_type);
+        env->emit(std::make_unique<IR_RegSet>(
+            result, to_math_type(compile_error_guard(args.unnamed.at(0), env), math_type, env)
+                        ->to_gpr(env)));
+
+        for (size_t i = 1; i < args.unnamed.size(); i++) {
+          env->emit(std::make_unique<IR_IntegerMath>(
+              IntegerMathKind::SUB_64, result,
+              to_math_type(compile_error_guard(args.unnamed.at(i), env), math_type, env)
+                  ->to_gpr(env)));
+        }
+        return result;
+      }
+
     case MATH_INVALID:
       throw_compile_error(
           form, "Cannot determine the math mode for object of type " + first_type.print());

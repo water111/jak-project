@@ -160,8 +160,22 @@ TEST(CompilerAndRuntime, CompilerTests) {
   runner.run_test("test-add-int-multiple.gc", {"15\n"});
   runner.run_test("test-add-int-multiple-2.gc", {"15\n"});
   runner.run_test("test-add-function-returns.gc", {"21\n"});
+  runner.run_test("test-sub-1.gc", {"4\n"});
+  runner.run_test("test-sub-2.gc", {"4\n"});
 
   compiler.shutdown_target();
   runtime_thread.join();
   runner.print_summary();
+}
+
+TEST(CompilerAndRuntime, BuildGame) {
+  std::thread runtime_thread([]() { exec_runtime(0, nullptr); });
+  Compiler compiler;
+
+  compiler.run_test("goal_src/test/test-build-game.gc");
+
+  // todo, tests after loading the game.
+
+  compiler.shutdown_target();
+  runtime_thread.join();
 }

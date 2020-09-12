@@ -2,8 +2,8 @@
 ; Each entry should consist of an ISO name, followed by a file name
 ; note that tweakval, vagdir, screen1 have dummy data for now.
 
-KERNEL.CGO resources/KERNEL.CGO
-GAME.CGO resources/GAME.CGO
+KERNEL.CGO out/KERNEL.CGO
+GAME.CGO out/GAME.CGO
 TEST.CGO resources/TEST.CGO
 TWEAKVAL.MUS resources/TWEAKVAL.MUS
 VAGDIR.AYB resources/VAGDIR.AYB
