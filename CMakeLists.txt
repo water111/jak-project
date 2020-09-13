@@ -11,8 +11,8 @@ if (CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_CXX_FLAGS
             "${CMAKE_CXX_FLAGS} \
         -Wall \
-				-Winit-self \
-				-ggdb \
+		-Winit-self \
+		-ggdb \
         -Wextra \
         -Wcast-align \
         -Wcast-qual \
@@ -24,7 +24,7 @@ if (CMAKE_COMPILER_IS_GNUCXX)
         -Wshadow \
         -Wsign-promo")
 else ()
-    set(CMAKE_CXX_FLAGS "/EHsc /O2 /F 33554432")
+    set(CMAKE_CXX_FLAGS "/EHsc")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /STACK:10000000")
 endif (CMAKE_COMPILER_IS_GNUCXX)
 
