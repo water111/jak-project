@@ -133,6 +133,48 @@ TEST(CompilerAndRuntime, BuildGame) {
   runtime_thread.join();
 }
 
+// TODO -move these into another file?
+TEST(CompilerAndRuntime, InlineIsInline) {
+  Compiler compiler;
+  auto code =
+      compiler.get_goos().reader.read_from_file({"goal_src", "test", "test-declare-inline.gc"});
+  auto compiled = compiler.compile_object_file("test-code", code, true);
+  EXPECT_EQ(compiled->functions().size(), 2);
+  auto& ir = compiled->top_level_function().code();
+  bool got_mult = false;
+  for (auto& x : ir) {
+    EXPECT_EQ(dynamic_cast<IR_FunctionCall*>(x.get()), nullptr);
+    auto as_im = dynamic_cast<IR_IntegerMath*>(x.get());
+    if (as_im) {
+      EXPECT_EQ(as_im->get_kind(), IntegerMathKind::IMUL_32);
+      got_mult = true;
+    }
+  }
+  EXPECT_TRUE(got_mult);
+}
+
+TEST(CompilerAndRuntime, AllowInline) {
+  Compiler compiler;
+  auto code =
+      compiler.get_goos().reader.read_from_file({"goal_src", "test", "test-inline-call.gc"});
+  auto compiled = compiler.compile_object_file("test-code", code, true);
+  EXPECT_EQ(compiled->functions().size(), 2);
+  auto& ir = compiled->top_level_function().code();
+  int got_mult = 0;
+  int got_call = 0;
+  for (auto& x : ir) {
+    if (dynamic_cast<IR_FunctionCall*>(x.get())) {
+      got_call++;
+    }
+    auto as_im = dynamic_cast<IR_IntegerMath*>(x.get());
+    if (as_im && as_im->get_kind() == IntegerMathKind::IMUL_32) {
+      got_mult++;
+    }
+  }
+  EXPECT_EQ(got_mult, 1);
+  EXPECT_EQ(got_call, 1);
+}
+
 TEST(CompilerAndRuntime, CompilerTests) {
   std::thread runtime_thread([]() { exec_runtime(0, nullptr); });
   Compiler compiler;
@@ -183,6 +225,14 @@ TEST(CompilerAndRuntime, CompilerTests) {
   runner.run_test("test-sub-1.gc", {"4\n"});
   runner.run_test("test-sub-2.gc", {"4\n"});
   runner.run_test("test-mul-1.gc", {"-12\n"});
+
+  expected = "test-string";
+  runner.run_test("test-string-symbol.gc", {expected}, expected.size());
+  runner.run_test("test-declare-inline.gc", {"32\n"});
+  runner.run_test("test-inline-call.gc", {"44\n"});
+
+  // float
+  runner.run_test("test-floating-point-1.gc", {"1067316150\n"});
 
   compiler.shutdown_target();
   runtime_thread.join();

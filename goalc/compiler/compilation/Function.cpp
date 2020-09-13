@@ -282,6 +282,7 @@ Val* Compiler::compile_function_or_method_call(const goos::Object& form, Env* en
       if (eval_args.empty()) {
         throw_compile_error(form, "0 argument method call is impossible to figure out");
       }
+      printf("BAD %s\n", uneval_head.print().c_str());
       assert(false);  // nyi
       // head = compile_get_method_of_object(eval_args.front(), symbol_string(uneval_head), env);
     }
@@ -359,4 +360,49 @@ Val* Compiler::compile_real_function_call(const goos::Object& form,
   } else {
     return return_reg;
   }
+}
+
+Val* Compiler::compile_declare(const goos::Object& form, const goos::Object& rest, Env* env) {
+  auto& settings = get_parent_env_of_type<DeclareEnv>(env)->settings;
+
+  if (settings.is_set) {
+    throw_compile_error(form, "function has multiple declares");
+  }
+  settings.is_set = true;
+
+  for_each_in_list(rest, [&](const goos::Object& o) {
+    if (!o.is_pair()) {
+      throw_compile_error(o, "invalid declare specification");
+    }
+
+    auto first = o.as_pair()->car;
+    auto rrest = o.as_pair()->cdr;
+
+    if (!first.is_symbol()) {
+      throw_compile_error(first, "invalid declare specification, expected a symbol");
+    }
+
+    if (first.as_symbol()->name == "inline") {
+      if (!rrest.is_empty_list()) {
+        throw_compile_error(first, "invalid inline declare");
+      }
+      settings.allow_inline = true;
+      settings.inline_by_default = true;
+      settings.save_code = true;
+    } else if (first.as_symbol()->name == "allow-inline") {
+      if (!rrest.is_empty_list()) {
+        throw_compile_error(first, "invalid allow-inline declare");
+      }
+      settings.allow_inline = true;
+      settings.inline_by_default = false;
+      settings.save_code = true;
+    } else if (first.as_symbol()->name == "asm-func") {
+      get_parent_env_of_type<FunctionEnv>(env)->is_asm_func = true;
+    }
+
+    else {
+      throw_compile_error(first, "unrecognized declare statement");
+    }
+  });
+  return get_none();
 }

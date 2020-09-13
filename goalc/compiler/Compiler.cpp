@@ -206,7 +206,7 @@ std::vector<std::string> Compiler::run_test(const std::string& source_code) {
 
 std::vector<std::string> Compiler::run_test_no_load(const std::string& source_code) {
   auto code = m_goos.reader.read_from_file({source_code});
-  auto compiled = compile_object_file("test-code", code, true);
+  compile_object_file("test-code", code, true);
   return {};
 }
 

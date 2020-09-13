@@ -1,0 +1,148 @@
+;; kernel-defs.gc
+;; everything defined in the C Kernel / runtime
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; kscheme - InitHeapAndSymbol
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; fixed symbols
+(define-extern #f symbol)
+(define-extern #t symbol)
+(define-extern function type)
+(define-extern basic type)
+(define-extern string type)
+(define-extern symbol type)
+(define-extern type type)
+(define-extern object type)
+(define-extern link-block type)
+(define-extern integer type)
+(define-extern sinteger type)
+(define-extern uinteger type)
+(define-extern binteger type)
+(define-extern int8 type)
+(define-extern int16 type)
+(define-extern int32 type)
+(define-extern int64 type)
+(define-extern int128 type)
+(define-extern uint8 type)
+(define-extern uint16 type)
+(define-extern uint32 type)
+(define-extern uint64 type)
+(define-extern uint128 type)
+(define-extern float type)
+(define-extern process-tree type)
+(define-extern process type)
+(define-extern thread type)
+(define-extern structure type)
+(define-extern pair type)
+(define-extern pointer type)
+(define-extern number type)
+(define-extern array type)
+(define-extern vu-function type)
+(define-extern connectable type)
+(define-extern stack-frame type)
+(define-extern file-stream type)
+(define-extern kheap type)
+(define-extern nothing (function none))
+(define-extern delete-basic (function basic none))
+(define-extern static symbol)
+(define-extern global kheap)
+(define-extern debug kheap)
+(define-extern loading-level kheap)   ;; not a kheap at boot
+(define-extern loading-package kheap) ;; not a kheap at boot
+(define-extern process-level-heap kheap) ;; not a kheap at boot
+(define-extern stack symbol)
+(define-extern scratch symbol)
+(define-extern *stratch-top* pointer)
+(define-extern zero-func (function int))
+;; asize-of-basic-func - has a bug
+;; copy-basic-func - has a bug
+;; level - unknown type
+;; art-group
+;; texture-page-dir
+;; texture-page
+;; sound
+;; dgo
+;; top-level
+
+(define-extern string->symbol (function string symbol))
+(define-extern print (function object object))
+(define-extern inspect (function object object))
+(define-extern load (function string kheap object))
+(define-extern loado (function string kheap object))
+(define-extern unload (function string none))
+(define-extern _format function)
+(define-extern malloc (function kheap int pointer))
+(define-extern kmalloc (function kheap int int string))
+(define-extern new-dynamic-structure (function kheap type int structure))
+(define-extern method-set! (function type int function none)) ;; may actually return function.
+(define-extern link (function pointer string int kheap int pointer))
+(define-extern dgo-load (function string kheap int int))
+(define-extern link-begin (function pointer string int kheap int int))
+(define-extern link-resume (function int))
+;; mc-run
+;; mc-format
+;; mc-unformat
+;; mc-create-file
+;; mc-save
+;; mc-load
+;; mc-check-result
+;; mc-get-slot-info
+;; mc-makefile
+;; kset-language
+
+(define-extern *debug-segment* symbol)
+(define-extern *enable-method-set* int)
+;; *boot-video-mode* ?
+(define-extern *deci-count* int)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; klisten - InitListener
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; *listener-link-block*
+;; *listener-function*
+;; kernel-dispatcher
+;; kernel-packages
+;; *print-column*
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; kmachine - InitMachineScheme
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; put-display-env
+;; syncv
+;; sync-path
+;; reset-path
+;; rest-graph
+;; dma-sync
+;; gs-put-imr
+;; gs-get-imr
+;; gs-store-image
+;; flush-cache
+;; cpad-open
+;; cpad-get-data
+;; install-handler
+;; install-debug-handler
+;; file-stream-open
+;; file-stream-close
+;; file-stream-length
+;; file-stream-seek
+;; file-stream-read
+;; file-stream-write
+;; scf-get-language
+;; scf-get-time
+;; scf-get-aspect
+;; scf-get-volume
+;; scf-get-territory
+;; scf-get-timeout
+;; scf-get-inactive-timeout
+;; dma-to-iop
+;; kernel-shutdown
+;; aybabtu
+;; *stack-top*
+;; *stack-base*
+;; *stack-size*
+;; *kernel-boot-message*
+;; *kernel-boot-mode*
+;; *kernel-boot-level*

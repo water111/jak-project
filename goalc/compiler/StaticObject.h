@@ -33,4 +33,15 @@ class StaticString : public StaticObject {
   int get_addr_offset() const override;
 };
 
+class StaticFloat : public StaticObject {
+ public:
+  explicit StaticFloat(float _value, int _seg);
+  float value = 0;
+  int seg = -1;
+  std::string print() const override;
+  LoadInfo get_load_info() const override;
+  void generate(emitter::ObjectGenerator* gen) override;
+  int get_addr_offset() const override;
+};
+
 #endif  // JAK_STATICOBJECT_H

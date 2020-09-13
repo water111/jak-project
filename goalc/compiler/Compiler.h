@@ -15,6 +15,7 @@ class Compiler {
   Compiler();
   ~Compiler();
   void execute_repl();
+  goos::Interpreter& get_goos() { return m_goos; }
   FileEnv* compile_object_file(const std::string& name, goos::Object code, bool allow_emit);
   std::unique_ptr<FunctionEnv> compile_top_level_function(const std::string& name,
                                                           const goos::Object& code,
@@ -40,6 +41,8 @@ class Compiler {
   Val* compile_pair(const goos::Object& code, Env* env);
   Val* compile_integer(const goos::Object& code, Env* env);
   Val* compile_integer(s64 value, Env* env);
+  Val* compile_float(const goos::Object& code, Env* env);
+  Val* compile_float(float value, Env* env, int seg);
   Val* compile_symbol(const goos::Object& form, Env* env);
   Val* compile_string(const goos::Object& form, Env* env);
   Val* compile_string(const std::string& str, Env* env, int seg = MAIN_SEGMENT);
@@ -137,6 +140,7 @@ class Compiler {
   // Function
   Val* compile_lambda(const goos::Object& form, const goos::Object& rest, Env* env);
   Val* compile_inline(const goos::Object& form, const goos::Object& rest, Env* env);
+  Val* compile_declare(const goos::Object& form, const goos::Object& rest, Env* env);
 };
 
 #endif  // JAK_COMPILER_H

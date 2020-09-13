@@ -1,4 +1,14 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; OTHER STUFF
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; get list of all goal files
+(asm-file "goal_src/build/all_files.gc")
+
+;; tell compiler about stuff defined/implemented in the runtime.
+(asm-file "goal_src/kernel-defs.gc")
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; BUILD SYSTEM
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -23,12 +33,10 @@
      )
   )
 
-;; load list of all goal files
-(asm-file "goal_src/build/all_files.gc")
-
 (defmacro e ()
   `(:exit)
   )
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; CONDITIONAL COMPILATION

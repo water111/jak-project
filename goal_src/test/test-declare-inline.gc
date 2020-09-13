@@ -1,0 +1,7 @@
+(defun inline-test-function-1 ((x int))
+  ;; inline this function by default.
+  (declare (inline))
+  (* 4 x)
+  )
+
+(inline-test-function-1 8)

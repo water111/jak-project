@@ -13,6 +13,9 @@ uint32_t push_data_to_byte_vector(T data, std::vector<uint8_t>& v) {
 }
 }  // namespace
 
+////////////////
+// StaticString
+////////////////
 StaticString::StaticString(std::string data, int _seg) : text(std::move(data)), seg(_seg) {}
 
 std::string StaticString::print() const {
@@ -48,4 +51,33 @@ void StaticString::generate(emitter::ObjectGenerator* gen) {
 
 int StaticString::get_addr_offset() const {
   return BASIC_OFFSET;
+}
+
+////////////////
+// StaticFloat
+////////////////
+
+StaticFloat::StaticFloat(float _value, int _seg) : value(_value), seg(_seg) {}
+
+StaticObject::LoadInfo StaticFloat::get_load_info() const {
+  LoadInfo info;
+  info.requires_load = true;
+  info.load_size = 4;
+  info.load_signed = false;
+  info.prefer_xmm = true;
+  return info;
+}
+
+void StaticFloat::generate(emitter::ObjectGenerator* gen) {
+  rec = gen->add_static_to_seg(seg, 4);
+  auto& d = gen->get_static_data(rec);
+  push_data_to_byte_vector<float>(value, d);
+}
+
+int StaticFloat::get_addr_offset() const {
+  return 0;
+}
+
+std::string StaticFloat::print() const {
+  return fmt::format("(sf {})", value);
 }

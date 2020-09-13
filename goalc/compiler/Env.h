@@ -90,6 +90,10 @@ class FileEnv : public Env {
   void debug_print_tl();
   const std::vector<std::unique_ptr<FunctionEnv>>& functions() { return m_functions; }
   const std::vector<std::unique_ptr<StaticObject>>& statics() { return m_statics; }
+  const FunctionEnv& top_level_function() {
+    assert(m_top_level_func);
+    return *m_top_level_func;
+  }
 
   bool is_empty();
   ~FileEnv() = default;
@@ -137,7 +141,7 @@ class FunctionEnv : public DeclareEnv {
   void emit(std::unique_ptr<IR> ir) override;
   void finish();
   RegVal* make_ireg(TypeSpec ts, emitter::RegKind kind) override;
-  const std::vector<std::unique_ptr<IR>>& code() { return m_code; }
+  const std::vector<std::unique_ptr<IR>>& code() const { return m_code; }
   int max_vars() const { return m_iregs.size(); }
   const std::vector<IRegConstraint>& constraints() { return m_constraints; }
   void constrain(const IRegConstraint& c) { m_constraints.push_back(c); }
@@ -167,7 +171,7 @@ class FunctionEnv : public DeclareEnv {
 
   int segment = -1;
   std::string method_of_type_name = "#f";
-
+  bool is_asm_func = false;
   std::vector<UnresolvedGoto> unresolved_gotos;
   std::unordered_map<std::string, Val*> params;
 
@@ -181,7 +185,6 @@ class FunctionEnv : public DeclareEnv {
   std::vector<IRegConstraint> m_constraints;
   // todo, unresolved gotos
   AllocationResult m_regalloc_result;
-  bool m_is_asm_func = false;
 
   bool m_aligned_stack_required = false;
 

@@ -141,12 +141,12 @@ class IntegerConstantVal : public Val {
 
 class FloatConstantVal : public Val {
  public:
-  FloatConstantVal(TypeSpec ts, float value) : Val(std::move(ts)), m_value(value) {}
-  std::string print() const override { return "float-constant-" + std::to_string(m_value); }
+  FloatConstantVal(TypeSpec ts, StaticFloat* value) : Val(std::move(ts)), m_value(value) {}
+  std::string print() const override { return "float-constant-" + m_value->print(); }
   RegVal* to_reg(Env* fe) override;
 
  protected:
-  float m_value = -1.f;
+  StaticFloat* m_value = nullptr;
 };
 // IntegerConstant
 // FloatConstant

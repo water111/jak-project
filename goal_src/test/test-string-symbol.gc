@@ -1,0 +1,1 @@
+(print (string->symbol "test-string"))

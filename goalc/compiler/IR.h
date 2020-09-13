@@ -159,6 +159,20 @@ class IR_StaticVarAddr : public IR {
   const StaticObject* m_src = nullptr;
 };
 
+class IR_StaticVarLoad : public IR {
+ public:
+  IR_StaticVarLoad(const RegVal* dest, const StaticObject* src);
+  std::string print() override;
+  RegAllocInstr to_rai() override;
+  void do_codegen(emitter::ObjectGenerator* gen,
+                  const AllocationResult& allocs,
+                  emitter::IR_Record irec) override;
+
+ protected:
+  const RegVal* m_dest = nullptr;
+  const StaticObject* m_src = nullptr;
+};
+
 class IR_FunctionAddr : public IR {
  public:
   IR_FunctionAddr(const RegVal* dest, FunctionEnv* src);
@@ -199,6 +213,7 @@ class IR_IntegerMath : public IR {
   void do_codegen(emitter::ObjectGenerator* gen,
                   const AllocationResult& allocs,
                   emitter::IR_Record irec) override;
+  IntegerMathKind get_kind() const { return m_kind; }
 
  protected:
   IntegerMathKind m_kind;

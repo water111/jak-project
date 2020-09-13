@@ -5,3 +5,20 @@
 ;; name in dgo: gcommon
 ;; dgos: KERNEL
 
+;; gcommon is the first file compiled and loaded.
+;; it's expected that this function will mostly be hand-decompiled
+
+
+
+;; The "identity" returns its input unchanged.  It uses the special GOAL "object"
+;; type, which can basically be anything, so this will work on integers, floats,
+;; strings, structures, arrays, etc.  The only things which doesn't work with "object"
+;; is a 128-bit integer. The upper 64-bits of the integer will usually be lost.
+(defun identity ((x object))
+  ;; there is an optional "docstring" that can go at the beginning of a function
+  "Function which returns its input. The first function of the game!"
+  
+  ;; the last thing in the function body is the return value.
+  x
+  )
+

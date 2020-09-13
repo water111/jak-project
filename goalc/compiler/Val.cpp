@@ -6,11 +6,14 @@
  * Fallback to_gpr if a more optimized one is not provided.
  */
 RegVal* Val::to_gpr(Env* fe) {
+  // TODO - handle 128-bit stuff here!
   auto rv = to_reg(fe);
   if (rv->ireg().kind == emitter::RegKind::GPR) {
     return rv;
   } else {
-    throw std::runtime_error("Val::to_gpr NYI");  // todo
+    auto re = fe->make_gpr(m_ts);
+    fe->emit(std::make_unique<IR_RegSet>(re, rv));
+    return re;
   }
 }
 
@@ -73,5 +76,11 @@ RegVal* LambdaVal::to_reg(Env* fe) {
   auto re = fe->make_gpr(m_ts);
   assert(func);
   fe->emit(std::make_unique<IR_FunctionAddr>(re, func));
+  return re;
+}
+
+RegVal* FloatConstantVal::to_reg(Env* fe) {
+  auto re = fe->make_xmm(m_ts);
+  fe->emit(std::make_unique<IR_StaticVarLoad>(re, m_value));
   return re;
 }

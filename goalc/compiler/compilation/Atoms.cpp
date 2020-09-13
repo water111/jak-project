@@ -68,7 +68,8 @@ static const std::unordered_map<
         //
         //        // LAMBDA
         {"lambda", &Compiler::compile_lambda},
-        //        {"inline", &Compiler::compile_inline},
+        {"declare", &Compiler::compile_declare},
+        {"inline", &Compiler::compile_inline},
         //        {"with-inline", &Compiler::compile_with_inline},
         //        {"rlet", &Compiler::compile_rlet},
         //        {"mlet", &Compiler::compile_mlet},
@@ -80,11 +81,6 @@ static const std::unordered_map<
         //        {"print-type", &Compiler::compile_print_type},
         {"quote", &Compiler::compile_quote},
         //        {"defconstant", &Compiler::compile_defconstant},
-        //
-        //        {"declare", &Compiler::compile_declare},
-        //
-        //
-        //
         //
         //        // OBJECT
         //
@@ -150,6 +146,8 @@ Val* Compiler::compile(const goos::Object& code, Env* env) {
       return compile_symbol(code, env);
     case goos::ObjectType::STRING:
       return compile_string(code, env);
+    case goos::ObjectType::FLOAT:
+      return compile_float(code, env);
     default:
       ice("Don't know how to compile " + code.print());
   }
@@ -252,6 +250,20 @@ Val* Compiler::compile_string(const std::string& str, Env* env, int seg) {
   auto obj = std::make_unique<StaticString>(str, seg);
   auto fe = get_parent_env_of_type<FunctionEnv>(env);
   auto result = fe->alloc_val<StaticVal>(obj.get(), m_ts.make_typespec("string"));
+  auto fie = get_parent_env_of_type<FileEnv>(env);
+  fie->add_static(std::move(obj));
+  return result;
+}
+
+Val* Compiler::compile_float(const goos::Object& code, Env* env) {
+  assert(code.is_float());
+  return compile_float(code.float_obj.value, env, MAIN_SEGMENT);
+}
+
+Val* Compiler::compile_float(float value, Env* env, int seg) {
+  auto obj = std::make_unique<StaticFloat>(value, seg);
+  auto fe = get_parent_env_of_type<FunctionEnv>(env);
+  auto result = fe->alloc_val<FloatConstantVal>(m_ts.make_typespec("float"), obj.get());
   auto fie = get_parent_env_of_type<FileEnv>(env);
   fie->add_static(std::move(obj));
   return result;

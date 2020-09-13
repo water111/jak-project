@@ -39,6 +39,7 @@ bool Compiler::is_singed_integer_or_binteger(const TypeSpec& ts) {
 }
 
 Val* Compiler::number_to_integer(Val* in, Env* env) {
+  (void)env;
   auto ts = in->type();
   if (is_binteger(ts)) {
     assert(false);
@@ -52,6 +53,7 @@ Val* Compiler::number_to_integer(Val* in, Env* env) {
 }
 
 Val* Compiler::number_to_binteger(Val* in, Env* env) {
+  (void)env;
   auto ts = in->type();
   if (is_binteger(ts)) {
     return in;
@@ -65,6 +67,7 @@ Val* Compiler::number_to_binteger(Val* in, Env* env) {
 }
 
 Val* Compiler::number_to_float(Val* in, Env* env) {
+  (void)env;
   auto ts = in->type();
   if (is_binteger(ts)) {
     assert(false);

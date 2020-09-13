@@ -194,8 +194,12 @@ void IR_RegSet::do_codegen(emitter::ObjectGenerator* gen,
 
   if (val_reg == dest_reg) {
     gen->add_instr(IGen::null(), irec);
-  } else {
+  } else if (val_reg.is_gpr() && dest_reg.is_gpr()) {
     gen->add_instr(IGen::mov_gpr64_gpr64(dest_reg, val_reg), irec);
+  } else if (val_reg.is_xmm() && dest_reg.is_gpr()) {
+    gen->add_instr(IGen::movd_gpr32_xmm32(dest_reg, val_reg), irec);
+  } else {
+    assert(false);
   }
 }
 
@@ -329,7 +333,7 @@ void IR_StaticVarAddr::do_codegen(emitter::ObjectGenerator* gen,
 
 /////////////////////
 // FunctionAddr
-///////////////////
+/////////////////////
 
 IR_FunctionAddr::IR_FunctionAddr(const RegVal* dest, FunctionEnv* src) : m_dest(dest), m_src(src) {}
 
@@ -354,7 +358,7 @@ void IR_FunctionAddr::do_codegen(emitter::ObjectGenerator* gen,
 
 /////////////////////
 // IntegerMath
-///////////////////
+/////////////////////
 
 IR_IntegerMath::IR_IntegerMath(IntegerMathKind kind, RegVal* dest, RegVal* arg)
     : m_kind(kind), m_dest(dest), m_arg(arg) {}
@@ -401,5 +405,40 @@ void IR_IntegerMath::do_codegen(emitter::ObjectGenerator* gen,
     break;
     default:
       assert(false);
+  }
+}
+
+/////////////////////
+// StaticVarLoad
+/////////////////////
+
+IR_StaticVarLoad::IR_StaticVarLoad(const RegVal* dest, const StaticObject* src)
+    : m_dest(dest), m_src(src) {}
+
+std::string IR_StaticVarLoad::print() {
+  return fmt::format("mov-svl {}, [{}]", m_dest->print(), m_src->print());
+}
+
+RegAllocInstr IR_StaticVarLoad::to_rai() {
+  RegAllocInstr rai;
+  rai.write.push_back(m_dest->ireg());
+  return rai;
+}
+
+void IR_StaticVarLoad::do_codegen(emitter::ObjectGenerator* gen,
+                                  const AllocationResult& allocs,
+                                  emitter::IR_Record irec) {
+  auto load_info = m_src->get_load_info();
+  assert(m_src->get_addr_offset() == 0);
+
+  if (m_dest->ireg().kind == emitter::RegKind::XMM) {
+    assert(load_info.load_signed == false);
+    assert(load_info.load_size == 4);
+    assert(load_info.requires_load == true);
+
+    auto instr = gen->add_instr(IGen::static_load_xmm32(get_reg(m_dest, allocs, irec), 0), irec);
+    gen->link_instruction_static(instr, m_src->rec, 0);
+  } else {
+    assert(false);
   }
 }
