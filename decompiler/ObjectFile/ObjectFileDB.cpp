@@ -20,6 +20,7 @@
 #include "decompiler/Function/BasicBlocks.h"
 #include "decompiler/IR/BasicOpBuilder.h"
 #include "decompiler/IR/CfgBuilder.h"
+#include "decompiler/Function/RegUsage.h"
 #include "third-party/spdlog/include/spdlog/spdlog.h"
 
 /*!
@@ -645,24 +646,25 @@ void ObjectFileDB::analyze_functions() {
         }
 
         // type analysis
-        if (func.guessed_name.kind == FunctionName::FunctionKind::GLOBAL) {
-          // we're a global named function. This means we're stored in a symbol
-          auto kv = dts.symbol_types.find(func.guessed_name.function_name);
-          if (kv != dts.symbol_types.end() && kv->second.arg_count() >= 1) {
-            if (kv->second.base_type() != "function") {
-              spdlog::error("Found a function named {} but the symbol has type {}",
-                            func.guessed_name.to_string(), kv->second.print());
-              assert(false);
-            }
-            // GOOD!
-            spdlog::info("Type Analysis on {} {}", func.guessed_name.to_string(),
-                         kv->second.print());
-            func.run_type_analysis(kv->second, dts, data.linked_data);
-            if (func.has_typemaps()) {
-              successful_type_analysis++;
-            }
-          }
-        }
+        //        analyze_reg_usage(func, data.linked_data);
+        //        if (func.guessed_name.kind == FunctionName::FunctionKind::GLOBAL) {
+        //          // we're a global named function. This means we're stored in a symbol
+        //          auto kv = dts.symbol_types.find(func.guessed_name.function_name);
+        //          if (kv != dts.symbol_types.end() && kv->second.arg_count() >= 1) {
+        //            if (kv->second.base_type() != "function") {
+        //              spdlog::error("Found a function named {} but the symbol has type {}",
+        //                            func.guessed_name.to_string(), kv->second.print());
+        //              assert(false);
+        //            }
+        //            // GOOD!
+        //            spdlog::info("Type Analysis on {} {}", func.guessed_name.to_string(),
+        //                         kv->second.print());
+        //            func.run_type_analysis(kv->second, dts, data.linked_data);
+        //            if (func.has_typemaps()) {
+        //              successful_type_analysis++;
+        //            }
+        //          }
+        //        }
       } else {
         asm_funcs++;
       }

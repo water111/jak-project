@@ -27,6 +27,9 @@ class IR {
                                 LinkedObjectFile& file,
                                 TypeSpec* out) const;
 
+  virtual std::vector<Register> get_read(LinkedObjectFile& file) const;
+  virtual std::vector<Register> get_write(LinkedObjectFile& file) const;
+
   bool is_basic_op = false;
 };
 
@@ -72,6 +75,9 @@ class IR_Set : public IR {
                     LinkedObjectFile& file) const override;
   std::shared_ptr<IR> dst, src;
   std::shared_ptr<IR> clobber = nullptr;
+
+  std::vector<Register> get_read(LinkedObjectFile& file) const override;
+  std::vector<Register> get_write(LinkedObjectFile& file) const override;
 };
 
 class IR_Store : public IR_Set {
@@ -184,6 +190,7 @@ class IR_IntMath2 : public IR {
                         DecompilerTypeSystem& dts,
                         LinkedObjectFile& file,
                         TypeSpec* out) const override;
+  std::vector<Register> get_read(LinkedObjectFile& file) const override;
 };
 
 class IR_IntMath1 : public IR {
@@ -234,6 +241,9 @@ struct BranchDelay {
   explicit BranchDelay(Kind _kind) : kind(_kind) {}
   goos::Object to_form(const LinkedObjectFile& file) const;
   void get_children(std::vector<std::shared_ptr<IR>>* output) const;
+
+  void get_read(std::vector<Register>* out) const;
+  void get_write(std::vector<Register>* out) const;
 };
 
 struct Condition {
@@ -286,6 +296,7 @@ struct Condition {
   std::shared_ptr<IR> src0, src1, clobber;
   void get_children(std::vector<std::shared_ptr<IR>>* output) const;
   void invert();
+  void get_read(std::vector<Register>* out) const;
 };
 
 class IR_Branch : public IR {
@@ -306,6 +317,8 @@ class IR_Branch : public IR {
   virtual bool update_types(TypeMap& reg_types,
                             DecompilerTypeSystem& dts,
                             LinkedObjectFile& file) const;
+  std::vector<Register> get_read(LinkedObjectFile& file) const override;
+  std::vector<Register> get_write(LinkedObjectFile& file) const override;
 };
 
 class IR_Compare : public IR {
@@ -320,6 +333,7 @@ class IR_Compare : public IR {
                         DecompilerTypeSystem& dts,
                         LinkedObjectFile& file,
                         TypeSpec* out) const override;
+  std::vector<Register> get_read(LinkedObjectFile& file) const override;
 };
 
 class IR_Nop : public IR {

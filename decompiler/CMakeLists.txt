@@ -15,6 +15,7 @@ add_executable(decompiler
         Function/BasicBlocks.cpp
         Disasm/InstructionMatching.cpp
         Function/CfgVtx.cpp
+		Function/RegUsage.cpp
         IR/BasicOpBuilder.cpp
         IR/CfgBuilder.cpp
         IR/IR.cpp

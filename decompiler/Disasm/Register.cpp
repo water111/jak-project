@@ -214,3 +214,7 @@ bool Register::operator==(const Register& other) const {
 bool Register::operator!=(const Register& other) const {
   return id != other.id;
 }
+
+bool Register::operator<(const Register& other) const {
+  return id < other.id;
+}

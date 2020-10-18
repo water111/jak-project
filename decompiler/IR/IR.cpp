@@ -1,6 +1,28 @@
 #include "IR.h"
 #include "decompiler/ObjectFile/LinkedObjectFile.h"
 
+namespace {
+void read_helper(IR* in, std::vector<Register>* out, LinkedObjectFile& file) {
+  auto in_as_reg = dynamic_cast<IR_Register*>(in);
+  if (in_as_reg) {
+    out->push_back(in_as_reg->reg);
+    return;
+  }
+  auto in_as_int = dynamic_cast<IR_IntegerConstant*>(in);
+  if (in_as_int) {
+    return;
+  } else {
+    auto temp = in->get_read(file);
+    out->insert(out->end(), temp.begin(), temp.end());
+    return;
+  }
+}
+}  // namespace
+
+//////////////
+/// IR
+//////////////
+
 std::vector<std::shared_ptr<IR>> IR::get_all_ir(LinkedObjectFile& file) const {
   (void)file;
   std::vector<std::shared_ptr<IR>> result;
@@ -33,6 +55,18 @@ bool IR::update_types(TypeMap& reg_types, DecompilerTypeSystem& dts, LinkedObjec
   return false;
 }
 
+std::vector<Register> IR::get_read(LinkedObjectFile& file) const {
+  throw std::runtime_error("IR get_read not yet implemented for " + print(file));
+}
+
+std::vector<Register> IR::get_write(LinkedObjectFile& file) const {
+  throw std::runtime_error("IR get_write not yet implemented for " + print(file));
+}
+
+//////////////
+/// IR Failed
+//////////////
+
 goos::Object IR_Failed::to_form(const LinkedObjectFile& file) const {
   (void)file;
   return pretty_print::build_list("INVALID-OPERATION");
@@ -42,6 +76,10 @@ void IR_Failed::get_children(std::vector<std::shared_ptr<IR>>* output) const {
   (void)output;
 }
 
+//////////////
+/// IR_Register
+//////////////
+
 goos::Object IR_Register::to_form(const LinkedObjectFile& file) const {
   (void)file;
   return pretty_print::to_symbol(reg.to_charp());
@@ -50,6 +88,10 @@ goos::Object IR_Register::to_form(const LinkedObjectFile& file) const {
 void IR_Register::get_children(std::vector<std::shared_ptr<IR>>* output) const {
   (void)output;
 }
+
+//////////////
+/// IR_Set
+//////////////
 
 goos::Object IR_Set::to_form(const LinkedObjectFile& file) const {
   return pretty_print::build_list(pretty_print::to_symbol("set!"), dst->to_form(file),
@@ -96,6 +138,20 @@ goos::Object IR_Store::to_form(const LinkedObjectFile& file) const {
 
   return pretty_print::build_list(pretty_print::to_symbol(store_operator), dst->to_form(file),
                                   src->to_form(file));
+}
+
+std::vector<Register> IR_Set::get_read(LinkedObjectFile& file) const {
+  std::vector<Register> result;
+  read_helper(src.get(), &result, file);
+  return result;
+}
+
+std::vector<Register> IR_Set::get_write(LinkedObjectFile& file) const {
+  (void)file;
+  auto dst_as_reg = dynamic_cast<IR_Register*>(dst.get());
+  assert(dst_as_reg);
+  assert(is_basic_op);  // note that after expression compaction an IR_Set can have side effects.
+  return {dst_as_reg->reg};
 }
 
 goos::Object IR_Symbol::to_form(const LinkedObjectFile& file) const {
@@ -281,6 +337,14 @@ void IR_IntMath2::get_children(std::vector<std::shared_ptr<IR>>* output) const {
   output->push_back(arg1);
 }
 
+std::vector<Register> IR_IntMath2::get_read(LinkedObjectFile& file) const {
+  std::vector<Register> result;
+  for (auto& src : {arg0, arg1}) {
+    read_helper(src.get(), &result, file);
+  }
+  return result;
+}
+
 goos::Object IR_IntMath1::to_form(const LinkedObjectFile& file) const {
   std::string math_operator;
   switch (kind) {
@@ -394,9 +458,34 @@ void BranchDelay::get_children(std::vector<std::shared_ptr<IR>>* output) const {
   }
 }
 
+void BranchDelay::get_read(std::vector<Register>* out) const {
+  for (auto& src : {source, source2}) {
+    auto as_reg = dynamic_cast<IR_Register*>(src.get());
+    if (as_reg) {
+      out->push_back(as_reg->reg);
+    }
+  }
+}
+
+void BranchDelay::get_write(std::vector<Register>* out) const {
+  auto as_reg = dynamic_cast<IR_Register*>(destination.get());
+  if (as_reg) {
+    out->push_back(as_reg->reg);
+  }
+}
+
 goos::Object IR_Nop::to_form(const LinkedObjectFile& file) const {
   (void)file;
   return pretty_print::build_list("nop!");
+}
+
+void Condition::get_read(std::vector<Register>* out) const {
+  for (auto& src : {src0, src1}) {
+    auto as_reg = dynamic_cast<IR_Register*>(src.get());
+    if (as_reg) {
+      out->push_back(as_reg->reg);
+    }
+  }
 }
 
 int Condition::num_args() const {
@@ -644,12 +733,34 @@ void IR_Branch::get_children(std::vector<std::shared_ptr<IR>>* output) const {
   branch_delay.get_children(output);
 }
 
+std::vector<Register> IR_Branch::get_read(LinkedObjectFile& file) const {
+  (void)file;
+  std::vector<Register> result;
+  condition.get_read(&result);
+  branch_delay.get_read(&result);
+  return result;
+}
+
+std::vector<Register> IR_Branch::get_write(LinkedObjectFile& file) const {
+  (void)file;
+  std::vector<Register> result;
+  branch_delay.get_write(&result);
+  return result;
+}
+
 goos::Object IR_Compare::to_form(const LinkedObjectFile& file) const {
   return condition.to_form(file);
 }
 
 void IR_Compare::get_children(std::vector<std::shared_ptr<IR>>* output) const {
   condition.get_children(output);
+}
+
+std::vector<Register> IR_Compare::get_read(LinkedObjectFile& file) const {
+  (void)file;
+  std::vector<Register> result;
+  condition.get_read(&result);
+  return result;
 }
 
 goos::Object IR_Suspend::to_form(const LinkedObjectFile& file) const {
