@@ -56,7 +56,7 @@ The file will be the exact size of `EE_MAIN_MEM_SIZE`, but the first `EE_LOW_MEM
 Anywhere an address can be used, you can also use an "address spec", which gives you easier ways to input addresses. For now, the address spec is pretty simple, but there will be more features in the future.
 
 - `(sym-val <sym-name>)`. Get the address stored in the symbol with the given name. Currently there's no check to see if the symbol actually stores an address or not. This is like "evaluate `<sym-name>`, then treat the value as an address"
-- `(sym <sym-name>)`. Get the address of the symbol object itself, including the basic offet.
+- `(sym <sym-name>)`. Get the address of the symbol object itself, including the basic offset.
 
 Example to show the difference:
 ```lisp

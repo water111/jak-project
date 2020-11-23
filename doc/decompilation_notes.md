@@ -194,7 +194,7 @@ The `daddiu v1, fp, L109` loads a `string` into the `v1` register which is never
 ## Return-From evaluates to 0 bug
 We would expect the value of `(return-from #f x)` to be nothing, as there's no possible way to use it. However, GOAL seems to have a small bug where `(return-from #f x)` always attempts to evaluate to 0.  This would be like implementing it as:
 ```lisp
-(set! retrun-reg return-value)
+(set! return-reg return-value)
 (goto end-of-function)
 0 ;; oops
 ```

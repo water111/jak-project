@@ -9,7 +9,7 @@ To access a GOOS REPL, run `(goos)` from the `goal>` prompt (note, currently thi
 This document assumes some familiarity with the Scheme programming language.  It's recommended to read a bit about Scheme first.
 
 Note that most Scheme things will work in GOOS, with the following exceptions:
-- Scheme supports fractions, GOOS does not (it has seaparate integer/floating point types)
+- Scheme supports fractions, GOOS does not (it has separate integer/floating point types)
 - The short form for defining functions is `(desfun function-name (arguments) body...)`
 - GOOS does not have tail call optimization and prefers looping to recursion (there is a `while` form)
 
@@ -27,7 +27,7 @@ Usually, each argument is evaluated, then passed to the operation, and the resul
     (do-y)
  )
 ```
-In this case, only one of `(do-x)` and `(do-y)` are executed.  This doesn't follow the pattern of "evaluate all arugments...", so it is a *SPECIAL FORM*.  It's not possible for a function call to be a special form - GOOS will automatically evaluate all arguments.  It is possible to build macros which act like special forms.  There are some special forms built-in to the GOOS interpreter, which are deocumented in this section.
+In this case, only one of `(do-x)` and `(do-y)` are executed.  This doesn't follow the pattern of "evaluate all arguments...", so it is a *SPECIAL FORM*.  It's not possible for a function call to be a special form - GOOS will automatically evaluate all arguments.  It is possible to build macros which act like special forms.  There are some special forms built-in to the GOOS interpreter, which are documented in this section.
 
 ### define
 This is used to define a value in the current lexical environment.

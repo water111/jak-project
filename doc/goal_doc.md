@@ -756,7 +756,7 @@ A normal Lisp/Scheme `unless`.
 ```
 If `test` is false, evaluate all forms and return the value of the last one. If `test` isn't false, return `#f`.
 
-# Compiler Forms - Defintion
+# Compiler Forms - Definition
 
 
 
@@ -829,7 +829,7 @@ Make this function call inlined.
 ```
 Example: inline call `my-function`
 ```
-((inline my-funciton) my-arg)
+((inline my-function) my-arg)
 ```
 Attempts to make the function call inline. If it is not possible, it will throw an error. You can't save the value of `(inline my-function)`, only use it immediately in a function call. You must provide a name of a global function as the function, not a function pointer.
 
@@ -922,10 +922,10 @@ The constant is available in both GOOS and GOAL. You can use it in `#cond` expre
 
 There are a few restrictions:
 - Currently constants do not work in `deftype`. (this should be fixed eventually)
-- Constants may not work in places where the compiler is expecting a symbol which isn't actually compiled. So `(+ MY_CONSTANT 2)` is fine, but `(defun MY_CONSANT () ...)` isn't.  Don't use constants for type names, function names, or symbol names. It is fine to have a constant with a value of a symbol, but don't `(define MY_CONSTANT)` or `(set! MY_CONSTANT)` or `(new MY_CONSTANT)` or things like that.
+- Constants may not work in places where the compiler is expecting a symbol which isn't actually compiled. So `(+ MY_CONSTANT 2)` is fine, but `(defun MY_CONSTANT () ...)` isn't. Don't use constants for type names, function names, or symbol names. It is fine to have a constant with a value of a symbol, but don't `(define MY_CONSTANT)` or `(set! MY_CONSTANT)` or `(new MY_CONSTANT)` or things like that.
 - Don't use constants with `method` form.
 - You can modify constants created with `defglobalconstant` in GOOS (effect won't be seen in GOAL) with `(set!)`
-- There is no warning if one `defglobalconstant` changes the value of an exisiting `defglobalconstant`
+- There is no warning if one `defglobalconstant` changes the value of an existing `defglobalconstant`
 
 In general constants should have `UPPERCASE` names otherwise things get very confusing when there are name conflicts.
 
@@ -933,7 +933,7 @@ The recommendation is to use constants for things like numbers or expressions li
 
 ## `mlet`
 Scoped constants in GOAL. Syntax is like a `let`. This feature has all the restrictions of `defglobalconstant`.
-Avoid using `mlet` becuase it's confusing and not useful.
+Avoid using `mlet` because it's confusing and not useful.
 ```lisp
 (mlet ((constant-name constant-value)...)
   body...
@@ -1086,9 +1086,9 @@ If the `type` and the `thing` are both numbers, it will automatically convert be
 If the `thing` is a number:
 - If `type` is `binteger`, convert the number to a `binteger`
 - If `type` is `int` or `uint` (or some user-defined child type of these), convert the number to an integer.
-- If `type` is `float`, conver the number to a `float`
+- If `type` is `float`, convert the number to a `float`
 
-In all other cases, directly use the 64-bit value in the reigster as the value of the desired `type`.
+In all other cases, directly use the 64-bit value in the register as the value of the desired `type`.
 
 
 Example of number conversions:
@@ -1276,7 +1276,7 @@ GOAL pointers work a lot like C/C++ pointers, but have some slight differences:
 
 In both C and GOAL, there is a connection between arrays and pointers.  A GOAL array field will have a pointer-to-element type, and a pointer can be accessed as an array.
 
-One confusing thing is that a `(pointer int32)` is a C `int32_t*`, but a `(pointer my-structure-type)` is a C `my_structure_type**`, becuase a GOAL `my-structure-type` is like a C `my_structure_type*`.  
+One confusing thing is that a `(pointer int32)` is a C `int32_t*`, but a `(pointer my-structure-type)` is a C `my_structure_type**`, because a GOAL `my-structure-type` is like a C `my_structure_type*`.
 
 ## Inline Arrays
 One limitation of the system above is that an array of `my_structure_type` is actually an array of references to structures (C `object*[]`).  It would be more efficient if instead we had an array of structures, laid out together in memory (C `object[]`).  
@@ -1412,7 +1412,7 @@ The following destinations are currently supported:
 
 The global variable `*print-column*` can be used to automatically print at a certain indentation.  The very first thing printed during a frame will not have the indentation applied.
 
-The format string excape sequences all start with `~`, then have arguments (possibly none), then have a single character code.  The arguments look like:
+The format string escape sequences all start with `~`, then have arguments (possibly none), then have a single character code.  The arguments look like:
 - `~A`, the `A` code with no arguments
 - `~12A`, the `A` code with an integer argument of `12`
 - `~'zA`, the `A` code with a character argument of `z`

@@ -40,7 +40,7 @@ If you were to `code.print()`, you would get:
 
 There are a few details worth mentioning about this process:
 - The reader will expand `'my-symbol` to `(quote my-symbol)`
-- The reader will throw errors on synatx errors (mismatched parentheses, bad strings/numbers, etc.)
+- The reader will throw errors on syntax errors (mismatched parentheses, bad strings/numbers, etc.)
 - Using `read_from_file` adds information about where each thing came from to a map stored in the reader.  This map is used to determine the source file/line for compiler errors.
 
 # IR Pass
@@ -335,7 +335,7 @@ Once the `CodeGenerator` is done going through all functions and static data, it
 ```
 return m_gen.generate_data_v3().to_vector();
 ```
-This actually lays out everything in memory. It takes a few passes because x86 instructions are variable length (may even change based on which reigsters are used!), so it's a little bit tricky to figure out offsets between different instructions or instructions and data. Finally it generates link data tables, which efficiently pack together links to the same symbols into a single entry, to avoid duplicated symbol names.  The link table also contains information about linking references in between different segments, as different parts of the object file may be loaded into different spots in memory, and will need to reference each other.
+This actually lays out everything in memory. It takes a few passes because x86 instructions are variable length (may even change based on which registers are used!), so it's a little bit tricky to figure out offsets between different instructions or instructions and data. Finally it generates link data tables, which efficiently pack together links to the same symbols into a single entry, to avoid duplicated symbol names.  The link table also contains information about linking references in between different segments, as different parts of the object file may be loaded into different spots in memory, and will need to reference each other.
 
 This is the final result for top-level function (stored in top-level segment)
 ```
@@ -433,7 +433,7 @@ memcpy(buffer.c(), msg.c(), MessCount);
 ListenerLinkBlock->value = buffer.offset + 4;
 ListenerFunction->value = link_and_exec(buffer, "*listener*", 0, kdebugheap, LINK_FLAG_FORCE_DEBUG).offset;
 ```
-- The `link_and_exec` function doesn't actually exectue anything becuase it doesn't have the `LINK_FLAG_EXECUTE` set, it just links things. It moves the top level function and linking data to the top of the heap (temporary storage for the kernel) and keep both the main segment and debug segment of the code on the debug heap.  It'll move them together and eliminate gaps before linking.  After linking, the `ListenerFunction->value` will contain a pointer to the top level function, which is stored in the top temp area of the heap.  This `ListenerFunction` is the GOAL `*listener-function*` symbol.
+- The `link_and_exec` function doesn't actually execute anything because it doesn't have the `LINK_FLAG_EXECUTE` set, it just links things. It moves the top level function and linking data to the top of the heap (temporary storage for the kernel) and keep both the main segment and debug segment of the code on the debug heap.  It'll move them together and eliminate gaps before linking.  After linking, the `ListenerFunction->value` will contain a pointer to the top level function, which is stored in the top temp area of the heap.  This `ListenerFunction` is the GOAL `*listener-function*` symbol.
 - The next time the GOAL kernel runs, it will notice that `*listener-function*` is set, then call this function, then set it to `#f` to indicate it called the function.
 - This 
 - After this, `ClearPending()` is called, which sends all of the `print` messages with the `Deci2Server` back to the compiler.

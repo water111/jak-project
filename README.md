@@ -27,7 +27,6 @@ Our objectives are:
 - Our GOAL compiler's performance should be around the same as unoptimized C.
 - try to match things from the original game and development as possible. For example, the original GOAL compiler supported live modification of code while the game is running, so we do the same, even though it's not required for just porting the game.
 - support modifications. It should be possible to make edits to the code without everything else breaking.
-- 
 
 We support both Linux and Windows on x86-64.
 
@@ -112,7 +111,7 @@ The final component is the "runtime", located in `game`. This is the part of the
 - `build`: C++ CMake build folder
 - `common`: common C++ code shared between the compiler, decompiler, and game.
   - `cross_os_debug`: platform-independent library for implementing the OpenGOAL debugger. Linux-only currently
-  - `cross_sockets`: platform-indpendent library for sockets. Used to connect the compiler to a running game. Linux and Windows.
+  - `cross_sockets`: platform-independent library for sockets. Used to connect the compiler to a running game. Linux and Windows.
   - `goos`: the compiler-time macro language and parser for OpenGOAL.
   - `type_system`: the OpenGOAL type system
   - `util`: Random utility functions for accessing files, timers, etc.
@@ -126,7 +125,7 @@ The final component is the "runtime", located in `game`. This is the part of the
   - `ObjectFile`: Utilities for processing the GOAL object file format.
   - `scripts`: Useful scripts for setting up the decompilation
   - `util`: random utilities
-- `decompiler_out`: output of the decompiler that's not automaically used by the compiler. This is for humans to read and use. Not included in the repository.
+- `decompiler_out`: output of the decompiler that's not automatically used by the compiler. This is for humans to read and use. Not included in the repository.
 - `doc`: more documentation!
 - `game`: the source code for the game executable
   - `common`: shared stuff between the `kernel` and `overlord`
@@ -145,7 +144,7 @@ The final component is the "runtime", located in `game`. This is the part of the
   - `debugger`: The OpenGOAL debugger (part of the compiler)
   - `emitter`: x86-64 emitter and object file generator
   - `listener`: The OpenGOAL listener, which connects the compiler to a running GOAL program for the interactive REPL
-  - `regalloc`: Register alocator 
+  - `regalloc`: Register allocator
 - `iso_data`: 
 - `out`: Outputs from the build process. Only the `iso` subfolder should contain assets used by the game.
   - `iso`: Final outputs that are used by the game.

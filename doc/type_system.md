@@ -109,7 +109,7 @@ For value types, arrays work as you expect.  They have type `(pointer your-type)
 - Array of references: `(pointer your-type)`, like a C array of pointers
 - Array of inline objects: `(inline-array your-type)`, like a C array of structs
 
-The default alignment of structs is 16 bytes, which is also the minimum alignment of `kmalloc`, and the minimum alignment used when using a refence type as an inline field.  However, it's possible to violate this rule in a `(inline-array your-type)` to be more efficient.  The `your-type` can set a flag indicating it should be packed in an inline array. 
+The default alignment of structs is 16 bytes, which is also the minimum alignment of `kmalloc`, and the minimum alignment used when using a reference type as an inline field.  However, it's possible to violate this rule in a `(inline-array your-type)` to be more efficient.  The `your-type` can set a flag indicating it should be packed in an inline array.
  
  I believe the alignment then becomes the maximum of the minimum alignment of the `your-type` fields.  So if you have a type with two `uint32`s (alignment 4 bytes), an `(inline-array your-type)` can then have spacing of 8 bytes, instead of the usual minimum 16.  The behavior of a `(field-name your-type :inline #t)` is unchanged and will still align at the minimum of 16 bytes. I _believe_ that the first element of the array will still have an alignment of 16.
 
@@ -123,7 +123,7 @@ There's a single type system library, located in `common/type_system`.  It will 
 - Type Checking for compiler
 - Parsing of type definitions for compiler
 - Lowest common ancestor implementation for compiler to figure out return types for branching forms.
-- Logic to catch multiple incompatible type defintions for both compiler warnings and decompiler sanity checks
+- Logic to catch multiple incompatible type definitions for both compiler warnings and decompiler sanity checks
 
 Compile Time vs. Run Time types
 ------------------------

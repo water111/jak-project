@@ -20,5 +20,5 @@ x86-64 has a lot of instructions.  They are described in Volume 2 of the 5 Volum
   - `sub rdest, roff` : convert real pointer to GOAL pointer
   - `mov rdest, [rdest + roff + variable_offset]` : access memory through normal GOAL deref.
   - Note - we should check that the register allocator gets this right always, and eliminates moves and avoid using a temporary register.
-  - Again, the constant propagation should give use enough information, if we ever want/need to implement a more efficient `mov rdest, [rsp + varaible_offset]` type instructions.
+  - Again, the constant propagation should give use enough information, if we ever want/need to implement a more efficient `mov rdest, [rsp + variable_offset]` type instructions.
 - Memory access to static data should use `rip` addressing, like `mov rdest, [rip + offset]`. And creating pointers to static data could be `lea rdest, [rip - roff + offset]`

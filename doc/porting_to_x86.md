@@ -14,7 +14,7 @@ The code in `game/sce` is my implementation of the Sony libraries. When possible
 
 The PS2's main CPU is called the EE. It runs GOAL code and the C Kernel, which is Naughty Dog's C++ code.  The C Kernel is responsible for bootstrapping GOAL's kernel and exposing Sony library functions to GOAL code.  The C Kernel is in `game/kernel`.  In OpenGOAL the "EE Thread" runs code than ran on the EE on the PS2. This includes the C Kernel and all GOAL code. There is a single EE thread - GOAL implements its own threading, but this all runs in the same Linux/Windows thread.
 
-The PS2 has a separate I/O Processor called the IOP. It runs the OVERLORD driver written by Naughty Dog in C. OpenGOAL uses C++ for its implementation of OVERLORD. Like with the EE, there are Sony libraries for the IOP. These are in `game/sce/iop` to distiguish them from EE code. The IOP can run independently from the EE. Unlike the EE, the IOP itself has multiple threads (7 threads) that each have their own OS thread. But only one IOP thread runs at a time, as the IOP was a single-core CPU.
+The PS2 has a separate I/O Processor called the IOP. It runs the OVERLORD driver written by Naughty Dog in C. OpenGOAL uses C++ for its implementation of OVERLORD. Like with the EE, there are Sony libraries for the IOP. These are in `game/sce/iop` to distinguish them from EE code. The IOP can run independently from the EE. Unlike the EE, the IOP itself has multiple threads (7 threads) that each have their own OS thread. But only one IOP thread runs at a time, as the IOP was a single-core CPU.
 
 To give an idea of the size of these (counted by `wc -l`):
 - OVERLORD is 3700 lines, but still has a lot to implement,
@@ -41,7 +41,7 @@ The IOP was a separate I/O Processor on the PS2. It runs a cooperative multi-tas
 The library in `game/sce/iop.h` wraps the `IOP_Kernel` in an interface that looks like the Sony libraries used by the game so the IOP code can be ported directly. 
 
 There are a few stub functions that are hardcoded to return the correct values for stuff like CD drive initialization.  The main features currently supported are:
-- Threads (create, wakup, start, sleep, delay, get ID)
+- Threads (create, wakeup, start, sleep, delay, get ID)
 - Messageboxes to pass data between threads (send, poll)
 - SIF RPC, a library to receive remote procedure calls from the EE. See `game/sce/sif_ee.h` for the wrapper of the EE side library, and `game/kernel/kdgo.cpp` and `ksound.cpp` for the wrapper around the EE library that's exposed to GOAL.
 - DMA to the EE for sending data from the IOP to GOAL.
@@ -93,7 +93,7 @@ The final chunk is not double buffered. This is so it can be loaded directly int
 
 The IOP side state machine for this is in `iso.cpp`, implemented inside of the DGO load buffer complete callback and is somewhat complicated because DGO info may be split between multiple buffers, and you have to deal with getting partial info.  The EE side is in `kdgo.cpp`. 
 
-The DGO syncronization is pretty confusing but I believe I have it working. It may be worth documenting it more (I thought I did already, but where did I put it?).
+The DGO synchronization is pretty confusing but I believe I have it working. It may be worth documenting it more (I thought I did already, but where did I put it?).
 
 ## IOP Server/Ramdisk (3)
 This is implemented, but so far unused and untested.
