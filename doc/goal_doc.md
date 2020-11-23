@@ -1,20 +1,512 @@
 # OpenGOAL Document
-This is the main documentation for the OpenGOAL language. It explains the syntax of OpenGOAL programs and also how OpenGOAL can be decompiled from original GOAL.  It's broken up into three sections:
-
-1. Compiler forms, which are things built-in to the compiler and have names.  Like `+` or `deftype`.
-2. Important Syntax Macros, which are really important features of the languages that are implemented as macros, like `if` and `defun`.
-3. Compiler features, which are things that are built-in to the compiler but don't have explicit names. Like calling functions or the rules for how names are scoped.
-4. Built-in types
-
-Each feature will have a description, explanation of the syntax, a guess at how often it's used, an example or two in OpenGOAL, and an example or two in MIPS GOAL. There will also be details on the order of evaluation that is useful for the decompiler but can mostly be ignored for normal programming in OpenGAL.
+This is the main documentation for the OpenGOAL language. It's designed to be read in order to learn OpenGOAL. It does not explain the OpenGOAL kernel or state system.
 
 The syntax description uses these rules:
-- Something `[in-brackets]` is optional and can be left out.
+- Something `[in-brackets]` is optional and can be left out. 
 - Something like `[:type type-name]` means there is an optional named argument. It can be used like `:type type-name`, replacing `type-name` with what you want, or left out entirely.
 - When there are multiple choices, they are separated by `|`. Example: `#t|#f` is either `#t` or `#f`.
 - A `...` means more of the thing before can be included. Example `(f arg...)` can have multiple arguments.
 
-When talking about ordering things, GOAL code fragments can be `compile`d and `flush`ed as two separate things. For the most part, everything is done during compilation, like calling functions. But consider `(set! (-> my-object value) x)`. We don't actually want the value of `(-> my-object value)`, we want to set its value. The `compile` stage gets us description of how to read/write a thing (if possible), and the `flush` stage gets us an actual value in a register.  This can basically be ignored outside of the decompiler. 
+# All Forms
+Documented forms are crossed out.
+- ~~asm-file~~
+- ~~m~~
+- ~~ml~~
+- ~~build-game~~
+- ~~build-data~~
+- ~~blg~~
+- tc
+- ~~e~~
+- db (debug mode)
+- #when
+- #unless
+- ~~lt~~
+- ~~r~~
+- ~~shutdown-target~~
+- db (disassemble byte)
+- dh
+- dw
+- dd
+- df
+- segfault
+- fpe
+- let
+- let*
+- ~~defun~~
+- while
+- until
+- dotimes
+- protect
+- +!
+- ~~if~~
+- ~~when~~
+- ~~unless~~
+- and
+- or
+- +1
+- +!
+- -!
+- *!
+- 1-
+- zero?
+- &+!
+- &-
+- &->
+- basic?
+- pair?
+- binteger?
+- rtype-of
+- cons
+- list
+- null?
+- caar
+- object-new
+- expect-eq
+- expect-true
+- expect-false
+- start-test
+- finish-test
+- top-level
+- ~~begin~~
+- ~~block~~
+- ~~return-from~~
+- ~~label~~
+- ~~goto~~
+- gs
+- :exit
+- ~~asm-file~~
+- ~~asm-data-file~~
+- listen-to-target
+- reset-target
+- :status
+- ~~in-package~~
+- ~~#cond~~
+- ~defglobalconstant~
+- ~~seval~~
+- ~~cond~~
+- ~~when-goto~~
+- ~~define~~
+- ~~define-extern~~
+- ~~set!~~
+- dbs
+- dbg
+- :cont
+- :break
+- :dump-all-mem
+- :pm
+- :di
+- :disasm
+- :bp
+- :ubp
+- deftype
+- ~~defmethod~~
+- ->
+- &
+- the-as
+- the
+- print-type
+- new
+- car
+- cdr
+- method
+- declare-type
+- none
+- ~~lambda~~
+- ~~declare~~
+- ~~inline~~
+- ~~quote~~
+- ~~mlet~~
+- defconstant
+- ~~+~~
+- ~~-~~
+- ~~*~~
+- ~~/~~
+- ~~shlv~~
+- ~~shrv~~
+- ~~sarv~~
+- ~~mod~~
+- ~~logior~~
+- ~~logxor~~
+- ~~logand~~
+- ~~lognot~~
+- ~~=~~
+- ~~!=~~
+- ~~eq?~~
+- ~~neq?~~
+- ~~not~~
+- ~~<=~~
+- ~~>=~~
+- ~~<~~
+- ~~>~~
+- &+
+- ~~build-dgos~~
+- ~~set-config!~~
+- set-config!
+
+# Language Basics
+OpenGOAL is a compiled language. Source code is stored in `.gc` files. Each `.gc` file is compiled into a `.o` file.  These `.o` files are then loaded by the game. When they are loaded, it has the effect of running every "top level" expression in the file. Usually these are function, type, and method declarations, but you can also use this for initialization code.  For example, it is common to first define types, functions, and methods, then set up global instances.
+
+There are effectively three different "languages":
+1. OpenGOAL - the normal compiled language. 
+2. OpenGOAL compiler commands - simple commands to run the compiler, listener, and debugger.  These run in the compiler only.
+3. GOOS macro language.  This is used in OpenGOAL macros and runs at compile-time. These macros generate OpenGOAL compiler commands or OpenGOAL source which is then processed. These run in the compiler only.
+
+The OpenGOAL language uses a LISP syntax, but on the inside is closer to C or C++. There is no protection against use-after-free or other common pointer bugs.
+
+Unlike a C/C++ compiler, the OpenGOAL compiler has a state. It remembers functions/methods/types/macros/constants/enums/etc defined in previous files.
+
+# Compiler REPL
+ When you start the OpenGOAL compiler, you'll see a prompt like this:
+ ```
+ OpenGOAL Compiler 0.2
+g  > 
+ ```
+The `g` indicates that you can input OpenGOAL compiler commands.  For example:
+
+***
+### `(e)` - Compiler Command
+Exit Compiler
+```lisp
+(e)
+```
+Exit the compiler once the current REPL command is finished. Takes no arguments. If we are connected to a target through the listener, attempts to reset the target.
+***
+### `(:exit)` - Compiler Command
+Exit Compiler
+```lisp
+(:exit)
+```
+Same as `(e)`, just requires more typing. `(e)` is actually a macro for `(:exit)`. Takes no arguments.
+***
+### `(lt)` - Compiler Command
+Listen to Target
+```lisp
+(lt ["ip address"] [port-number])
+```
+Connect the listener to a running target. The IP address defaults to `"127.0.0.1"` and the port to `8112` (`DECI2_PORT` in `listener_common.h`). These defaults are usually what you want, so you can just run `(lt)` to connect.
+
+Example:
+```lisp
+g  > (lt)
+[Listener] Socket connected established! (took 0 tries). Waiting for version...
+Got version 0.2 OK!
+[Debugger] Context: valid = true, s7 = 0x147d24, base = 0x2000000000, tid = 1296302
+gc >
+```
+***
+### `r`
+Reset the target.
+```lisp
+(r ["ip address"] [port-number])
+```
+Regardless of the current state, attempt to reset the target and reconnect. After this, the target will have nothing loaded.  Like with `(lt)`, the default IP and port are probably what you want.
+
+Note: `r` is actually a macro. 
+***
+### `shutdown-target`
+If the target is connected, make it exit.
+```lisp
+(shutdown-target)
+```
+The target will print
+```
+GOAL Runtime Shutdown (code 2)
+```
+before it exits.
+***
+### `:status`
+Ping the target.
+```lisp
+(:status)
+```
+Send a ping-like message to the target. Requires the target to be connected. If successful, prints nothing.  Will time-out and display and error message if the GOAL kernel or code dispatched by the kernel is stuck in an infinite loop.  Unlikely to be used often.
+***
+ 
+ ## Connecting To Target Example
+```lisp
+;; we cannot execute OpenGOAL code unless we connect the listener
+g  > (+ 1 2 3)
+REPL Error: Compilation generated code, but wasn't supposed to
+
+;; connect to the target
+g  > (lt)
+[Listener] Socket connected established! (took 0 tries). Waiting for version...
+Got version 0.2 OK!
+[Debugger] Context: valid = true, s7 = 0x147d24, base = 0x2000000000, tid = 1297692
+
+;; execute OpenGOAL code
+gc > (+ 1 2 3)
+6
+
+;; quit the compiler and reset the target for next time.
+gc > (e)
+[Listener] Closed connection to target
+```
+Once we are connected, we see that there is a `gc` prompt. This indicates that the listener has an open socket connection. Now the REPL will accept both compiler commands and OpenGOAL source code.  All `(format #t ...` debugging prints (like `printf`) will show up in this REPL. Each time you run something in the REPL, the result is printed as a decimal number. If the result doesn't make sense to print as a decimal, or there is no result, you will get some random number.
+
+In the future there will be a fancier printer here.
+
+# OpenGOAL Type System
+OpenGOAL has a type system. Every expression and object in OpenGOAL has a type. With the exception of three special types (`none`, `_varags_`, and `_types_`), every type has a parent type, and the root of all types is `object`.  Types themselves are objects in the runtime that contain some basic information and their method table.
+
+One annoying detail of OpenGOAL is that the type system has some slightly different types for variables and places in memory, and automatic conversions between them.
+
+Another annoying detail is that there are a totally separate set of rules for 128-bit integer types (or children of these). Nothing in this section applies to these.
+
+Some types are boxed vs. unboxed. If you have an object of boxed type, it is possible to figure out its type at runtime. If you have an object of unboxed type, you can't.  If you have an unboxed type, you can't tell if it's a boxed or unboxed object.
+
+Some types are value or reference. A value type means it has value semantics, it is passed by value everywhere. A reference type is like a C/C++ pointer or reference, where there is memory allocated for the data somewhere, and the you just pass around a reference to this memory.
+
+## Built-in Types
+There are a number of built-in types. I use "abstract" type to refer to a type that is only a parent type .
+
+### `none`
+This is a special type that represents "no information". This is the return type of a function which returns nothing, and also the return type of an expression that doesn't return anything.  For example, the expression `(goto x)` does not produce a value, so its type is `none`.
+
+### `object`
+This is the parent type of all types. This is an abstract class. In a variable, this is always `object`, and can hold any `object`. In memory, this is either `object32` or `object64`. The `object32` can hold everything except for `binteger` and 64-bit integers. This type is neither boxed nor unboxed and is neither value nor reference.
+
+### `structure` (child of `object`)
+This is the parent type of all types with fields. This is an abstract class and a reference class.  A `structure` can hold any `structure`, both in memory and in a variable.  It is unboxed.
+
+### `basic` (child of `structure`)
+This is the "boxed" version of `structure`. The first field of a basic is `type`, which contains the `type` of the object. It is boxed and a reference. A `basic` can hold any `basic`, both in memory and in a variable.
+
+### `symbol` (child of `basic`)
+A symbol has a name and a value. The name is a string, and the value is an `object32`.  Note that the value is an `object32` so you cannot store a 64-bit integer in a symbol.  It is considered "bad" to store unboxed objects in symbols, though you can get away with it sometimes.
+
+All `symbol`s are stored in the global symbol table, which is a hash table. As a result, you cannot have multiple symbols with the same name. A name is enough to uniquely determine the symbol.  To get a symbol, use the syntax `'symbol-name`. To get the value, use `symbol-name`.
+
+Each global variable, type, and named global function has a symbol for it which has the variable, type, or function as its value. The linker is able to perform symbol table lookups at link time and patch the code so you don't have to do a hash table lookup every time you access a global variable, function, or type.  
+
+You can also use symbols as a efficient way to represent a enum. For example, a function may return `'error` or `'complete` as a status. The compiler is able to compare symbols for equality very efficiently (just a pointer comparison, as symbols are a reference type).
+
+### `type` (child of `basic`)
+A `type` stores information about an OpenGOAL type, including its size, parent, and name (stored as a `symbol`). It also stores the method table.  Some OpenGOAL types (children of integers, bitfield types, enums, compounds types) do not have runtime types, and instead become the parent/base type. But these types cannot have runtime type information or methods and are pretty rare.  It is a reference type, is boxed, and is dynamically sized (the method table's size is not fixed).
+
+### `string` (child of `basic`)
+A string. The string is null terminated and also stores the buffer size. This type is a reference type, is boxed, and is also dynamically sized.
+
+### `function` (child of `basic`)
+A function. Boxed and reference. It is a reference to a function, so it's like a C/C++ function pointer type.
+
+### `kheap` (child of `structure`)
+A simple bump-allocated heap. Doesn't store the heap memory, just metadata. Supports allocating from either the top or the bottom. This is used as the memory allocation strategy for the global, debug, and level heaps. Unboxed, reference, not dynamic.
+
+### `array` (child of `basic`)
+A "fancy" array. It is not yet implemented in OpenGOAL.
+
+### `pair` (child of `object`)
+A pair. It is boxed. You should not make child types of `pair`.  The two objects stored by the pair are `object32`s.
+
+### `pointer` (child of `object`)
+It is a 32-bit value type containing a pointer. Not boxed, value type. See section on compound types for more information.
+
+### `number` (child of `object`)
+Abstract type for all numbers. Value type. 64-bits.
+
+### `float` (child of `number`)
+4-byte, single precision floating point number.  Value type.
+
+### `integer` (child of `number`)
+Abstract class for integer numbers. Child classes are `sinteger` (signed integer), `uinteger` (unsigned integer), and `binteger` (boxed-integer, always signed).  These are all 64-bit types.
+
+Children of `sinteger` and `uinteger` are `int8`, `int16`, `int32`, `int64`, `uint8`, `uint16`, `uint32`, `uint64`.  These are the size you expect, value types, and not boxed. These only exist as memory types. In a variable, there is only `int` and `uint`.  These are both 64-bit types. All integer operations (math, logical, shifts) are 64-bit.
+
+The `binteger` is a boxed integer. It is a 61 bit signed integer (the other three bits are lost due to the number being boxed). There may actually be a `buinteger` (or `ubinteger`) but it doesn't exist in OpenGOAL at this point.
+
+### Weird Built-in types that aren't supported yet.
+- `vu-function`
+- `link-block`
+- `connectable`
+- `file-stream`
+- `inline-array` (class)
+
+## Compound Types
+A compound type is a type like "a pointer to an int64" or "a function which takes int as an argument and returns a string". These exist only at compile time, and get simplified at runtime. For example, all pointers become `pointer` and all functions become `function`. (The one exception to this seems to be `inline-array-class` stuff, but this is not yet supported in OpenGOAL).
+
+### Pointer
+Pointers work like you would expect. They can only point to memory types - you can't have a `(pointer int)`, instead you must have a `(pointer int32)` (for example).  Note that a `(pointer basic)` is like a C++ `basic**` as `basic` is already like a C++ pointer to struct. You can nest these, like `(pointer (pointer int64))`.  If you want a pointer with no type, (like C++ `void*`) just use a plain `pointer`. The `(pointer none)` type is invalid.
+
+Like in C/C++, you can use array indexing with a pointer. One thing to note is that a `(pointer basic)` (or pointer to any reference type) is like a C++ "array of pointers to structs". To get the C++ "array of structs", you need an `inline-array`. 
+
+### Inline Array
+These are only valid for reference types. They refer to an array of the actual data (like C array of structs) rather than an array of reference (like C array of pointers to structs, or GOAL `(pointer structure)`).  At runtime, `inline-array` becomes pointer.
+
+For an inline array of basics, elements are 16-byte aligned. For `structure`s that aren't `basic`, the alignment is usually the minimum alignment of all members of the structure, but there is an option to make it 16-byte aligned if needed.
+
+For information about how to create these arrays, see `deftype` (fields in a type) and `new` (create just an array) sections.
+
+### Function
+Function compound types look like this `(function arg0-type arg1-type... return-type)`. There can be no arguments. The `return-type` must always be specified, and should be `none` if there is no return value.  The argument types themselves can be compound types.  In order to call a function, you must have a compound function type - a `function` by itself cannot be called.
+
+ 
+## Field Definitions
+GOAL field definitions look like this:  
+  
+`(name type-name [optional stuff])`  
+  
+where optional stuff can include these, in any order:  
+  
+- `:inline #t` (default is false), to mark field as inline. This can only be done for a reference type, and indicates that the data should be stored inline, in the type, rather than just storing a reference to data stored elsewhere.  
+- `:dynamic #t` (default is false), to mark field as dynamically-sized array (must be the last field in the type)  
+- a number, to give an array size.  
+- `:offset x` where x is a number, to manually specify where the field is located  
+  
+There are many combinations of reference/value, dynamic/not-dynamic, inline/not-inline, array-size/no-array-size, and it can be confusing.  This list explains all that are valid.  
+  
+- Value type, no modifiers: a single value is stored in the field. The field type is the value type.  
+- Value type, `:dynamic #t`: the field marks the beginning of an array (of unknown size). Field type is `(pointer your-type)`  
+- Value type, with array size: the field marks the beginning of an array (of known size). Field type is `(pointer your-type)`  
+- Value type, with `:inline #t`: invalid in all cases.  
+- Reference type, no modifiers: a single reference is stored in the type. Type of field is `your-type` (a C++ pointer).    
+- Reference type, `:inline #t`: a single object is stored inside the type. Type of field is `your-type` still (a C++ pointer). The access logic is different to make this work.  
+- Reference type, `:dynamic #t` or array size: the field marks the beginning of an **array of references**. Field type is `(pointer your-type)`.  Like C array of pointers.  
+- Reference type, `:inline #t` and (`:dynamic #t` or array size): the field marks the beginning of an **array of inline objects**. Field type is `(inline-array your-type)`. Like C array of structs.  
+  
+Bonus ones, for where the array is stored _outside_ of the type:  
+- A dynamically typed GOAL array, stored outside your type (think `std::vector`): use `(name (array your-type))`  
+- A dynamically type GOAL array, stored inside your type: Not allowed, `array` is dynamic!  
+- An array of value types, stored outside your type: use `(name (pointer your-type))`  
+- An array of references (C++ array of pointers), stored outside your type: use `(name (pointer your-ref-type))`  
+- An array of objects of reference type (C++ array of structs), stored outside your type: use `(name (inline-array your-ref-type))`  
+  
+Of course, you can combine these, to get even more confusing types! But this seems uncommon.
+
+## Dynamic Size Types
+Any type which ends with a dynamic array as the last field is dynamic. For these, it's a good idea to implement the `asize-of` method.
+
+# OpenGOAL Method System
+OpenGOAL has a virtual method system. This means that child types can override parent methods.  The first argument to a method is always the object the method is being called on, except for `new`.
+
+## Special Method Type: `_type_`
+Methods have the same type as `function`. But they are allowed to use the special type `_type_`, which means "the compile-time type of the object the method is being called on".  The type system is flexible with allowing you to use `_type_` in the method declaration in `deftype`, but not using `_type_` in the actual `defmethod`.
+
+## Built in Methods
+All types have these 9 methods. They have reasonable defaults if you don't provide anything.
+
+### `new`
+The new method is a very special method used to construct a new object, like a constructor. Note that some usages of the `new` keyword __do not__ end up calling the new method. See the `new` section for more details. Unlike C++, fields of a type and elements in an array are not constructed either.
+
+The first argument is an "allocation", indicating where the object should be constructed. It can be
+- The symbol `'global` or `'debug`, indicating the global or debug heaps
+- The symbols `'process-level-heap` or `'loading-level`, indicating whatever heaps are stored in those symbols.
+- `'process`, indicating the allocation should occur on the current process heap.
+- `'scratch`, for allocating on the scratchpad. This is unused.
+- Otherwise it's treated as a 16-byte aligned address and used for in place construction (it zeros the memory first)
+
+The second argument is the "type to make".  It might seem stupid at first, but it allows child classes to use the same `new` method as the parent class.
+
+The remaining arguments can be used for whatever you want.
+
+When writing your own `new` methods, you should ignore the `allocation` argument and use the `object-new` macro to actually do the allocation.  This takes care of all the details for getting the memory (and setting up runtime type information if its a basic).  See the section on `object-new` for more details.
+
+### `delete`
+This method isn't really used very much. Unlike a C++ destructor it's never called automatically. In some cases, it's repurposed as a "clean up" type function but it doesn't actually free any memory.  It takes no arguments.  The default implementations call `kfree` on what the allocation, but there are two issues:
+1. The implementation is sometimes wrong, likely confusing doing pointer math (steps by array stride) with address math (steps by one byte).
+2. The `kfree` function does nothing.
+
+The `kheap` system doesn't really support freeing objects unless you free in the opposite order you allocate, so it makes sense that `delete` doesn't really work.
+
+### `print`
+This method should print out a short description of the object (with no newlines) and return the object.  The printing should be done with `(format #t ...)` (see the section on `format`) for more information.  If you call `print` by itself, it'll make this description show up in the REPL. (Note that there is some magic involved to add a newline here... there's actually a function named `print` that calls the `print` method and adds a newline)
+
+The default short description looks like this: `#<test-type @ #x173e54>` for printing an object of type `test-type`. Of course, you can override it with a better version.  Built-in types like string, type, boxed integer, pair, have reasonable overrides. 
+
+This method is also used to print out the object with `format`'s `~A` format option.
+
+### `inspect`
+This method should print out a detailed, multi-line description. By default, `structure`s and `basic`s will have an auto-generated method that prints out the name and value of all fields.  For example:
+
+```
+gc > (inspect *kernel-context*)
+[00164b44] kernel-context
+  prevent-from-run: 65
+  require-for-run: 0
+  allow-to-run: 0
+  next-pid: 2
+  fast-stack-top: 1879064576
+  current-process: #f
+  relocating-process: #f
+  relocating-min: 0
+  relocating-max: 0
+  relocating-offset: 0
+  low-memory-message: #t
+```
+
+In some cases this method is overridden to provide nicer formatting.
+
+### `length`
+This method should return a "length".  The default method for this just returns 0, but for things like strings or buffers, it could be used to return the number of characters or elements in use.  It's usually used to refer to how many are used, rather than the capacity.
+
+### `asize-of`
+This method should return the size of the object. Including the 4 bytes of type info for a `basic`.
+
+By default this grabs the value from the object's `type`, which is only correct for non-dynamic types. For types like `string` or other dynamic types, this method should be overridden. If you intend to store dynamically sized objects of a given type on a process heap, you __must__ implement this method accurately.
+
+### `copy`
+Creates a copy of the object. I don't think this used very much.  Just does a `memcpy` to duplicate by default.
+
+### `relocate`
+The exact details are still unknown, but is used to update internal data structures after an object is moved in memory. This must be support for objects allocated in process heaps of processes allocated on the actor heap or debug actor heap.
+
+It's also called on objects loaded from a GOAL data object file.
+
+### `mem-usage`
+Not much is known yet, but used for computing memory usage statistics.
+
+
+## Details on the Order of Overrides
+The order in which you `defmethod` and `deftype` matters.
+
+When you `deftype`, you copy all methods from the parent. When you `defmethod`, you always set a method in that type. You may also override methods in a child if: the child hasn't modified that method already, and if you are in a certain mode. This is a somewhat slow process that involves iterating over the entire symbol table and every type in the runtime, so I believe it was disabled when loading level code, and you just had to make sure to `deftype` and `defmethod` in order.
+
+Assume you have the type hierarchy where `a` is the parent of `b`, which is the parent of `c`.
+
+If you first define the three types using `deftype`, then override a method from `a` on `c`, then override that same method on `b`, then `c` won't use the override from `b`.
+
+If you first define the three types using `deftype`, then override a method on `b`, it will _sometimes_ do the override on `c`. This depends on the value of the global variable `*enable-method-set*`, and some other confusing options. It may also print a warning but still do the override in certain cases.
+
+# Syntax Basics
+An "atom" in Lisp is a form that can't be broken down into smaller forms. For example `1234` is an atom, but `(1234 5678)` is not.  OpenGOAL supports the following atoms:
+
+## Integers
+All integers are by default `int`, a signed 64-bit integer. You can use:
+- decimal: Like `123` or `-232`. The allowable range is `INT64_MIN` to `INT64_MAX`.
+- hex: Like `#x123`. The allowable range is `0` to `UINT64_MAX`. Values over `INT64_MAX` will wrap around.
+- binary: Like `#b10101010`. The range is the same as hex.
+- character:
+  - Most can be written like `#\c` for the character `c`.
+  - Space is `#\\s`
+  - New Line is `#\\n`
+  - Tab is `#\\t`
+
+
+## String
+A string generates a static string constant. Currently the "const" of this string "constant" isn't enforced. Creating two identical string constants creates two different string objects, which is different from GOAL and should be fixed at some point.
+
+The string data is in quotes, like in C. The following escapes are supported:
+- Newline: `\n`
+- Tab: `\t`
+- The `\` character: `\\`
+- The `"` character: `\"`
+- Any character: `\cXX` where `XX` is the hex number for the character.
+
+## Float
+Any number constant with a decimal in it. The trailing and leading zeros and negative sign is flexible, so you can do any of these:
+- `1.`, `1.0`, `01.`, `01.0`
+- `.1`, `0.1`, `.10`, `0.10`
+- `-.1`, `-0.1`, `-.10`, `-0.10`
+
+Like string, it creates a static floating point constant. In later games the float was inlined instead of being a static constant.
+
+## Symbol
+Use `symbol-name` to get the value of a symbol and `'symbol-name` to get the symbol object.
+
+## Comments
+Use `;` for line comments and `#|` and `|#` for block comments.
+
+
 
 
 # Compiler Forms - Block Related
@@ -35,8 +527,6 @@ Example:
   )
 ```
 will print `hello world!` and the value of the entire form is `7`.
-
-In `begin` and similar "do everything in the list" forms, each form is `compile`d then `flush`ed. 
 
 The `begin` form is used a lot in macros, but not that much in code. It's generally used when you want to execute multiple things, but fit it into a single form.
 
@@ -112,17 +602,8 @@ The `goto` form used very rarely outside of macros and inline assembly. Try to a
 ## `top-level`
 This form is reserved by the compiler. Internally all forms in a file are grouped under a `top-level` form, so you may see this in error messages. Do not name anything `top-level`.
 
-# Compiler Forms - Compiler Control
-These forms are used to control the GOAL compiler, and are usually entered at the GOAL REPL, or as part of a macro that's executed at the GOAL REPL. These shouldn't really be used in GOAL source code.
-
-## `:exit`
-This causes the compiler to exit after the current REPL command is over. 
-```lisp
-(:exit)
-```
-If the listener is connected, it sends a reset command to reboot the target so it is ready for the next compiler connection.
-
-There's a useful macro `(e)` to exit with less typing.  Obviously this shouldn't be used in game code.
+# Compiler Forms - Compiler Commands
+These forms are used to control the GOAL compiler, and are usually entered at the GOAL REPL, or as part of a macro that's executed at the GOAL REPL. These shouldn't be used in GOAL source code.
 
 ## `seval`
 Execute GOOS code.
@@ -138,8 +619,8 @@ Compile a file.
 ```
 This runs the compiler on a given file. The file path is relative to the `jak-project` folder. These are the options:
 - `:color`: run register allocation and code generation. Can be omitted if you don't want actually generate code. Usually you want this option.
-- `:write`: write the object file to the `data` folder. You must also have `:color` on. You must do this to include this file in a DGO.
-- `:load`: send the object file to the target with the listener. Requires `:color` but not `:write`. There may be issues with `:load`ing very large object files.
+- `:write`: write the object file to the `out/obj` folder. You must also have `:color` on. You must do this to include this file in a DGO.
+- `:load`: send the object file to the target with the listener. Requires `:color` but not `:write`. There may be issues with `:load`ing very large object files (believed fixed).
 
 To reduce typing, there are some useful macros:
 - `(m "filename")` is "make" and does a `:color` and `:write`.
@@ -147,47 +628,14 @@ To reduce typing, there are some useful macros:
 - `(build-game)` does `m` on all game files and rebuilds DGOs
 - `(blg)` (build and load game) does `build-game` then sends commands to load KERNEL and GAME CGOs. The load is done through DGO loading, not `:load`ing individual object files.
 
-## `lt`
-Listen to target.
+## `asm-data-file`
+Build a data file.
 ```lisp
-(lt ["ip address"] [port-number])
+(asm-data-file tool-name "file-name")
 ```
-This causes the compiler to connect to the target/runtime. Usually it's just run as `(lt)`, as the default IP is `127.0.0.1` and the default port is the right one.  If it works, you should see something like this:
-```
-[Listener] Socket connected established! (took 0 tries). Waiting for version...
-Got version 2.6 OK!
-[OUTPUT] reset #x147d24
-```
-The `OUTPUT` message is a pending message from the runtime saying that it has reset and the location of the symbol table.
+The `tool-name` refers to which data building tool should be used. For example, this should be `game-text` when building the game text data files.  
 
-Note: `lt` is actually a macro. Use these target control macros over the direct compiler forms (currently undocumented) whenever possible, as running the compiler forms in the wrong order can leave the target/compiler in a strange state.
-
-## `r`
-Reset the target.
-```lisp
-(r)
-```
-Regardless of the current state, attempt to reset the target and reconnect. 
-
-Note: `r` is actually a macro. Use it over the (currently undocumented) compiler forms.
-
-## `shutdown-target`
-If the target is connected, shut it down.
-```lisp
-(shutdown-target)
-```
-The target will print
-```
-GOAL Runtime Shutdown (code 2)
-```
-when it shuts down.
-
-## `:status`
-Ping the target.
-```lisp
-(:status)
-```
-Send a ping-like message to the target. Requires the target to be connected. If successful, prints nothing.  Will time-out if the GOAL kernel or code dispatched by the kernel is stuck in an infinite loop.  Unlikely to be used often.
+There's a macro `(build-data)` which rebuilds everything.
 
 ## `gs`
 Enter a GOOS REPL.
@@ -221,6 +669,8 @@ The compiler ignores this. GOAL files evidently start with this for some reason 
 (build-dgos "path to dgos description file")
 ```
 Builds all the DGO files described in the DGO description file. See `goal_src/builds/dgos.txt` for an example. This just packs existing things into DGOs - you must have already built all the dependencies.
+
+In the future, this may become part of `asm-data-file`.
 
 # Compiler Forms - Control Flow
 
@@ -1038,3 +1488,8 @@ Any other codes will result in an error message being printed.
 
 
 ## Load Stuff
+
+# GOOS
+# Built-in Functions
+# Compiler Start Procedure
+# Inline Functions
