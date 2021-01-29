@@ -63,37 +63,156 @@ void FormStack::push_form_element(FormElement* elt, bool sequence_point) {
   m_stack.push_back(entry);
 }
 
-Form* FormStack::pop_reg(Register reg) {
+std::vector<Form*> FormStack::pop(const std::vector<Register>& regs, const Env& env) {
+//  fmt::print("pop {}\n", regs.front().to_string());
+  std::vector<Form*> result;
+
+  // first, we build up a list of how far back we can safely go.
+  // entry_idx = max_map[reg] is the lowest value of entry_idx we can use
+  std::unordered_map<Register, int, Register::hash> max_map;
+
+  RegSet modified;
+  RegSet unmodified(regs.begin(), regs.end());
   for (size_t i = m_stack.size(); i-- > 0;) {
+    // update modified
     auto& entry = m_stack.at(i);
-    if (entry.active) {
-      if (entry.destination->reg() == reg) {
-        entry.active = false;
-        assert(entry.source);
-        if (entry.non_seq_source.has_value()) {
-          assert(entry.sequence_point == false);
-          auto result = pop_reg(entry.non_seq_source->reg());
-          if (result) {
-            return result;
-          }
+    if (entry.source) {
+      assert(!entry.elt);
+      entry.source->get_modified_regs(modified);
+    } else {
+      assert(entry.elt);
+      entry.elt->get_modified_regs(modified);
+    }
+
+    // update unmodified and map
+    for (auto it = unmodified.begin(); it != unmodified.end();) {
+      if (modified.find(*it) != modified.end()) {
+        // modified at i. two cases here:
+        if (entry.destination.has_value() && entry.destination->reg() == *it) {
+          // 1). the entry at i writes the reg. it is safe to use this entry.
+          bool added = max_map.insert(std::make_pair(*it, i)).second;
+          assert(added);
+        } else {
+          // 2). the entry at i doesn't directly write the reg. Unsafe to use.
+          bool added = max_map.insert(std::make_pair(*it, i + 1)).second;
+          assert(added);
         }
-        return entry.source;
+        it = unmodified.erase(it);
       } else {
-        // we didn't match
-        if (entry.sequence_point) {
-          // and it's a sequence point! can't look any more back than this.
-          return nullptr;
-        }
+        it++;
       }
     }
   }
-  // we didn't have it...
-  return nullptr;
+  // never modified ever.
+  for (auto reg : unmodified) {
+    bool added = max_map.insert(std::make_pair(reg, 0)).second;
+    assert(added);
+  }
+
+//  fmt::print("max: {}\n", max_map[regs.front()]);
+//  fmt::print("stack:\n{}\n", print(env));
+
+  // second, we build up a collection of where to pop things.
+  // this should line up with the registers exactly
+  std::vector<int> pop_idx_per_reg;
+  pop_idx_per_reg.resize(regs.size(), -1);
+
+  bool success = true;
+  size_t stack_idx = m_stack.size();
+  for (size_t reg_idx = regs.size(); reg_idx-- > 0;) {
+    if (stack_idx == 0) {
+      success = false;
+      break;
+    }
+    for (; stack_idx-- > 0;) {
+      auto& entry = m_stack.at(stack_idx);
+      if (entry.active) {
+        if (entry.destination.has_value() && entry.destination->reg() == regs.at(reg_idx)) {
+//          fmt::print("got a match!\n");
+          // it's a match!
+          assert(pop_idx_per_reg.at(reg_idx) == -1);
+          pop_idx_per_reg.at(reg_idx) = stack_idx;
+          break;
+        } else {
+          if (entry.sequence_point) {
+//            fmt::print("failed to match, hit sequence point.\n");
+            success = false;
+            goto end_of_pops;
+          }
+        }
+      }
+      if (stack_idx == 0) {
+        success = false;
+        goto end_of_pops;
+      }
+    }
+  }
+
+end_of_pops:
+
+  if (success) {
+    // third: if successful, double check for success in the map:
+    for (size_t i = 0; i < regs.size(); i++) {
+      if (pop_idx_per_reg.at(i) < max_map.at(regs.at(i))) {
+        fmt::print("Failed map check {} vs. {}\n", pop_idx_per_reg.at(i), max_map.at(regs.at(i)));
+            success = false;
+        break;
+      }
+    }
+  }
+
+  if (success) {
+    // ok, we are successful for real!
+    for (size_t i = 0; i < regs.size(); i++) {
+      auto& entry = m_stack.at(pop_idx_per_reg.at(i));
+      assert(entry.destination.has_value());
+      assert(entry.destination->reg() == regs.at(i));
+      assert(entry.active);
+      entry.active = false;
+      result.push_back(entry.source);
+      assert(entry.source);
+    }
+
+    assert(result.size() == regs.size());
+//    fmt::print("it worked, got {}\n", result.front()->to_string(env));
+    return result;
+  } else {
+
+    return {};
+  }
 }
 
-Form* FormStack::pop_reg(const Variable& var) {
-  return pop_reg(var.reg());
-}
+// Form* FormStack::pop_reg(Register reg) {
+//  for (size_t i = m_stack.size(); i-- > 0;) {
+//    auto& entry = m_stack.at(i);
+//    if (entry.active) {
+//      if (entry.destination.has_value() && entry.destination->reg() == reg) {
+//        entry.active = false;
+//        assert(entry.source);
+//        if (entry.non_seq_source.has_value()) {
+//          assert(entry.sequence_point == false);
+//          auto result = pop_reg(entry.non_seq_source->reg());
+//          if (result) {
+//            return result;
+//          }
+//        }
+//        return entry.source;
+//      } else {
+//        // we didn't match
+//        if (entry.sequence_point) {
+//          // and it's a sequence point! can't look any more back than this.
+//          return nullptr;
+//        }
+//      }
+//    }
+//  }
+//  // we didn't have it...
+//  return nullptr;
+//}
+
+// Form* FormStack::pop_reg(const Variable& var) {
+//  return pop_reg(var.reg());
+//}
 
 std::vector<FormElement*> FormStack::rewrite(FormPool& pool) {
   std::vector<FormElement*> result;
