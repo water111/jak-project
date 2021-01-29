@@ -5,16 +5,25 @@
  * Cross platform socket library used for the listener.
  */
 
-#ifdef __linux
+#ifdef __linux__
 #include <sys/socket.h>
 #include <netinet/tcp.h>
 #include <unistd.h>
+#endif
+#ifdef __APPLE__
+#include <sys/socket.h>
+#include <netinet/tcp.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <netinet/in.h>
 #elif _WIN32
 #include <WinSock2.h>
 #endif
 
 #ifdef __linux
 const int TCP_SOCKET_LEVEL = SOL_TCP;
+#elif __APPLE__
+const int TCP_SOCKET_LEVEL = IPPROTO_TCP;
 #elif _WIN32
 const int TCP_SOCKET_LEVEL = IPPROTO_TCP;
 #endif

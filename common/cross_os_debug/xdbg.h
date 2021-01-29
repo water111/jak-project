@@ -12,12 +12,14 @@
 
 #ifdef __linux
 #include <sys/types.h>
+#elif __APPLE__
+#include <sys/types.h>
 #elif _WIN32
 // todo - windows includes
 #endif
 
 namespace xdbg {
-#ifdef __linux
+#ifdef __APPLE__
 
 /*!
  * Identification for a thread.
@@ -48,6 +50,19 @@ struct ThreadID {
 
 struct MemoryHandle {
   int a;
+};
+
+#elif __LINUX__
+/*!
+ * Identification for a thread.
+ */
+struct ThreadID {
+  pid_t id = 0;
+
+  std::string to_string() const;
+  explicit ThreadID(const std::string& str);
+  explicit ThreadID(pid_t _id);
+  ThreadID() = default;
 };
 #endif
 

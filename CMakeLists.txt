@@ -1,5 +1,5 @@
 # Top Level CMakeLists.txt
-if (UNIX)
+if (LINUX)
     cmake_minimum_required(VERSION 3.10)
 else ()
     cmake_minimum_required(VERSION 3.16)
@@ -14,7 +14,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 # Set default compile flags for GCC
 # optimization level can be set here. Note that game/ overwrites this for building game C++ code.
-if (UNIX)
+if (LINUX)
     message(STATUS "GCC detected, adding compile flags")
     set(CMAKE_CXX_FLAGS
         "${CMAKE_CXX_FLAGS} \
@@ -31,10 +31,15 @@ if (UNIX)
         -Wredundant-decls \
         -Wshadow \
         -Wsign-promo")
+elseif(UNIX)
+    message(STATUS "MacOS detected, adding compile flags")
+
 else ()
     set(CMAKE_CXX_FLAGS "/EHsc")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /STACK:10000000")
-endif (UNIX)
+endif (LINUX)
+
+
 
 IF (WIN32)
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
@@ -51,7 +56,7 @@ ENDIF ()
 option(CODE_COVERAGE "Enable Code Coverage Compiler Flags" OFF)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/third-party/cmake/modules/)
 
-if(UNIX AND CODE_COVERAGE)
+if(LINUX AND CODE_COVERAGE)
   include(CodeCoverage)
   append_coverage_compiler_flags()
   message("Code Coverage build is enabled!")

@@ -10,6 +10,7 @@
 #include <vector>
 #include <cstdint>
 #include <cstring>
+#include <string>
 
 struct BinaryWriterRef {
   size_t offset;

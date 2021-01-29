@@ -10,7 +10,6 @@
 #include "kboot.h"
 #include "fileio.h"
 #include "klisten.h"
-
 /*!
  * Update GOAL message header after receiving and verify message is ok.
  * Return the size of the message in bytes (not including DECI or GOAL headers)

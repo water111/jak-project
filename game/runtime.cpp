@@ -10,6 +10,9 @@
 #include <io.h>
 #include <third-party/mman/mman.h>
 #include <Windows.h>
+#elif __APPLE__
+#include <unistd.h>
+#include <sys/mman.h>
 #endif
 
 #include <chrono>
@@ -105,125 +108,146 @@ void deci2_runner(SystemThreadInterface& iface) {
  * SystemThread Function for the EE (PS2 Main CPU)
  */
 void ee_runner(SystemThreadInterface& iface) {
-  // Allocate Main RAM. Must have execute enabled.
-  if (EE_MEM_LOW_MAP) {
-    g_ee_main_mem =
-        (u8*)mmap((void*)0x10000000, EE_MAIN_MEM_SIZE, PROT_EXEC | PROT_READ | PROT_WRITE,
-                  MAP_ANONYMOUS | MAP_32BIT | MAP_PRIVATE | MAP_POPULATE, 0, 0);
-  } else {
+// Allocate Main RAM. Must have execute enabled.
+#ifdef __LINUX__
+  {
+    if (EE_MEM_LOW_MAP) {
+      g_ee_main_mem =
+          (u8*)mmap((void*)0x10000000, EE_MAIN_MEM_SIZE, PROT_EXEC | PROT_READ | PROT_WRITE,
+                    MAP_ANONYMOUS | MAP_32BIT | MAP_PRIVATE | MAP_POPULATE | 0, 0);
+    } else {
+      g_ee_main_mem =
+          (u8*)mmap((void*)EE_MAIN_MEM_MAP, EE_MAIN_MEM_SIZE, PROT_EXEC | PROT_READ | PROT_WRITE,
+                    MAP_ANONYMOUS | MAP_PRIVATE, 0, 0);
+    }
+#elif __WIN32
+  {
+    if (EE_MEM_LOW_MAP) {
+      g_ee_main_mem =
+          (u8*)mmap((void*)0x10000000, EE_MAIN_MEM_SIZE, PROT_EXEC | PROT_READ | PROT_WRITE,
+                    MAP_ANONYMOUS | MAP_32BIT | MAP_PRIVATE | MAP_POPULATE | 0, 0);
+    } else {
+      g_ee_main_mem =
+          (u8*)mmap((void*)EE_MAIN_MEM_MAP, EE_MAIN_MEM_SIZE, PROT_EXEC | PROT_READ | PROT_WRITE,
+                    MAP_ANONYMOUS | MAP_PRIVATE, 0, 0);
+    }
+#elif __APPLE__
+  {
     g_ee_main_mem =
         (u8*)mmap((void*)EE_MAIN_MEM_MAP, EE_MAIN_MEM_SIZE, PROT_EXEC | PROT_READ | PROT_WRITE,
                   MAP_ANONYMOUS | MAP_PRIVATE, 0, 0);
   }
+#endif
 
-  if (g_ee_main_mem == (u8*)(-1)) {
-    lg::debug("Failed to initialize main memory! {}", strerror(errno));
+    if (g_ee_main_mem == (u8*)(-1)) {
+      lg::debug("Failed to initialize main memory! {}", strerror(errno));
+      iface.initialization_complete();
+      return;
+    }
+
+    lg::debug("Main memory mapped at 0x{:016x}", (u64)(g_ee_main_mem));
+    lg::debug("Main memory size 0x{:x} bytes ({:.3f} MB)", EE_MAIN_MEM_SIZE,
+              (double)EE_MAIN_MEM_SIZE / (1 << 20));
+
+    lg::debug("[EE] Initialization complete!");
     iface.initialization_complete();
-    return;
+
+    lg::debug("[EE] Run!");
+    memset((void*)g_ee_main_mem, 0, EE_MAIN_MEM_SIZE);
+
+    // prevent access to the first 1 MB of memory.
+    // On the PS2 this is the kernel and can't be accessed either.
+    // this may not work well on systems with a page size > 1 MB.
+    mprotect((void*)g_ee_main_mem, EE_MAIN_MEM_LOW_PROTECT, PROT_NONE);
+    fileio_init_globals();
+    kboot_init_globals();
+    kdgo_init_globals();
+    kdsnetm_init_globals();
+    klink_init_globals();
+
+    kmachine_init_globals();
+    kscheme_init_globals();
+    kmalloc_init_globals();
+
+    klisten_init_globals();
+    kmemcard_init_globals();
+    kprint_init_globals();
+
+    // Added for OpenGOAL's debugger
+    xdbg::allow_debugging();
+
+    goal_main(g_argc, g_argv);
+    lg::debug("[EE] Done!");
+
+    //  // kill the IOP todo
+    iop::LIBRARY_kill();
+
+    munmap(g_ee_main_mem, EE_MAIN_MEM_SIZE);
+
+    // after main returns, trigger a shutdown.
+    iface.trigger_shutdown();
   }
 
-  lg::debug("Main memory mapped at 0x{:016x}", (u64)(g_ee_main_mem));
-  lg::debug("Main memory size 0x{:x} bytes ({:.3f} MB)", EE_MAIN_MEM_SIZE,
-            (double)EE_MAIN_MEM_SIZE / (1 << 20));
+  /*!
+   * SystemThread function for running the IOP (separate I/O Processor)
+   */
+  void iop_runner(SystemThreadInterface & iface) {
+    IOP iop;
+    lg::debug("[IOP] Restart!");
+    iop.reset_allocator();
+    ee::LIBRARY_sceSif_register(&iop);
+    iop::LIBRARY_register(&iop);
 
-  lg::debug("[EE] Initialization complete!");
-  iface.initialization_complete();
+    // todo!
+    dma_init_globals();
+    iso_init_globals();
+    fake_iso_init_globals();
+    // iso_api
+    iso_cd_init_globals();
+    iso_queue_init_globals();
+    // isocommon
+    // overlord
+    ramdisk_init_globals();
+    // sbank
+    // soundcommon
+    srpc_init_globals();
+    // ssound
+    stream_init_globals();
 
-  lg::debug("[EE] Run!");
-  memset((void*)g_ee_main_mem, 0, EE_MAIN_MEM_SIZE);
+    iface.initialization_complete();
 
-  // prevent access to the first 1 MB of memory.
-  // On the PS2 this is the kernel and can't be accessed either.
-  // this may not work well on systems with a page size > 1 MB.
-  mprotect((void*)g_ee_main_mem, EE_MAIN_MEM_LOW_PROTECT, PROT_NONE);
-  fileio_init_globals();
-  kboot_init_globals();
-  kdgo_init_globals();
-  kdsnetm_init_globals();
-  klink_init_globals();
+    lg::debug("[IOP] Wait for OVERLORD to start...");
+    iop.wait_for_overlord_start_cmd();
+    if (iop.status == IOP_OVERLORD_INIT) {
+      lg::debug("[IOP] Run!");
+    } else {
+      lg::debug("[IOP] Shutdown!");
+      return;
+    }
 
-  kmachine_init_globals();
-  kscheme_init_globals();
-  kmalloc_init_globals();
+    iop.reset_allocator();
 
-  klisten_init_globals();
-  kmemcard_init_globals();
-  kprint_init_globals();
+    // init
 
-  // Added for OpenGOAL's debugger
-  xdbg::allow_debugging();
+    start_overlord(iop.overlord_argc, iop.overlord_argv);  // todo!
 
-  goal_main(g_argc, g_argv);
-  lg::debug("[EE] Done!");
+    // unblock the EE, the overlord is set up!
+    iop.signal_overlord_init_finish();
 
-  //  // kill the IOP todo
-  iop::LIBRARY_kill();
+    // IOP Kernel loop
+    while (!iface.get_want_exit() && !iop.want_exit) {
+      // the IOP kernel just runs at full blast, so we only run the IOP when the EE is waiting on
+      // the IOP. Each time the EE is waiting on the IOP, it will run an iteration of the IOP
+      // kernel.
+      iop.wait_run_iop();
+      iop.kernel.dispatchAll();
+    }
 
-  munmap(g_ee_main_mem, EE_MAIN_MEM_SIZE);
-
-  // after main returns, trigger a shutdown.
-  iface.trigger_shutdown();
-}
-
-/*!
- * SystemThread function for running the IOP (separate I/O Processor)
- */
-void iop_runner(SystemThreadInterface& iface) {
-  IOP iop;
-  lg::debug("[IOP] Restart!");
-  iop.reset_allocator();
-  ee::LIBRARY_sceSif_register(&iop);
-  iop::LIBRARY_register(&iop);
-
-  // todo!
-  dma_init_globals();
-  iso_init_globals();
-  fake_iso_init_globals();
-  // iso_api
-  iso_cd_init_globals();
-  iso_queue_init_globals();
-  // isocommon
-  // overlord
-  ramdisk_init_globals();
-  // sbank
-  // soundcommon
-  srpc_init_globals();
-  // ssound
-  stream_init_globals();
-
-  iface.initialization_complete();
-
-  lg::debug("[IOP] Wait for OVERLORD to start...");
-  iop.wait_for_overlord_start_cmd();
-  if (iop.status == IOP_OVERLORD_INIT) {
-    lg::debug("[IOP] Run!");
-  } else {
-    lg::debug("[IOP] Shutdown!");
-    return;
+    // stop all threads in the iop kernel.
+    // if the threads are not stopped nicely, we will deadlock on trying to destroy the kernel's
+    // condition variables.
+    iop.kernel.shutdown();
   }
-
-  iop.reset_allocator();
-
-  // init
-
-  start_overlord(iop.overlord_argc, iop.overlord_argv);  // todo!
-
-  // unblock the EE, the overlord is set up!
-  iop.signal_overlord_init_finish();
-
-  // IOP Kernel loop
-  while (!iface.get_want_exit() && !iop.want_exit) {
-    // the IOP kernel just runs at full blast, so we only run the IOP when the EE is waiting on the
-    // IOP. Each time the EE is waiting on the IOP, it will run an iteration of the IOP kernel.
-    iop.wait_run_iop();
-    iop.kernel.dispatchAll();
-  }
-
-  // stop all threads in the iop kernel.
-  // if the threads are not stopped nicely, we will deadlock on trying to destroy the kernel's
-  // condition variables.
-  iop.kernel.shutdown();
-}
 }  // namespace
 
 /*!

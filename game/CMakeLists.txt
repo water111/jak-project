@@ -3,7 +3,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 # Set default compile flags for GCC
 # optimization level can be set here. Note that game/ overwrites this for building game C++ code.
-if(UNIX)
+if(LINUX)
     message(STATUS "GCC detected, adding compile flags")
     set(CMAKE_CXX_FLAGS
             "${CMAKE_CXX_FLAGS} \
@@ -20,9 +20,11 @@ if(UNIX)
         -Wredundant-decls \
         -Wshadow \
         -Wsign-promo")
-else()
-		set(CMAKE_CXX_FLAGS "/EHsc")
-endif(UNIX)
+ELSEIF(UNIX)
+    message(STATUS "MacOS detected, adding compile flags")
+ELSE()
+	set(CMAKE_CXX_FLAGS "/EHsc")
+endif(LINUX)	
 
 enable_language(ASM_NASM)
 set(CMAKE_ASM_NASM_SOURCE_FILE_EXTENSIONS ${CMAKE_ASM_NASM_SOURCE_FILE_EXTENSIONS} asm)

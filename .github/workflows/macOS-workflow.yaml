@@ -1,7 +1,11 @@
-name: Linux
+name: macOS Build
+
+
 
 # Controls when the action will run. Triggers the workflow on push or pull request
+
 # events but only for the master branch
+
 on:
   push:
     branches:
@@ -16,10 +20,11 @@ jobs:
       # Prevent one build from failing everything (although maybe those should be included as experimental builds instead)
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04]
+        os: [macos-10.15]
         config: [Debug] # TODO - Eventually we need to make a Release Config
         compiler: [clang, gcc]
         experimental: [false]
+
 
     name: ${{ matrix.config }}-${{ matrix.compiler }}
     runs-on: ${{ matrix.os }}
@@ -69,23 +74,8 @@ jobs:
           echo "##[set-output name=artifact-metadata;]${ARTIFACT_NAME}"
 
       - name: Get Package Dependencies
-        run: sudo apt install build-essential cmake ccache clang gcc g++ lcov make nasm
-
-      # # -- SETUP CCACHE - https://cristianadam.eu/20200113/speeding-up-c-plus-plus-github-actions-using-ccache/
-      # - name: Prepare ccache timestamp
-      #   id: ccache_cache_timestamp
-      #   shell: cmake -P {0}
-      #   run: |
-      #     string(TIMESTAMP current_date "%Y-%m-%d-%H;%M;%S" UTC)
-      #     message("::set-output name=timestamp::${current_date}")
-
-      # - name: ccache cache files
-      #   uses: actions/cache@v2
-      #   with:
-      #     path: .ccache
-      #     key: ${{ matrix.config }}-ccache-${{ steps.ccache_cache_timestamp.outputs.timestamp }}
-      #     restore-keys: |
-      #       ${{ matrix.config }}-ccache-
+        run: brew install cmake ccache clang-format gcc lcov make nasm
+        
 
       - name:  CMake Generation
         # run: cmake -D CMAKE_C_COMPILER_LAUNCHER=ccache -D CMAKE_CXX_COMPILER_LAUNCHER=ccache -B build -DCODE_COVERAGE=ON
@@ -129,3 +119,5 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path-to-lcov: ./build/goalc-test_coverage.info
+
+
