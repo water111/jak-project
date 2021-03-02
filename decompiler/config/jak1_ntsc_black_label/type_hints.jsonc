@@ -248,21 +248,66 @@
     	[13, ["s4", "load-chunk-msg"]]
     ],
 
-     "str-play-stop":[
+    "str-play-stop":[
     	[7, ["v0", "load-chunk-msg"]]
     ],
 
-     "str-play-queue":[
+    "str-play-queue":[
      	[19, ["v0", "load-chunk-msg"]]
      ],
 
-     "str-ambient-play":[
+    "str-ambient-play":[
      	[7, ["v0", "load-chunk-msg"]]
      ],
 
-     "str-ambient-stop":[
+    "str-ambient-stop":[
      	[7, ["v0", "load-chunk-msg"]]
-     ]
+     ],
+	
+	"anim-test-obj-init":[
+		[16, ["v0", "anim-test-obj"]]
+	],
+	"(method 0 anim-test-obj)":[
+		[9, ["s4", "anim-test-obj"]]
+	],
+	"(method 0 anim-test-sequence)":[
+		[8, ["s5", "anim-test-sequence"]]
+	],
+	"(method 0 anim-test-seq-item)":[
+		[7, ["v0", "anim-test-seq-item"]]
+	],
+	"(method 3 anim-tester)":[
+		[7, ["v1", "glst-list"]]
+	],
+	"anim-test-obj-item-valid?":[
+		[5, ["s5", "anim-test-sequence"]],
+		[20, ["v1", "anim-test-seq-item"]]
+	],
+	"anim-test-obj-remove-invalid":[
+		[8, ["s5", "anim-test-sequence"]],
+		[88, ["v1", "anim-test-sequence"]],
+		[18, ["s3", "anim-test-seq-item"]],
+		[61, ["a0", "anim-test-seq-item"]]
+	],
+	"anim-tester-real-post":[
+		[0, ["s6", "anim-tester"]]
+	],
+	"anim-tester-update-anim-info":[
+		[1, ["s6", "anim-tester"]]
+	],
+	"anim-tester-reset":[
+		[2, ["v1", "glst-list"]],
+		[5, ["s6", "anim-tester"]],
+		[29, ["v0", "anim-test-obj"]],
+		[13, ["v0", "anim-test-obj"]]
+	],
+	"initialize-anim-tester":[
+		[0, ["s6", "anim-tester"]]
+	],
+	"anim-tester-save-all-objects":[
+		[2, ["v1", "glst-list"]],
+		[4, ["gp", "anim-test-obj"]]
+	]
     
 
 

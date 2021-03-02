@@ -402,6 +402,10 @@
   `(set! ,place (logand ,place ,amount))
   )
 
+(defmacro clear-flag! (place val)
+  `(set! ,place (logand (lognot ,val) ,place))
+  )
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Bit Macros
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;

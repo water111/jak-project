@@ -132,3 +132,11 @@
 
 ## `loader-h`: **Done**
 - Good one for playing with inlined basics.
+
+## `anim-tester`: In progress
+- Various functions need decompiler or compiler support on multiple fronts:
+ - Stack variables.
+ - GOAL behaviors.
+ - GOAL defstate.
+ - better subclass support
+- Need to find where some functions are called to verify the argument types.

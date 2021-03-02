@@ -5,3 +5,384 @@
 ;; name in dgo: anim-tester
 ;; dgos: GAME, ENGINE
 
+(when *debug-segment*
+
+(deftype list-control (structure)
+  ((listfunc             basic      :offset-assert 0)
+   (list-owner           object     :offset-assert 4)
+   (top                  int32      :offset-assert 8)
+   (left                 int32      :offset-assert 12)
+   (list                 glst-list  :offset-assert 16)
+   (the-node             glst-node  :offset-assert 20)
+   (top-index            int32      :offset-assert 24)
+   (the-index            int32      :offset-assert 28)
+   (the-disp-line        int32      :offset-assert 32)
+   (highlight-index      int32      :offset-assert 36)
+   (current-index        int32      :offset-assert 40)
+   (numlines             int32      :offset-assert 44)
+   (lines-to-disp        int32      :offset-assert 48)
+   (charswide            int32      :offset-assert 52)
+   (highlight-disp-line  int32      :offset-assert 56)
+   (field-id             int32      :offset-assert 60)
+   (xpos                 int32      :offset-assert 64)
+   (ypos                 int32      :offset-assert 68)
+   (user-info            int32      :offset-assert 72)
+   (return-int           int32      :offset-assert 76)
+   )
+  :pack-me
+  :method-count-assert 9
+  :size-assert #x50
+  :flag-assert #x900000050
+  )
+
+(deftype list-field (structure)
+  ((left   int32   :offset-assert 0)
+   (width  int32   :offset-assert 4)
+   )
+  :method-count-assert 9
+  :size-assert #x8
+  :flag-assert #x900000008
+  )
+
+(deftype DISP_LIST-bank (basic)
+  ((TV_SPACING   int32   :offset-assert 4)
+   (BORDER_WIDTH  int32   :offset-assert 8)
+   (BORDER_HEIGHT  int32   :offset-assert 12)
+   (MAX_LINES  int32   :offset-assert 16)
+   (CHAR_WIDTH  int32   :offset-assert 20)
+   (INC_DELAY  int32   :offset-assert 24)
+   (BORDER_LINES  int32   :offset-assert 28)
+   (CXOFF  int32   :offset-assert 32)
+   (CYOFF  int32   :offset-assert 36)
+   (BXOFF  int32   :offset-assert 40)
+   (BYOFF  int32   :offset-assert 44)
+   )
+  :method-count-assert 9
+  :size-assert #x30
+  :flag-assert #x900000030
+  )
+
+(define *DISP_LIST-bank* (new 'static 'DISP_LIST-bank
+                            :TV_SPACING 8
+                            :BORDER_WIDTH 4
+                            :BORDER_HEIGHT 4
+                            :MAX_LINES 12
+                            :CHAR_WIDTH 10
+                            :INC_DELAY 20
+                            :BORDER_LINES 3
+                            ))
+
+(deftype anim-tester-bank (basic)
+  ((ANIM_SPEED   float  :offset-assert 4)
+   (BLEND  float  :offset-assert 8)
+   (OBJECT_LIST_X  int32  :offset-assert 12)
+   (OBJECT_LIST_Y  int32  :offset-assert 16)
+   (OBJECT_LIST_MIN_WIDTH  int32  :offset-assert 20)
+   (ANIM_LIST_X  int32  :offset-assert 24)
+   (ANIM_LIST_Y  int32  :offset-assert 28)
+   (ANIM_LIST_MIN_WIDTH  int32  :offset-assert 32)
+   (PICK_LIST_X  int32  :offset-assert 36)
+   (PICK_LIST_Y  int32  :offset-assert 40)
+   (PICK_LIST_MIN_WIDTH  int32  :offset-assert 44)
+   (EDIT_LIST_X  int32  :offset-assert 48)
+   (EDIT_LIST_Y  int32  :offset-assert 52)
+   (EDIT_STATS_X  int32  :offset-assert 56)
+   (EDIT_LIST_MIN_WIDTH  int32  :offset-assert 60)
+   (EDIT_PICK_X  int32  :offset-assert 64)
+   )
+  :method-count-assert 9
+  :size-assert #x44
+  :flag-assert #x900000044
+  )
+
+(define *ANIM_TESTER-bank* (new 'static 'anim-tester-bank
+                                :ANIM_SPEED 1.0
+                                :BLEND 1.0
+                                :OBJECT_LIST_X 10
+                                :OBJECT_LIST_Y 50
+                                :OBJECT_LIST_MIN_WIDTH 18
+                                :ANIM_LIST_X 10
+                                :ANIM_LIST_Y 50
+                                :ANIM_LIST_MIN_WIDTH 17
+                                :PICK_LIST_X 10
+                                :PICK_LIST_Y 50
+                                :PICK_LIST_MIN_WIDTH 21
+                                :EDIT_LIST_X 10
+                                :EDIT_LIST_Y 50
+                                :EDIT_STATS_X 30
+                                :EDIT_LIST_MIN_WIDTH 64
+                                :EDIT_PICK_X 30
+                                ))
+
+(deftype anim-tester (process-drawable)
+  ((flags  int32   :offset-assert 176)
+   (obj-list  glst-list :inline :offset-assert 180)
+   (current-obj  basic  :offset-assert 196)
+   (speed  int32   :offset-assert 200)
+   (list-con  list-control :inline :offset-assert 204)
+   (pick-con  list-control :inline :offset-assert 284)
+   (_pad1 int32  :offset-assert 364)
+   (item-field int32  :offset-assert 368)
+   (_pad2 int32  :offset-assert 372)
+   (inc-delay int32  :offset-assert 376)
+   (inc-timer int32  :offset-assert 380)
+   (edit-mode int32  :offset-assert 384)
+   (old-mode int32  :offset-assert 388)
+   (anim-speed float :offset-assert 392)
+   (anim-gspeed float :offset-assert 396)
+   (anim-first float :offset-assert 400)
+   (anim-last float :offset-assert 404)
+   )
+  :method-count-assert 20
+  :size-assert #x198
+  :heap-base #x130
+  :flag-assert #x1401300198
+  )
+
+(defun-debug anim-tester-num-print ((fmt-out object) (arg1 float))
+  (cond
+    ((= arg1 -2.0)
+     (format fmt-out "max")
+     )
+    ((= arg1 -1.0)
+     (format fmt-out "min")
+     )
+    (else
+     (format fmt-out "~f" arg1)
+     )
+    )
+  )
+
+(define-extern *anim-tester* anim-tester)
+(when (or (not *anim-tester*)
+          (zero? *anim-tester*))
+    (set! *anim-tester* #f)
+    )
+
+(deftype anim-test-obj (glst-named-node)
+  ((obj-art-group  basic :offset-assert 12)
+   (seq-list  glst-list :inline :offset-assert 16)
+   (flags  int32 :offset-assert 32)
+   (mesh-geo  basic :offset-assert 36)
+   (joint-geo  basic :offset-assert 40)
+   (list-con  list-control :inline :offset-assert 44)
+   (parent  anim-test-obj :offset-assert 124)
+   (anim-index  int32 :offset-assert 128)
+   (anim-hindex  int32 :offset-assert 132)
+   (seq-index  int32 :offset-assert 136)
+   (seq-hindex  int32 :offset-assert 140)
+   )
+  :method-count-assert 9
+  :size-assert #x90
+  :flag-assert #x900000090
+  (:methods
+   (new (symbol type uint string basic) _type_ 0)
+   )
+  )
+
+(define-extern anim-test-anim-list-handler function)
+(defun-debug anim-test-obj-init ((obj anim-test-obj) (parent anim-test-obj))
+  (set! (-> obj mesh-geo) #f)
+  (set! (-> obj joint-geo) #f)
+  (set! (-> obj list-con listfunc) anim-test-anim-list-handler)
+  (set! (-> obj list-con left) (-> *ANIM_TESTER-bank* ANIM_LIST_X))
+  (set! (-> obj list-con top) (-> *ANIM_TESTER-bank* ANIM_LIST_Y))
+  (set! (-> obj list-con list) (-> obj seq-list))
+  (set! (-> obj list-con list-owner) obj)
+  (set! (-> obj parent) (the anim-test-obj (if parent (-> parent seq-list tail))))
+  )
+
+(defmethod new anim-test-obj ((allocation symbol) (type-to-make type) (size uint) (name string) (art-group basic))
+  (let ((obj (the anim-test-obj (object-new allocation type-to-make))))
+    (set! (-> obj obj-art-group) art-group)
+    (set! (-> obj privname) name)
+    (glst-init-list! (-> obj seq-list))
+    obj
+    )
+  )
+
+(deftype anim-test-sequence (glst-named-node)
+  ((item-list  glst-list :inline :offset-assert 12)
+   (playing-item  int32 :offset-assert 28)
+   (flags  int32 :offset-assert 32)
+   (list-con  list-control :inline :offset-assert 36)
+   (parent  anim-test-obj :offset-assert 116)
+   )
+  :method-count-assert 9
+  :size-assert #x78
+  :flag-assert #x900000078
+  (:methods
+   (new (symbol type uint string) _type_ 0)
+   )
+  )
+
+(define-extern anim-test-edit-sequence-list-handler function)
+(defun-debug anim-test-sequence-init ((seq anim-test-sequence) (obj anim-test-obj))
+  (set! (-> seq list-con listfunc) anim-test-edit-sequence-list-handler)
+  (set! (-> seq list-con left) (-> *ANIM_TESTER-bank* EDIT_LIST_X))
+  (set! (-> seq list-con top) (-> *ANIM_TESTER-bank* EDIT_LIST_Y))
+  (set! (-> seq list-con list) (-> seq item-list))
+  (set! (-> seq list-con list-owner) seq)
+  (set! (-> seq parent) obj)
+  obj
+  )
+
+(defmethod new anim-test-sequence ((allocation symbol) (type-to-make type) (size uint) (name string))
+  (let ((obj (the anim-test-sequence (object-new allocation type-to-make))))
+    (set! (-> obj privname) name)
+    (glst-init-list! (-> obj item-list))
+    obj
+    )
+  )
+
+(deftype anim-test-seq-item (glst-named-node)
+  ((speed  int32 :offset-assert 12)
+   (blend  int32 :offset-assert 16)
+   (first-frame  float :offset-assert 20)
+   (last-frame  float :offset-assert 24)
+   (num-frames  float :offset-assert 28)
+   (artist-base  float :offset-assert 32)
+   (flags  int32 :offset-assert 36)
+   (parent  anim-test-sequence :offset-assert 40)
+   )
+  :method-count-assert 9
+  :size-assert #x2c
+  :flag-assert #x90000002c
+  (:methods
+   (new (symbol type uint string) _type_ 0)
+   )
+  )
+
+(defmethod new anim-test-seq-item ((allocation symbol) (type-to-make type) (size uint) (name string))
+  (let ((obj (the anim-test-seq-item (object-new allocation type-to-make))))
+    (set! (-> obj privname) name)
+    (set! (-> obj speed) 100)
+    (set! (-> obj blend) 0)
+    (set! (-> obj first-frame) -1.0)
+    (set! (-> obj last-frame) -2.0)
+    obj
+    )
+  )
+
+(defun-debug anim-test-seq-item-copy! ((dest anim-test-seq-item) (src anim-test-seq-item))
+  "Copy an anim-test-seq-item from src to dest"
+
+  (set! (-> dest privname) (-> src privname))
+  (set! (-> dest speed) (-> src speed))
+  (set! (-> dest blend) (-> src blend))
+  (set! (-> dest first-frame) (-> src first-frame))
+  (set! (-> dest last-frame) (-> src last-frame))
+  (set! (-> dest num-frames) (-> src num-frames))
+  (set! (-> dest artist-base) (-> src artist-base))
+  (set! (-> dest flags) (-> src flags))
+  (set! (-> dest parent) (-> src parent))
+  )
+
+;; L378 anim-tester inspect
+
+(defun-debug anim-test-obj-item-valid? ((obj anim-test-obj) (item anim-test-seq-item))
+  (glst-iterate-typed-list (-> obj seq-list) seq anim-test-sequence
+    (cond ((and (nonzero? (logand (-> seq flags) #x2))
+                (name= (-> item privname) (-> seq privname)))
+           (let ((seq-item (the-as anim-test-seq-item (glst-head (-> seq item-list)))))
+             (when (not (glst-end-of-list? seq-item))
+               (set! (-> item num-frames) (-> seq-item num-frames))
+               (set! (-> item artist-base) (-> seq-item artist-base))
+               )
+             (return #t)
+             )
+           )
+      )
+    )
+  #f
+  )
+
+;; anim-test-obj-remove-invalid
+
+;; anim-tester-real-post - needs process-drawable figured out
+
+;; behavior?
+; (defun-debug anim-tester-post ()
+  ; (anim-tester-real-post)
+  ; )
+
+;; anim-tester-update-anim-info
+
+;; anim-tester-reset - lq/sq
+
+;; anim-tester-disp-frame-num - stack
+
+;; anim-tester-standard-event-handler - behavior (event func)
+
+;; anim-test-obj-list-handler - stack
+;; anim-test-anim-list-handler - stack
+;; anim-test-sequence-list-handler - stack
+
+;; anim-test-field-highlight-lw - ??
+
+;; anim-tester-pick-item-setup - behavior?
+
+;; anim-test-seq-mark-as-edited - unknown a0
+
+;; anim-test-edit-seq-insert-item - stack
+;; anim-test-edit-sequence-list-handler - stack
+
+;; anim-tester-interface - behavior?
+
+;; anim-tester-get-playing-item - stack
+
+;; defstate anim-tester-process
+
+;; initialize-anim-tester - Don't have the type of symbol draw-control
+
+;; arg0 is wrong?
+; (defun-debug anim-tester-string-get-frame!! ((bank anim-tester-bank) (frame string))
+  ; (cond ((string-get-arg!! *temp-string* frame)
+         ; (if (or (string= *temp-string* "max") (string= *temp-string* "MAX"))
+               ; (set! (-> bank ANIM_SPEED) -2)
+               ; (if (or (string= *temp-string* "min") (string= *temp-string* "MIN"))
+                 ; (set! (-> bank ANIM_SPEED) -1)
+                 ; (set! (-> bank ANIM_SPEED) (string->int *temp-string*))
+                 ; )
+             ; )
+         ; #t
+         ; )
+        ; (else #f)
+   ; )
+  ; )
+
+(defun-debug anim-tester-load-object-seqs ((obj anim-test-obj))
+  #f
+  )
+
+(define-extern anim-tester-save-object-seqs (function anim-test-obj symbol))
+;; anim-tester-save-object-seqs - stack
+
+(defun-debug anim-tester-save-all-objects ((tester anim-tester))
+  (glst-iterate-typed-list (-> tester obj-list) obj anim-test-obj
+    (when (nonzero? (logand (-> obj flags) #x1))
+      (clear-flag! (-> obj flags) #x1)
+      (anim-tester-save-object-seqs obj)
+      )
+    )
+  #f
+  )
+
+;; anim-tester-add-newobj - BAD PROLOGUE
+
+(defun-debug anim-tester-stop ()
+  (when *anim-tester*
+    (kill-by-name 'anim-tester *active-pool*)
+    (set! *anim-tester* #f)
+    #f
+    )
+  )
+
+;; anim-tester-start - stack
+
+;; anim-tester-add-object - missing level-group method
+
+;; anim-tester-set-name - weird error on *anim-tester*
+;; anim-tester-add-sequence - weird error on *anim-tester* + stack
+
+)

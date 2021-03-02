@@ -601,6 +601,28 @@
 	},
 	"(method 11 touching-prims-entry-pool)":{
 		"vars":{"a1-0":"current", "v1-0":"prev", "a2-0":"next"}
+	},
+	
+	"anim-test-obj-init":{
+		"args":["obj", "parent"]
+	},
+	"(method 0 anim-test-obj)":{
+		"args":["allocation", "type-to-make", "size", "name", "art-group"]
+	},
+	"anim-test-sequence-init":{
+		"args":["seq", "obj"]
+	},
+	"(method 0 anim-test-sequence)":{
+		"args":["allocation", "type-to-make", "size", "name"]
+	},
+	"(method 0 anim-test-seq-item)":{
+		"args":["allocation", "type-to-make", "size", "name"]
+	},
+	"anim-test-obj-item-valid?":{
+		"args":["obj", "item"]
+	},
+	"anim-tester-string-get-frame!!":{
+		"args":["bank", "frame"]
 	}
 
 

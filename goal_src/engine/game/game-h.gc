@@ -5,3 +5,36 @@
 ;; name in dgo: game-h
 ;; dgos: GAME, ENGINE
 
+
+;; temp
+(deftype process-drawable (process)
+  ((root        basic   :offset-assert 112)
+   (node-list   basic   :offset-assert 116)
+   (draw        basic   :offset-assert 120)
+   (skel        basic   :offset-assert 124)
+   (nav         basic   :offset-assert 128)
+   (align       basic   :offset-assert 132)
+   (path        basic   :offset-assert 136)
+   (vol         basic   :offset-assert 140)
+   (fact        basic   :offset-assert 144)
+   (link        basic   :offset-assert 148)
+   (part        basic   :offset-assert 152)
+   (water       basic   :offset-assert 156)
+   (sound       basic   :offset-assert 160)
+   (state-flags uint32  :offset-assert 164)
+   (state-time  uint64  :offset-assert 168)
+   )
+  :heap-base #x40
+  :method-count-assert 20
+  :size-assert         #xb0
+  :flag-assert         #x14004000b0
+  ;; inherited inspect of process
+  (:methods
+    (dummy-14 () none 14)
+    (dummy-15 () none 15)
+    (dummy-16 () none 16)
+    (dummy-17 () none 17)
+    (dummy-18 () none 18)
+    (dummy-19 () none 19)
+    )
+  )

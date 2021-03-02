@@ -102,32 +102,10 @@
   list
   )
 
-(defmacro glst-iterate-list (list node &rest body)
-  "Iterate through the list using node as the current node variable"
-
-  `(let ((,node (glst-head ,list)))
-      (while (not (glst-end-of-list? (-> ,node next)))
-        ,@body
-        (set! ,node (glst-next ,node))
-        )
-      )
-  )
-
-(defmacro glst-iterate-named-list (list node &rest body)
-  "Iterate through the named node list using node as the current node variable"
-
-  `(let ((,node (the glst-named-node (glst-head ,list))))
-      (while (not (glst-end-of-list? (-> ,node next)))
-        ,@body
-        (set! ,node (the glst-named-node (glst-next ,node)))
-        )
-      )
-  )
-
 (defun-debug glst-find-node-by-name ((list glst-list) (name string))
   "Find the node in the list with the given name and return it. If it is not found, #f is returned instead"
 
-  (glst-iterate-named-list list node
+  (glst-iterate-typed-list list node glst-named-node
     (if (name= (-> node privname) name)
       (return node)
       )
@@ -155,7 +133,7 @@
   "Returns the length of longest name in a list of named nodes"
 
   (let ((max-len 0))
-    (glst-iterate-named-list list node
+    (glst-iterate-typed-list list node glst-named-node
       (let ((len ((method-of-type string length) (-> node privname)))) ;; TODO method call
           (when (< max-len len)
             (set! max-len len)

@@ -142,7 +142,8 @@
 	],
 
 	"text-h":[
-		["L2", "_auto_", true]],
+		["L2", "_auto_", true]
+	],
 
 	"ocean-trans-tables":[
 		["L1", "(pointer float)", true, 16],
@@ -275,8 +276,18 @@
 	],
 
 	"collide-edge-grab-h":[
-	    ["L1", "collide-edge-work", true]]
+	    ["L1", "collide-edge-work", true]
+	],
 
-
+	"anim-tester":[
+		["L615", "DISP_LIST-bank", true],
+		["L592", "anim-tester-bank", true],
+		["L654", "float", true],
+		["L652", "float", true],
+		["L649", "float", true],
+		["L655", "float", true],
+		["L650", "float", true],
+		["L490", "state", true]
+	]
 
 }
