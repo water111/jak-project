@@ -414,6 +414,12 @@ int DecompilerTypeSystem::get_format_arg_count(const std::string& str) const {
       if (i + 1 < str.length() && (str.at(i) == '2') && str.at(i + 1) == 'j') {
         continue;
       }
+
+      // ~0k
+      if (i + 1 < str.length() && (str.at(i) == '0') && str.at(i + 1) == 'k') {
+        continue;
+      }
+
       arg_count++;
     }
   }

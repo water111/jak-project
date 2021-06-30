@@ -11186,7 +11186,7 @@
   :flag-assert         #xe00000034
   (:methods
     (dummy-9 (_type_) none 9)
-    (dummy-10 (_type_) none 10)
+    (print-stats (_type_ string) perf-stat 10)
     (PERF-COUNTER-REG-ACCESS-11 (_type_) none 11)
     (PERF-COUNTER-REG-ACCESS-12 (_type_) none 12)
     (update-wait-stats-13 (_type_ uint uint uint) none 13)
@@ -14465,32 +14465,32 @@
 
 ;; - Functions
 
-(define-extern perf-stat-bucket->string function)
-(define-extern print-tr-stat function)
-(define-extern clear-tr-stat function)
-(define-extern print-terrain-stats function)
-(define-extern update-subdivide-settings! function)
-(define-extern set-tfrag-dists! function)
+(define-extern perf-stat-bucket->string (function int string))
+(define-extern print-tr-stat (function tr-stat string string uint)) ;; TODO - only the last int arg is used, it sets it to none anyway...
+(define-extern clear-tr-stat (function tr-stat none))
+(define-extern print-terrain-stats (function int int rgba int float none)) ;; TODO - the ints are unused
+(define-extern update-subdivide-settings! (function subdivide-settings math-camera int none))
+(define-extern set-tfrag-dists! (function subdivide-settings subdivide-settings))
 (define-extern start-perf-stat-collection function)
 (define-extern end-perf-stat-collection function)
-(define-extern print-perf-stats function)
+(define-extern print-perf-stats (function none))
 
 ;; - Unknowns
 
 (define-extern *subdivide-settings* subdivide-settings)
-;;(define-extern *tfrag-work* object) ;; unknown type
-;;(define-extern *perf-stats* object) ;; unknown type
-;;(define-extern *merc-global-stats* object) ;; unknown type
-;;(define-extern *stat-string-tfrag-near* object) ;; unknown type
-;;(define-extern *stat-string-tfrag* object) ;; unknown type
-;;(define-extern *stat-string-total* object) ;; unknown type
-;;(define-extern *terrain-context* object) ;; unknown type
-;;(define-extern GSH_ENABLE object) ;; unknown type
-;;(define-extern GSH_BUCKET object) ;; unknown type
-;;(define-extern GSH_WHICH_STAT object) ;; unknown type
-;;(define-extern GSH_MAX_DISPLAY object) ;; unknown type
-;;(define-extern GSH_TIME object) ;; unknown type
-;;(define-extern *gomi-stats-hack* object) ;; unknown type
+(define-extern *tfrag-work* tfrag-work)
+(define-extern *perf-stats* perf-stat-array)
+(define-extern *merc-global-stats* merc-global-stats)
+(define-extern *stat-string-tfrag-near* string)
+(define-extern *stat-string-tfrag* string)
+(define-extern *stat-string-total* string)
+(define-extern *terrain-context* terrain-context)
+(define-extern GSH_ENABLE symbol) ;; TODO - guess
+(define-extern GSH_BUCKET int)
+(define-extern GSH_WHICH_STAT int)
+(define-extern GSH_MAX_DISPLAY symbol) ;; TODO - guess
+(define-extern GSH_TIME int)
+(define-extern *gomi-stats-hack* pointer) ;; TODO - result from a malloc
 
 
 ;; ----------------------
