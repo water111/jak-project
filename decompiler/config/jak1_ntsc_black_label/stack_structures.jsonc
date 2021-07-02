@@ -221,8 +221,6 @@
     [16, "vector"],
     [32, "vector"]
   ],
-  
-  "make-light-kit": [[16, "matrix"]],
 
   "(method 23 trsqv)": [[16, "vector"]],
   "(method 24 trsqv)": [[16, "vector"]],
@@ -392,5 +390,11 @@
   "(method 10 load-state)": [[16, "event-message-block"]],
   
   "draw-joint-spheres": [[16, "vector"]],
-  "(method 16 process-drawable)": [[16, "matrix"], [80, "matrix"], [144, "vector"], [160, "vector"]]
+  "(method 16 process-drawable)": [[16, "matrix"], [80, "matrix"], [144, "vector"], [160, "vector"]],
+
+  "update-time-of-day": [
+    [16, "(array float)"] // TODO - broken!
+  ],
+
+  "placeholder-do-not-add-below": []
 }

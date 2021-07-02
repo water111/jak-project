@@ -1,22 +1,23 @@
 {
-	"gkernel":[
-		[16, "(function process symbol)"],
-		[22, "(function process symbol)"],
-		[25, "(function process symbol)"],
-		[28, "(function process symbol)"],
-		[30, "(function process symbol)"],
-		[32, "(function process symbol)"]
+  "gkernel": [
+    [16, "(function process symbol)"],
+    [22, "(function process symbol)"],
+    [25, "(function process symbol)"],
+    [28, "(function process symbol)"],
+    [30, "(function process symbol)"],
+    [32, "(function process symbol)"]
+  ],
+
+  "hud": [[15, "(function basic int basic event-message-block object)"]],
+
+  "main": [[4, "(function none)"]],
+
+  "process-drawable": [[29, "(function string symbol)"]],
+
+	"time-of-day": [
+		[10, "(function none)"],
+		[12, "(function sparticle-system sparticle-cpuinfo int none)"]
 	],
 
-	"hud":[
-	    [15, "(function basic int basic event-message-block object)"]
-	],
-    
-    "main":[
-        [4, "(function none)"]
-    ],
-    
-    "process-drawable":[
-        [29, "(function string symbol)"]
-    ]
+	"placeholder-don't-add-below-me": []
 }

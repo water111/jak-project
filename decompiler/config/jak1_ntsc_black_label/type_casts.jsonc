@@ -820,5 +820,22 @@
     [[157, 162], "a1", "dma-packet"]
   ],
 
+  "time-of-day-update": [
+    [[0, 999], "s6", "time-of-day-proc"]
+  ],
+
+  "(anon-function 10 time-of-day)": [
+    [[0, 999], "s6", "time-of-day-proc"]
+  ],
+
+  "init-time-of-day": [
+    [[0, 999], "s6", "time-of-day-proc"],
+    [[51, 54], "t9", "(function object object object)"]
+  ],
+
+  "start-time-of-day": [
+    [[20, 23], "t9", "(function process function object)"]
+  ],
+
   "placeholder-do-not-add-below": []
 }

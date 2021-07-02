@@ -6866,11 +6866,12 @@
   :size-assert         #x110
   :flag-assert         #xb00000110
   (:methods
-    (dummy-9 () none 9)
-    (dummy-10 () none 10)
+    (reset! (_type_) symbol 9)
+    (TODO-RENAME-10 (_type_ int float float vector) object 10) ; returns float or error string
     )
   )
 
+(declare-type sparticle-launch-control basic)
 (deftype time-of-day-proc (process)
   ((year            int32  :offset-assert 112)
    (month           int32  :offset-assert 116)
@@ -6883,13 +6884,13 @@
    (time-of-day     float  :offset-assert 144)
    (time-ratio      float  :offset-assert 148)
    (star-count      int32  :offset-assert 152)
-   (stars           basic  :offset-assert 156)
+   (stars           sparticle-launch-control  :offset-assert 156)
    (sun-count       int32  :offset-assert 160)
-   (sun             basic  :offset-assert 164)
+   (sun             sparticle-launch-control  :offset-assert 164)
    (green-sun-count int32  :offset-assert 168)
-   (green-sun       basic  :offset-assert 172)
+   (green-sun       sparticle-launch-control  :offset-assert 172)
    (moon-count      int32  :offset-assert 176)
-   (moon            basic  :offset-assert 180)
+   (moon            sparticle-launch-control  :offset-assert 180)
    )
   :heap-base #x50
   :method-count-assert 14
@@ -6928,7 +6929,7 @@
    (light-masks-0        uint8       2         :offset-assert 2096)
    (light-masks-1        uint8       2         :offset-assert 2098)
    (light-interp         uint32      2         :offset-assert 2100)
-   (sky                  basic                 :offset-assert 2108)
+   (sky                  symbol                 :offset-assert 2108)
    (sun-fade             float                 :offset-assert 2112)
    (title-updated        symbol                :offset-assert 2116)
    )
@@ -11046,6 +11047,7 @@
 
 ;; - Types
 
+(declare-type sidekick basic)
 (deftype target (process-drawable)
   ((control             control-info        :score 100 :offset 112)
    (skel2               basic               :offset-assert 176)
@@ -11055,7 +11057,7 @@
    (state-hook-time     uint64              :offset-assert 192)
    (state-hook          function            :offset-assert 200)
    (cam-user-mode       symbol              :offset-assert 204)
-   (sidekick            uint32              :offset-assert 208)
+   (sidekick            (pointer sidekick)              :offset-assert 208)
    (manipy              uint32              :offset-assert 212)
    (attack-info         attack-info :inline :offset-assert 224)
    (attack-info-rec     attack-info :inline :offset-assert 336)
@@ -12968,13 +12970,13 @@
   )
 
 (deftype sparticle-system (basic)
-  ((blocks          uint32 2 :offset-assert 4)
+  ((blocks          int32 2 :offset-assert 4)
    (length          uint32 2 :offset-assert 12)
    (num-alloc       uint32 2 :offset-assert 20)
    (is-3d           basic     :offset-assert 28)
    (flags           uint32    :offset-assert 32)
    (alloc-table     uint32    :offset-assert 36)
-   (cpuinfo-table   uint32    :offset-assert 40)
+   (cpuinfo-table   sparticle-cpuinfo    :offset-assert 40)
    (vecdata-table   uint32    :offset-assert 44)
    (adgifdata-table uint32    :offset-assert 48)
    )
@@ -15746,7 +15748,7 @@
 ;;(define-extern *particle-300hz-timer* object) ;; unknown type
 ;;(define-extern *sp-launch-queue* object) ;; unknown type
 ;;(define-extern *death-adgif* object) ;; unknown type
-;;(define-extern *part-group-id-table* object) ;; unknown type
+(define-extern *part-group-id-table* (array sparticle-launch-group))
 ;;(define-extern *sp-launcher-lock* object) ;; unknown type
 ;;(define-extern *sp-launcher-enable* object) ;; unknown type
 ;;(define-extern *particle-adgif-cache* object) ;; unknown type
@@ -15769,9 +15771,9 @@
 (define-extern forall-particles function)
 (define-extern sparticle-kill-it-level0 function)
 (define-extern sparticle-kill-it-level1 function)
-(define-extern forall-particles-with-key function)
-(define-extern sparticle-kill-it function)
-(define-extern forall-particles-with-key-runner function)
+(define-extern forall-particles-with-key (function sparticle-launch-control function symbol symbol none))
+(define-extern sparticle-kill-it (function sparticle-system sparticle-cpuinfo none))
+(define-extern forall-particles-with-key-runner (function sparticle-launch-control function sparticle-system none)) ;; TODO - not complete!
 (define-extern sp-get-approx-alloc-size function)
 (define-extern sp-process-block function)
 (define-extern sp-copy-to-spr function)
@@ -15791,8 +15793,8 @@
 ;; - Unknowns
 
 ;;(define-extern *particles-flag* object) ;; unknown type
-;;(define-extern *sp-particle-system-2d* object) ;; unknown type
-;;(define-extern *sp-particle-system-3d* object) ;; unknown type
+(define-extern *sp-particle-system-2d* sparticle-system)
+(define-extern *sp-particle-system-3d* sparticle-system) ;; unknown type
 
 
 ;; ----------------------
@@ -16567,20 +16569,23 @@
 ;; - Functions
 
 (define-extern make-sky-textures function)
-(define-extern init-time-of-day function)
-(define-extern update-sky-tng-data function)
-(define-extern time-of-day-update function)
-(define-extern start-time-of-day (function int))
-(define-extern time-of-day-setup function)
-(define-extern set-time-of-day function)
-(define-extern init-time-of-day-context function)
-(define-extern update-time-of-day function)
+(define-extern init-time-of-day (function none))
+(define-extern update-sky-tng-data (function float none))
+(define-extern time-of-day-update (function none))
+(define-extern start-time-of-day (function (pointer process-tree)))
+(define-extern time-of-day-setup (function symbol symbol))
+(define-extern set-time-of-day (function float none))
+(define-extern init-time-of-day-context (function time-of-day-context float))
+(define-extern update-time-of-day (function time-of-day-context none))
+
+;; - Symbols
+
+(define-extern time-of-day-tick state)
+(define-extern time-of-day-effect (function none)) ;; only 'nothing' is stored here, looks like dead code
 
 ;; - Unknowns
 
 ;;(define-extern sky-base-polygons object) ;; unknown type
-;;(define-extern time-of-day-tick object) ;; unknown type
-;;(define-extern time-of-day-effect object) ;; unknown type
 
 
 ;; ----------------------
@@ -16632,8 +16637,8 @@
 ;; - Functions
 
 (define-extern sky-add-frame-data function)
-(define-extern sky-make-sun-data function)
-(define-extern sky-make-moon-data function)
+(define-extern sky-make-sun-data (function sky-parms int float none))
+(define-extern sky-make-moon-data (function sky-parms float none))
 (define-extern sky-make-light function)
 (define-extern sky-init-upload-data function)
 (define-extern sky-upload function)
@@ -16671,7 +16676,7 @@
 ;; - Unknowns
 
 ;;(define-extern *sky-work* object) ;; unknown type
-;;(define-extern *sky-tng-data* object) ;; unknown type
+(define-extern *sky-tng-data* sky-tng-data) ;; unknown type
 ;;(define-extern sky-roof-polygons object) ;; unknown type
 ;;(define-extern sky-cloud-polygons object) ;; unknown type
 ;;(define-extern sky-cloud-polygon-indices object) ;; unknown type
