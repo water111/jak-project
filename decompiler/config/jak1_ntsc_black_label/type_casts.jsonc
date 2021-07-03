@@ -885,5 +885,11 @@
   "(anon-function 38 task-control)": [[13, "v0", "float"]],
   "(anon-function 28 task-control)": [[13, "v0", "float"]],
 
+  "update-mood-village3": [
+    [[236, 297], "s0", "(array float)"],
+    [[297, 309], "s0", "(array uint8)"],
+    [[309, 314], "s0", "matrix"] // TODO - there is no way this is correct lol
+  ],
+
   "placeholder-do-not-add-below": []
 }

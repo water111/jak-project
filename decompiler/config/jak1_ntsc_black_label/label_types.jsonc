@@ -1092,6 +1092,30 @@
     ["L560", "_lambda_", true]
   ],
 
+  "mood": [
+    ["L258", "vector", true],
+    ["L290", "float", true],
+    ["L291", "float", true],
+    ["L404", "float", true],
+    ["L419", "float", true],
+    ["L420", "float", true],
+    ["L421", "float", true],
+    ["L429", "float", true],
+    ["L450", "float", true],
+    ["L452", "float", true],
+    ["L453", "float", true],
+    ["L455", "float", true],
+    ["L460", "float", true],
+    ["L461", "float", true],
+    ["L463", "float", true],
+    ["L465", "float", true],
+    ["L471", "float", true],
+    ["L480", "float", true],
+    ["L494", "float", true],
+    ["L497", "float", true],
+    ["L508", "float", true]
+  ],
+
   // please do not add things after this entry! git is dumb.
   "object-file-that-doesnt-actually-exist-and-i-just-put-this-here-to-prevent-merge-conflicts-with-this-file": []
 }

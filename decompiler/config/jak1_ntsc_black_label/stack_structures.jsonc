@@ -393,10 +393,6 @@
     [16, "tracking-spline-sampler"],
     [32, "tracking-spline-sampler"]
   ],
-
-  "draw-ocean-transition": [
-    [16, "sphere"]
-  ],
   
   "(method 22 level)": [[16, "event-message-block"]],
   "(method 9 level)": [[16, "event-message-block"]],
@@ -440,5 +436,78 @@
   "(anon-function 286 task-control)": [[16, "event-message-block"]],
   "(anon-function 227 task-control)": [[16, "event-message-block"]],
   "(anon-function 38 task-control)": [[16, "event-message-block"]],
-  "(anon-function 28 task-control)": [[16, "event-message-block"]]
+  "(anon-function 28 task-control)": [[16, "event-message-block"]],
+
+  "update-mood-prt-color": [
+    [16, "vector"]
+  ],
+
+  "update-mood-swamp": [
+    [16, "vector"]
+  ],
+
+  "update-mood-village1": [
+    [16, "vector"]
+  ],
+
+  "update-mood-maincave": [
+    [16, "vector"]
+  ],
+
+  "update-mood-ogre": [
+    [16, "vector"]
+  ],
+
+  "update-mood-finalboss": [
+    [16, "vector"]
+  ],
+
+  "update-mood-darkcave": [
+    [16, "vector"],
+    [32, "vector"]
+  ],
+
+  "update-mood-citadel": [
+    [16, "vector"],
+    [32, "vector"],
+    [48, "vector"],
+    [64, "vector"],
+    [80, "vector"],
+    [96, "vector"]
+  ],
+
+  "update-mood-jungleb": [
+    [16, "vector"],
+    [32, "vector"],
+    [48, "vector"]
+  ],
+
+  "update-mood-sunken": [
+    [16, "vector"],
+    [32, "vector"],
+    [48, "vector"],
+    [64, "vector"]
+  ],
+
+  "update-mood-village2": [
+    [16, "vector"],
+    [32, "vector"],
+    [48, "vector"],
+    [64, "vector"]
+  ],
+
+  "update-mood-rolling": [
+    [16, "vector"] // TODO - really not sure about this one
+  ],
+
+  "update-mood-village3": [
+    [16, "vector"],
+    [32, "vector"],
+    [48, "vector"],
+    [64, "vector"],
+    [80, "vector"],
+    [96, "vector"]
+  ],
+
+  "placeholder-leave-it-alone": []
 }

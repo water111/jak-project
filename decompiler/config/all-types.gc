@@ -118,7 +118,7 @@
 
 ;; - Unknowns
 
-;;(define-extern quad-copy! UNKNOWN)
+(define-extern quad-copy! (function object object int none)) ;; TODO
 
 
 ;; ----------------------
@@ -11184,6 +11184,7 @@
 
 ;; - Types
 
+(declare-type sidekick basic)
 (deftype target (process-drawable)
   ((control             control-info        :score 100 :offset 112)
    (skel2               basic               :offset-assert 176)
@@ -11193,8 +11194,8 @@
    (state-hook-time     uint64              :offset-assert 192)
    (state-hook          function            :offset-assert 200)
    (cam-user-mode       symbol              :offset-assert 204)
-   (sidekick            uint32              :offset-assert 208)
-   (manipy              uint32              :offset-assert 212)
+   (sidekick            (pointer sidekick)              :offset-assert 208)
+   (manipy              (pointer manipy)              :offset-assert 212)
    (attack-info         attack-info :inline :offset-assert 224)
    (attack-info-rec     attack-info :inline :offset-assert 336)
    (anim-seed           uint64              :offset-assert 440)
@@ -16606,43 +16607,43 @@
 
 ;; - Functions
 
-(define-extern clear-mood-times function)
-(define-extern update-mood-quick function)
-(define-extern update-mood-flames function)
-(define-extern update-mood-light function)
-(define-extern target-joint-pos function)
-(define-extern update-mood-itimes function)
-(define-extern update-mood-fog (function mood-fog mood-lights-table none))
-(define-extern update-mood-sky-texture function)
-(define-extern update-mood-palette function)
-(define-extern update-mood-interp function)
-(define-extern update-mood-lightning function)
-(define-extern update-mood-lava function)
-(define-extern update-light-kit function)
-(define-extern set-target-light-index function)
-(define-extern update-mood-caustics function)
-(define-extern update-mood-jungleb-blue function)
-(define-extern update-mood-prt-color function)
-(define-extern update-mood-default function)
-(define-extern update-mood-misty function)
-(define-extern update-mood-village2 function)
-(define-extern update-mood-swamp function)
-(define-extern update-mood-village1 function)
-(define-extern update-mood-jungle function)
-(define-extern update-mood-jungleb function)
-(define-extern update-mood-sunken function)
-(define-extern update-mood-rolling function)
-(define-extern update-mood-firecanyon function)
-(define-extern update-mood-training function)
-(define-extern update-mood-maincave function)
-(define-extern update-mood-darkcave function)
-(define-extern update-mood-robocave function)
-(define-extern update-mood-snow function)
-(define-extern update-mood-village3 function)
-(define-extern update-mood-lavatube function)
-(define-extern update-mood-ogre function)
-(define-extern update-mood-finalboss function)
-(define-extern update-mood-citadel function)
+(define-extern clear-mood-times (function mood-context symbol))
+(define-extern update-mood-quick (function mood-context int int int int vector))
+(define-extern update-mood-flames (function mood-context int int int float float float none))
+(define-extern update-mood-light (function mood-context int int int float float float int none))
+(define-extern target-joint-pos (function vector)) ;; TODO - unconfirmed
+(define-extern update-mood-itimes (function mood-context none)) ;; TODO - implement VFTOI12 and PPACH
+(define-extern update-mood-fog (function mood-context float vector))
+(define-extern update-mood-sky-texture (function mood-context float vector))
+(define-extern update-mood-palette (function mood-context float int float))
+(define-extern update-mood-interp (function mood-context mood-context mood-context float none))
+(define-extern update-mood-lightning (function mood-context int int int int float symbol none)) ;; TODO - asm - ret not verified
+(define-extern update-mood-lava (function mood-context float int symbol none))
+(define-extern update-light-kit (function light-group int float none))
+(define-extern set-target-light-index (function int int))
+(define-extern update-mood-caustics (function mood-context int int float)) ;; TODO - double check
+(define-extern update-mood-jungleb-blue (function mood-context float int vector))
+(define-extern update-mood-prt-color (function mood-context vector))
+(define-extern update-mood-default (function mood-context float int none))
+(define-extern update-mood-misty (function mood-context float float none))
+(define-extern update-mood-village2 (function mood-context float int none))
+(define-extern update-mood-swamp (function mood-context float int none))
+(define-extern update-mood-village1 (function mood-context float int none))
+(define-extern update-mood-jungle (function mood-context float int none))
+(define-extern update-mood-jungleb (function mood-context float int none))
+(define-extern update-mood-sunken (function mood-context float int none))
+(define-extern update-mood-rolling (function mood-context float int none))
+(define-extern update-mood-firecanyon (function mood-context float int none))
+(define-extern update-mood-training (function mood-context float int none))
+(define-extern update-mood-maincave (function mood-context float int none))
+(define-extern update-mood-darkcave (function mood-context float int none))
+(define-extern update-mood-robocave (function mood-context float int none))
+(define-extern update-mood-snow (function mood-context float int none)) ;; TODO - weirdness with `state` on `mood-context`
+(define-extern update-mood-village3 (function mood-context float int none))
+(define-extern update-mood-lavatube (function mood-context float int none))
+(define-extern update-mood-ogre (function mood-context float int none))
+(define-extern update-mood-finalboss (function mood-context float int none))
+(define-extern update-mood-citadel (function mood-context float int none))
 
 ;; - Symbols
 
@@ -16650,31 +16651,31 @@
 
 ;; - Unknowns
 
-;;(define-extern *lightning-time2* object) ;; unknown type
-;;(define-extern *rolling-spheres-on* object) ;; unknown type
-;;(define-extern *rolling-spheres-light0* object) ;; unknown type
-;;(define-extern *rolling-spheres-light1* object) ;; unknown type
-;;(define-extern *rolling-spheres-light2* object) ;; unknown type
-;;(define-extern *rolling-spheres-light3* object) ;; unknown type
-;;(define-extern *rolling-spheres-light4* object) ;; unknown type
-;;(define-extern *flash0* object) ;; unknown type
-;;(define-extern *flash1* object) ;; unknown type
-;;(define-extern *flash2* object) ;; unknown type
-;;(define-extern *flash3* object) ;; unknown type
-;;(define-extern *flash4* object) ;; unknown type
-;;(define-extern *flash5* object) ;; unknown type
-;;(define-extern *flash6* object) ;; unknown type
-;;(define-extern *flash7* object) ;; unknown type
-;;(define-extern *lightning-index* object) ;; unknown type
-;;(define-extern *lightning-time* object) ;; unknown type
-;;(define-extern *lightning-frame-done* object) ;; unknown type
-;;(define-extern *lightning-realtime-done* object) ;; unknown type
-;;(define-extern *thunder-id0* object) ;; unknown type
-;;(define-extern *thunder-id1* object) ;; unknown type
-;;(define-extern *thunder-id2* object) ;; unknown type
-;;(define-extern *thunder-id* object) ;; unknown type
-;;(define-extern *thunder-count* object) ;; unknown type
-;;(define-extern *lava-time* object) ;; unknown type
+(define-extern *lightning-time2* float) ;; TODO - guess
+(define-extern *rolling-spheres-on* (inline-array vector)) ;; 11 vectors
+(define-extern *rolling-spheres-light0* vector) ;; TODO - what is going on here...
+(define-extern *rolling-spheres-light1* (inline-array vector)) ; TODO - what is going on here...
+(define-extern *rolling-spheres-light2* light-ellipse) ;; unknown type
+(define-extern *rolling-spheres-light3* light-volume-sphere) ;; unknown type
+(define-extern *rolling-spheres-light4* vector) ;; TODO - what is going on here...
+(define-extern *flash0* (array float)) ;; unknown type
+(define-extern *flash1* (array float)) ;; unknown type
+(define-extern *flash2* (array float)) ;; unknown type
+(define-extern *flash3* (array float)) ;; unknown type
+(define-extern *flash4* (array float)) ;; unknown type
+(define-extern *flash5* (array float)) ;; unknown type
+(define-extern *flash6* (array float)) ;; unknown type
+(define-extern *flash7* (array float)) ;; unknown type
+(define-extern *lightning-index* int) ;; unknown type
+(define-extern *lightning-time* float) ;; a guess, might be uint (useconds)
+(define-extern *lightning-frame-done* symbol) ;; unknown type
+(define-extern *lightning-realtime-done* symbol) ;; unknown type
+(define-extern *thunder-id0* sound-id) ;; unknown type
+(define-extern *thunder-id1* sound-id) ;; unknown type
+(define-extern *thunder-id2* sound-id) ;; unknown type
+(define-extern *thunder-id* sound-id) ;; unknown type
+(define-extern *thunder-count* int) ;; unknown type
+(define-extern *lava-time* int) ;; TODO - guess
 
 
 ;; ----------------------

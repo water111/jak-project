@@ -7,6 +7,15 @@
   },
   "highlight.maxMatches": 50000, // Maximum number of matches to decorate per regex, in order not to crash the app with accidental cathastropic regexes
   "highlight.regexes": {
+    "(<uninitialized>)": {
+      "filterFileRegex": ".*ir2\\.asm",
+      "decorations": [
+        {
+          "overviewRulerColor": "transparent", // TODO - fix this bug, it extends beyond the line match
+          "color": "#a442f5"
+        }
+      ]
+    },
     "(\\.function.*)": {
       "filterFileRegex": ".*ir2\\.asm",
       "decorations": [
