@@ -480,7 +480,7 @@
      (.add.vf vf28 vf28 vf30)
      (.max.x.vf vf28 vf28 vf0 :mask #b1000)
      ;;(TODO.VFTOI4 vf28 vf28)
-     (vftoi4.xyzw vf28 vf28)
+     (.vftoi4.xyzw vf28 vf28)
      (.svf (&-> arg0 quad) vf28)
      (zero? (logand clip 63))
      )

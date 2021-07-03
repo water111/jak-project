@@ -451,11 +451,29 @@ class Compiler {
   Val* compile_asm_pw_sll(const goos::Object& form, const goos::Object& rest, Env* env);
   Val* compile_asm_pw_srl(const goos::Object& form, const goos::Object& rest, Env* env);
   Val* compile_asm_pw_sra(const goos::Object& form, const goos::Object& rest, Env* env);
-  Val* compile_asm_pextlw(const goos::Object& form, const goos::Object& rest, Env* env);
+
+  Val* compile_asm_por(const goos::Object& form, const goos::Object& rest, Env* env);
+  Val* compile_asm_pnor(const goos::Object& form, const goos::Object& rest, Env* env);
+  Val* compile_asm_pand(const goos::Object& form, const goos::Object& rest, Env* env);
+
+  Val* compile_asm_pceqb(const goos::Object& form, const goos::Object& rest, Env* env);
+  Val* compile_asm_pceqh(const goos::Object& form, const goos::Object& rest, Env* env);
+  Val* compile_asm_pceqw(const goos::Object& form, const goos::Object& rest, Env* env);
+
+  Val* compile_asm_pcgtb(const goos::Object& form, const goos::Object& rest, Env* env);
+  Val* compile_asm_pcgth(const goos::Object& form, const goos::Object& rest, Env* env);
+  Val* compile_asm_pcgtw(const goos::Object& form, const goos::Object& rest, Env* env);
+
+  Val* compile_asm_pextub(const goos::Object& form, const goos::Object& rest, Env* env);
+  Val* compile_asm_pextuh(const goos::Object& form, const goos::Object& rest, Env* env);
   Val* compile_asm_pextuw(const goos::Object& form, const goos::Object& rest, Env* env);
+
+  Val* compile_asm_pextlb(const goos::Object& form, const goos::Object& rest, Env* env);
+  Val* compile_asm_pextlh(const goos::Object& form, const goos::Object& rest, Env* env);
+  Val* compile_asm_pextlw(const goos::Object& form, const goos::Object& rest, Env* env);
+
   Val* compile_asm_pcpyud(const goos::Object& form, const goos::Object& rest, Env* env);
   Val* compile_asm_pcpyld(const goos::Object& form, const goos::Object& rest, Env* env);
-  Val* compile_asm_pceqw(const goos::Object& form, const goos::Object& rest, Env* env);
   Val* compile_asm_ppach(const goos::Object& form, const goos::Object& rest, Env* env);
   Val* compile_asm_psubw(const goos::Object& form, const goos::Object& rest, Env* env);
   Val* compile_asm_xorp(const goos::Object& form, const goos::Object& rest, Env* env);

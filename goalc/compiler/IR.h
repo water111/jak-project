@@ -562,7 +562,26 @@ class IR_VFMath3Asm : public IR_Asm {
 class IR_Int128Math3Asm : public IR_Asm {
  public:
   // these are MIPS names, not x86 names.
-  enum class Kind { PEXTLW, PEXTUW, PCPYUD, PCPYLD, PCEQW, PSUBW };
+  enum class Kind {
+    PEXTUB,
+    PEXTUH,
+    PEXTUW,
+    PEXTLB,
+    PEXTLH,
+    PEXTLW,
+    PCPYUD,
+    PCPYLD,
+    PSUBW,
+    PCEQB,
+    PCEQH,
+    PCEQW,
+    PCGTB,
+    PCGTH,
+    PCGTW,
+    POR,
+    PXOR,
+    PAND
+  };
   IR_Int128Math3Asm(bool use_color,
                     const RegVal* dst,
                     const RegVal* src1,

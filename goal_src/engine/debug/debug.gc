@@ -25,7 +25,7 @@
         (.add.vf vf5 vf5 vf8)
         (.max.x.vf vf5 vf5 vf0 :mask #b1000)
         (.min.x.vf vf5 vf5 vf6 :mask #b1000)
-        (vftoi4.xyzw vf5 vf5)
+        (.vftoi4.xyzw vf5 vf5)
         (.svf (&-> arg1 quad) vf5)
         arg1
         )

@@ -1518,8 +1518,20 @@ IR_Int128Math3Asm::IR_Int128Math3Asm(bool use_color,
 std::string IR_Int128Math3Asm::print() {
   std::string function = "";
   switch (m_kind) {
+    case Kind::PEXTLB:
+      function = ".pextlb";
+      break;
+    case Kind::PEXTLH:
+      function = ".pextlh";
+      break;
     case Kind::PEXTLW:
       function = ".pextlw";
+      break;
+    case Kind::PEXTUB:
+      function = ".pextub";
+      break;
+    case Kind::PEXTUH:
+      function = ".pextuh";
       break;
     case Kind::PEXTUW:
       function = ".pextuw";
@@ -1530,11 +1542,35 @@ std::string IR_Int128Math3Asm::print() {
     case Kind::PCPYUD:
       function = ".pcpyud";
       break;
+    case Kind::PSUBW:
+      function = ".psubw";
+      break;
+    case Kind::PCEQB:
+      function = ".pceqb";
+      break;
+    case Kind::PCEQH:
+      function = ".pceqh";
+      break;
     case Kind::PCEQW:
       function = ".pceqw";
       break;
-    case Kind::PSUBW:
-      function = ".psubw";
+    case Kind::PCGTB:
+      function = ".pcgtb";
+      break;
+    case Kind::PCGTH:
+      function = ".pcgth";
+      break;
+    case Kind::PCGTW:
+      function = ".pcgtw";
+      break;
+    case Kind::POR:
+      function = ".por";
+      break;
+    case Kind::PXOR:
+      function = ".pxor";
+      break;
+    case Kind::PAND:
+      function = ".pand";
       break;
     default:
       assert(false);
@@ -1561,13 +1597,29 @@ void IR_Int128Math3Asm::do_codegen(emitter::ObjectGenerator* gen,
   auto src2 = get_reg_asm(m_src2, allocs, irec, m_use_coloring);
 
   switch (m_kind) {
-    case Kind::PEXTLW:
+    case Kind::PEXTUB:
       // NOTE: this is intentionally swapped because x86 and PS2 do this opposite ways.
-      gen->add_instr(IGen::pextlw_swapped(dst, src2, src1), irec);
+      gen->add_instr(IGen::pextub_swapped(dst, src2, src1), irec);
+      break;
+    case Kind::PEXTUH:
+      // NOTE: this is intentionally swapped because x86 and PS2 do this opposite ways.
+      gen->add_instr(IGen::pextuh_swapped(dst, src2, src1), irec);
       break;
     case Kind::PEXTUW:
       // NOTE: this is intentionally swapped because x86 and PS2 do this opposite ways.
       gen->add_instr(IGen::pextuw_swapped(dst, src2, src1), irec);
+      break;
+    case Kind::PEXTLB:
+      // NOTE: this is intentionally swapped because x86 and PS2 do this opposite ways.
+      gen->add_instr(IGen::pextlb_swapped(dst, src2, src1), irec);
+      break;
+    case Kind::PEXTLH:
+      // NOTE: this is intentionally swapped because x86 and PS2 do this opposite ways.
+      gen->add_instr(IGen::pextlh_swapped(dst, src2, src1), irec);
+      break;
+    case Kind::PEXTLW:
+      // NOTE: this is intentionally swapped because x86 and PS2 do this opposite ways.
+      gen->add_instr(IGen::pextlw_swapped(dst, src2, src1), irec);
       break;
     case Kind::PCPYLD:
       // NOTE: this is intentionally swapped because x86 and PS2 do this opposite ways.
@@ -1576,12 +1628,36 @@ void IR_Int128Math3Asm::do_codegen(emitter::ObjectGenerator* gen,
     case Kind::PCPYUD:
       gen->add_instr(IGen::pcpyud(dst, src1, src2), irec);
       break;
+    case Kind::PCEQB:
+      gen->add_instr(IGen::parallel_compare_e_b(dst, src2, src1), irec);
+      break;
+    case Kind::PCEQH:
+      gen->add_instr(IGen::parallel_compare_e_h(dst, src2, src1), irec);
+      break;
     case Kind::PCEQW:
-      gen->add_instr(IGen::pceqw(dst, src1, src2), irec);
+      gen->add_instr(IGen::parallel_compare_e_w(dst, src2, src1), irec);
+      break;
+    case Kind::PCGTB:
+      gen->add_instr(IGen::parallel_compare_gt_b(dst, src2, src1), irec);
+      break;
+    case Kind::PCGTH:
+      gen->add_instr(IGen::parallel_compare_gt_h(dst, src2, src1), irec);
+      break;
+    case Kind::PCGTW:
+      gen->add_instr(IGen::parallel_compare_gt_w(dst, src2, src1), irec);
       break;
     case Kind::PSUBW:
       // psubW on mips is psubD on x86...
       gen->add_instr(IGen::vpsubd(dst, src1, src2), irec);
+      break;
+    case Kind::POR:
+      gen->add_instr(IGen::parallel_bitwise_or(dst, src2, src1), irec);
+      break;
+    case Kind::PXOR:
+      gen->add_instr(IGen::parallel_bitwise_xor(dst, src2, src1), irec);
+      break;
+    case Kind::PAND:
+      gen->add_instr(IGen::parallel_bitwise_and(dst, src2, src1), irec);
       break;
     default:
       assert(false);

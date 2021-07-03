@@ -15541,7 +15541,7 @@
 
 (define-extern collide-cache-using-line-sphere-test function)
 (define-extern collide-cache-using-y-probe-test function)
-(define-extern collide-cache-using-box-test function)
+(define-extern collide-cache-using-box-test (function vector symbol))
 (define-extern draw-node-cull function)
 
 
@@ -19181,9 +19181,9 @@
 
 ;; - Functions
 
-(define-extern drawable-sphere-box-intersect? function)
-(define-extern instance-sphere-box-intersect? function)
-(define-extern instance-tfragment-add-debug-sphere function)
+(define-extern drawable-sphere-box-intersect? (function drawable bounding-box4w symbol)) ;; TODO - pcgtw | por | ppach
+(define-extern instance-sphere-box-intersect? (function drawable instance-tie bounding-box4w symbol)) ;; pextlh | VITOF12 | pcgtw | por | ppach ;; TODO - the first arg is based from the second arg in `drawable:11`
+(define-extern instance-tfragment-add-debug-sphere (function drawable instance-tie symbol)) ;; unused
 
 
 ;; ----------------------

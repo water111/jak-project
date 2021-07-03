@@ -37,6 +37,24 @@
         }
       ]
     },
+    "(<uninitialized>)": {
+      "filterFileRegex": ".*ir2\\.asm",
+      "decorations": [
+        {
+          "overviewRulerColor": "transparent", // TODO - fix this bug, it extends beyond the line match
+          "color": "#a442f5"
+        }
+      ]
+    },
+    "(jalr)": {
+      "filterFileRegex": ".*ir2\\.asm",
+      "decorations": [
+        {
+          "overviewRulerColor": "transparent",
+          "color": "magenta"
+        }
+      ]
+    },
     "(.*;; )(\\[\\s*\\d+\\])": {
       "filterFileRegex": ".*ir2\\.asm",
       "decorations": [

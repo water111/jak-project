@@ -96,8 +96,27 @@ const std::unordered_map<
         {".pw.sll", &Compiler::compile_asm_pw_sll},
         {".pw.srl", &Compiler::compile_asm_pw_srl},
         {".pw.sra", &Compiler::compile_asm_pw_sra},
+
+        {".por", &Compiler::compile_asm_por},
+        {".pnor", &Compiler::compile_asm_pnor},
+        {".pand", &Compiler::compile_asm_pand},
+
+        {".pceqb", &Compiler::compile_asm_pceqb},
+        {".pceqh", &Compiler::compile_asm_pceqh},
+        {".pceqw", &Compiler::compile_asm_pceqw},
+
+        {".pcgtb", &Compiler::compile_asm_pcgtb},
+        {".pcgth", &Compiler::compile_asm_pcgth},
+        {".pcgtw", &Compiler::compile_asm_pcgtw},
+
+        {".pextlb", &Compiler::compile_asm_pextlb},
+        {".pextlh", &Compiler::compile_asm_pextlh},
         {".pextlw", &Compiler::compile_asm_pextlw},
+
+        {".pextub", &Compiler::compile_asm_pextub},
+        {".pextuh", &Compiler::compile_asm_pextuh},
         {".pextuw", &Compiler::compile_asm_pextuw},
+
         {".pcpyld", &Compiler::compile_asm_pcpyld},
         {".pcpyud", &Compiler::compile_asm_pcpyud},
         {".pceqw", &Compiler::compile_asm_pceqw},

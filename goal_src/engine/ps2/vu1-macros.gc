@@ -49,7 +49,7 @@
   )
 
 
-(defmacro vftoi4.xyzw (dst src)
+(defmacro .vftoi4.xyzw (dst src)
   "convert to 28.4 integer. This does the multiply while the number is still
    a float. This will have issues for very large floats, but it seems like this
    is how PCSX2 does it as well, so maybe it's right?
@@ -65,6 +65,85 @@
     )
   )
 
+(defmacro .vftoi12.xyzw (dst src)
+  "convert to 20.12 integer. This does the multiply while the number is still
+   a float. This will have issues for very large floats, but it seems like this
+   is how PCSX2 does it as well, so maybe it's right?
+   NOTE: this is the only version of the instruction used in Jak 1, so we
+   don't need to worry about masks."
+
+  `(begin
+    (rlet ((temp :class vf))
+      (set! temp 4096.0)
+      (.mul.x.vf temp ,src temp)
+      (.ftoi.vf ,dst temp)
+      )
+    )
+  )
+
+(defmacro .vftoi15.xyzw (dst src)
+  "convert to 17.15 integer. This does the multiply while the number is still
+   a float. This will have issues for very large floats, but it seems like this
+   is how PCSX2 does it as well, so maybe it's right?
+   NOTE: this is the only version of the instruction used in Jak 1, so we
+   don't need to worry about masks."
+
+  `(begin
+    (rlet ((temp :class vf))
+      (set! temp 32768.0)
+      (.mul.x.vf temp ,src temp)
+      (.ftoi.vf ,dst temp)
+      )
+    )
+  )
+
+(defmacro .vitof4.xyzw (dst src)
+  "convert from a 28.4 integer. This does the multiply while the number is still
+   a float. This will have issues for very large floats, but it seems like this
+   is how PCSX2 does it as well, so maybe it's right?
+   NOTE: this is the only version of the instruction used in Jak 1, so we
+   don't need to worry about masks."
+
+  `(begin
+    (rlet ((temp :class vf))
+      (set! temp 0.0625)
+      (.mul.x.vf temp ,src temp)
+      (.ftoi.vf ,dst temp)
+      )
+    )
+  )
+
+(defmacro .vitof12.xyzw (dst src)
+  "convert from a 20.12 integer. This does the multiply while the number is still
+   a float. This will have issues for very large floats, but it seems like this
+   is how PCSX2 does it as well, so maybe it's right?
+   NOTE: this is the only version of the instruction used in Jak 1, so we
+   don't need to worry about masks."
+
+  `(begin
+    (rlet ((temp :class vf))
+      (set! temp 0.000244140625)
+      (.mul.x.vf temp ,src temp)
+      (.ftoi.vf ,dst temp)
+      )
+    )
+  )
+
+(defmacro .vitof15.xyzw (dst src)
+  "convert from a 17.15 integer. This does the multiply while the number is still
+   a float. This will have issues for very large floats, but it seems like this
+   is how PCSX2 does it as well, so maybe it's right?
+   NOTE: this is the only version of the instruction used in Jak 1, so we
+   don't need to worry about masks."
+
+  `(begin
+    (rlet ((temp :class vf))
+      (set! temp 0.000030517578125)
+      (.mul.x.vf temp ,src temp)
+      (.ftoi.vf ,dst temp)
+      )
+    )
+  )
 
 ;; In the original game, init-for-transform stashed a bunch of stuff in registers, to be used by other functions.
 ;; In OpenGOAL, this seems risky so we're going to back up this manually.

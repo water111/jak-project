@@ -404,8 +404,6 @@
   
   "draw-joint-spheres": [[16, "vector"]],
   "(method 16 process-drawable)": [[16, "matrix"], [80, "matrix"], [144, "vector"], [160, "vector"]],
-  
-  "draw-ocean-transition": [[16, "sphere"]],
 
   "(anon-function 494 task-control)": [[16, "event-message-block"]],
   "(anon-function 493 task-control)": [[16, "event-message-block"]],
@@ -440,5 +438,11 @@
   "(anon-function 286 task-control)": [[16, "event-message-block"]],
   "(anon-function 227 task-control)": [[16, "event-message-block"]],
   "(anon-function 38 task-control)": [[16, "event-message-block"]],
-  "(anon-function 28 task-control)": [[16, "event-message-block"]]
+  "(anon-function 28 task-control)": [[16, "event-message-block"]],
+
+  "instance-tfragment-add-debug-sphere": [
+    [16, "vector"]
+  ],
+
+  "placeholder-leave-alone": []
 }
