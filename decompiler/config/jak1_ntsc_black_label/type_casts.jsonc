@@ -764,13 +764,7 @@
     [[115, 154], "s3", "continue-point"]
   ],
   "(method 20 level)": [[[43, 45], "s3", "ramdisk-rpc-fill"]],
-  //"bg": [[[25, 52], "a0", "string"]],
 
-  "(anon-function 29 process-drawable)": [
-    [[0, 99999], "s6", "process-drawable"]
-  ],
-  //"bg": [[[25, 52], "a0", "string"]],
-  
   "(anon-function 29 process-drawable)": [[[0, 999], "s6", "process-drawable"]],
   "ja-done?": [[[0, 999], "s6", "process-drawable"]],
   "ja-min?": [[[0, 999], "s6", "process-drawable"]],
@@ -785,7 +779,10 @@
   "ja-group-size": [[[0, 999], "s6", "process-drawable"]],
   "ja-eval": [[[0, 999], "s6", "process-drawable"]],
   "ja-blend-eval": [[[0, 999], "s6", "process-drawable"]],
-  "ja-post": [[[0, 999], "s6", "process-drawable"], [54, "a1", "process"]],
+  "ja-post": [
+    [[0, 999], "s6", "process-drawable"],
+    [54, "a1", "process"]
+  ],
   "transform-post": [[[0, 999], "s6", "process-drawable"]],
   "rider-trans": [[[0, 999], "s6", "process-drawable"]],
   "rider-post": [[[0, 999], "s6", "process-drawable"]],
@@ -804,9 +801,7 @@
     [[157, 162], "a1", "dma-packet"]
   ],
 
-  "(top-level-login task-control)" :[
-    [165, "v1", "symbol"]
-  ],
+  "(top-level-login task-control)": [[165, "v1", "symbol"]],
 
   "task-control-reset": [
     [[7, 13], "a0", "task-control"],
@@ -890,11 +885,15 @@
     [10, "s3", "continue-point"]
   ],
 
-   "(method 9 game-info)": [
-     [[270, 286], "s2", "(function cpu-thread function object object object object pointer)"]
-   ],
+  "(method 9 game-info)": [
+    [
+      [270, 286],
+      "s2",
+      "(function cpu-thread function object object object object pointer)"
+    ]
+  ],
 
-  "(method 25 game-info)" :[
+  "(method 25 game-info)": [
     [4, "v1", "game-save-tag"],
     [53, "v1", "pointer"],
     [[7, 53], "v1", "game-save-tag"],
@@ -946,6 +945,62 @@
     [[203, 210], "s4", "game-save-tag"]
   ],
 
+  "cam-standard-event-handler": [
+    [[0, 999], "s6", "camera-slave"],
+    [[16, 30], "s5", "state"],
+    [41, "a0", "vector"]
+    // [[5, 7], "t9", "(function object object object object object object)"],
+    // [[19, 21], "t9", "(function object object object object object object)"],
+    // [[29, 31], "t9", "(function object object object object object object)"]
+  ],
+
+  "cam-curve-pos": [[[0, 224], "s6", "camera-slave"]],
+
+  "cam-combiner-init": [
+    [[0, 999], "s6", "camera-combiner"],
+    [[28, 33], "t9", "(function object)"]
+  ],
+
+  "(anon-function 1 cam-combiner)": [
+    [[0, 999], "s6", "camera-combiner"]
+  ],
+
+  "(anon-function 2 cam-combiner)": [
+    [10, "a0", "vector"],
+    [[0, 20], "s6", "camera-slave"],
+    [[20, 231], "s6", "camera-combiner"],
+    [[99, 127], "gp", "camera-slave"],
+    [[187, 231], "gp", "camera-slave"]
+  ],
+
+  "cam-start": [
+    [[18, 22], "t9", "(function process object function)"],
+    [[38, 42], "t9", "(function process object function)"]
+  ],
+
+  "cam-master-init": [
+    [[0, 999], "s6", "camera-master"],
+    [[111, 115], "t9", "(function cpu-thread function)"],
+    [[139, 145], "t9", "(function cpu-thread function object object)"],
+    [[163, 167], "t9", "(function object)"]
+  ],
+
+  "cam-curve-setup": [[[0, 82], "s6", "camera-slave"]],
+
+  "(method 15 tracking-spline)": [
+    [[57, 65], "a2", "vector"],
+    [[57, 65], "a3", "vector"]
+  ],
+
+  "cam-slave-get-vector-with-offset": [[[52, 65], "s3", "vector"]],
+
+  "cam-slave-go": [[[3, 6], "t9", "(function object object)"]],
+
+  "cam-slave-init": [
+    [[0, 58], "s6", "camera-slave"],
+    [[47, 50], "t9", "(function object object)"],
+    [[54, 58], "t9", "(function object object)"]
+  ],
 
   "placeholder-do-not-add-below": []
 }

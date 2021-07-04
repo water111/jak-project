@@ -1130,6 +1130,59 @@
     ["L195", "(array game-option)", true]
   ],
 
+  "camera": [
+    ["L257", "(inline-array qword)", true, 1],
+    ["L258", "(inline-array qword)", true, 1],
+    ["L271", "float", true],
+    ["L278", "float", true],
+    ["L279", "float", true],
+    ["L285", "float", true],
+    ["L287", "float", true],
+    ["L288", "float", true],
+    ["L291", "float", true],
+    ["L292", "float", true],
+    ["L293", "float", true],
+    ["L297", "float", true],
+    ["L299", "float", true],
+    ["L301", "float", true],
+    ["L302", "float", true],
+    ["L312", "float", true],
+    ["L314", "float", true],
+    ["L315", "float", true],
+    ["L317", "float", true],
+    ["L321", "float", true],
+    ["L323", "float", true]
+  ],
+
+  "cam-combiner": [
+    ["L4", "_lambda_", true],
+    ["L54", "_lambda_", true],
+    ["L77", "state", true],
+    ["L90", "float", true]
+  ],
+
+  "cam-master": [
+    ["L369", "float", true],
+    ["L370", "float", true],
+    ["L371", "float", true]
+  ],
+
+  "cam-update": [
+    ["L82", "float", true],
+    ["L84", "float", true],
+    ["L88", "rgba", true]
+  ],
+
+  "cam-states-dbg": [
+    ["L90", "float", true],
+    ["L91", "float", true],
+    ["L92", "float", true],
+    ["L93", "float", true],
+    ["L94", "float", true],
+    ["L98", "float", true],
+    ["L99", "float", true]
+  ],
+
   // please do not add things after this entry! git is dumb.
   "object-file-that-doesnt-actually-exist-and-i-just-put-this-here-to-prevent-merge-conflicts-with-this-file": []
 }

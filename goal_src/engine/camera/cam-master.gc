@@ -5,3 +5,5 @@
 ;; name in dgo: cam-master
 ;; dgos: GAME, ENGINE
 
+;; TODO - for cam-start
+(define-extern cam-master-init (function none))

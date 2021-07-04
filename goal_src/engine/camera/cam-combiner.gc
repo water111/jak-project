@@ -5,3 +5,5 @@
 ;; name in dgo: cam-combiner
 ;; dgos: GAME, ENGINE
 
+;; TODO - for cam-start
+(define-extern cam-combiner-init (function none))

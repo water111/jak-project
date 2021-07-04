@@ -393,7 +393,7 @@
      (vector-!
       (new 'stack-no-clear 'vector)
       (-> gp-0 target)
-      (-> csp bone position)
+      (-> csp bone transform vector 3)
       )
      1.0
      )

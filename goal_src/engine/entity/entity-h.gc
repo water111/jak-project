@@ -230,3 +230,5 @@
 (defun-extern entity-by-aid uint entity)
 (define-extern reset-actors (function symbol none))
 (define-extern *spawn-actors* symbol)
+;; TODO - for cam-start
+(define-extern reset-cameras (function none))

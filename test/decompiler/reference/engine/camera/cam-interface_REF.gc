@@ -26,19 +26,17 @@
 (define-perm *camera-dummy-vector* vector (vector-reset! (new 'global 'vector)))
 
 ;; definition for function camera-pos
-;; INFO: Return type mismatch object vs vector.
 (defun camera-pos ()
-  (the-as vector (cond
-                  (*camera-combiner*
-                   (-> *camera-combiner* stack)
-                   )
-                  (*math-camera*
-                   (-> *math-camera* trans)
-                   )
-                  (else
-                   *camera-dummy-vector*
-                   )
-                  )
+  (cond
+   (*camera-combiner*
+    (-> *camera-combiner* trans)
+    )
+   (*math-camera*
+    (-> *math-camera* trans)
+    )
+   (else
+    *camera-dummy-vector*
+    )
    )
   )
 

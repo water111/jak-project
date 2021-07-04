@@ -5,3 +5,6 @@
 ;; name in dgo: cam-states
 ;; dgos: GAME, ENGINE
 
+;; TODO - for cam-start
+(define-extern cam-string state)
+(define-extern *camera-base-mode* state)

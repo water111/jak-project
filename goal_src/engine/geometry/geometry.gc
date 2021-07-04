@@ -137,4 +137,4 @@
 
 ;; TODO
 (define-extern vector-3pt-cross! (function vector vector vector vector vector))
-(define-extern curve-evaluate! (function vector float int int vector int int))
+(define-extern curve-evaluate! (function vector float pointer int pointer int vector))

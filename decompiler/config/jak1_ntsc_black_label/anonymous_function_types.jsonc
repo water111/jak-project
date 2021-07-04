@@ -509,5 +509,10 @@
     [17, "(function symbol symbol continue-point symbol none)"]
   ],
 
+  "cam-combiner": [
+		[1, "(function none)"],
+		[2, "(function basic int basic event-message-block object)"]
+	],
+
   "placeholder-do-not-add-below": []
 }

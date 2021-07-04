@@ -433,12 +433,12 @@
 
 ;; definition of type vector
 (deftype vector (structure)
-  ((data float   4 :offset-assert   0)
-   (x    float     :offset          0)
-   (y    float     :offset          4)
-   (z    float     :offset          8)
-   (w    float     :offset         12)
-   (quad uint128   :offset          0)
+  ((x    float     :offset   0)
+   (y    float     :offset   4)
+   (z    float     :offset   8)
+   (w    float     :offset  12)
+   (data float   4 :offset   0)
+   (quad uint128   :offset   0)
    )
   :method-count-assert 9
   :size-assert         #x10

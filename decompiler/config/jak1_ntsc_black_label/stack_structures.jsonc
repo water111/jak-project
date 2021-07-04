@@ -389,16 +389,12 @@
     [32, "matrix"]
   ],
 
-  "(method 18 tracking-spline)": [
-    [16, "tracking-spline-sampler"],
-    [32, "tracking-spline-sampler"]
-  ],
-
   "draw-ocean-transition": [[16, "sphere"]],
 
   "(method 22 level)": [[16, "event-message-block"]],
   "(method 9 level)": [[16, "event-message-block"]],
   "(method 10 load-state)": [[16, "event-message-block"]],
+  "cam-slave-get-rot": [[16, "quaternion"]],
 
   "draw-joint-spheres": [[16, "vector"]],
   "(method 16 process-drawable)": [
@@ -407,8 +403,6 @@
     [144, "vector"],
     [160, "vector"]
   ],
-
-  "draw-ocean-transition": [[16, "sphere"]],
 
   "(anon-function 494 task-control)": [[16, "event-message-block"]],
   "(anon-function 493 task-control)": [[16, "event-message-block"]],
@@ -448,5 +442,143 @@
   "(method 9 game-info)": [[16, "event-message-block"]],
   "(method 9 continue-point)": [[16, "vector"]],
   "(method 9 game-save)": [[16, "file-stream"]],
-  "(method 10 game-save)": [[16, "file-stream"]]
+  "(method 10 game-save)": [[16, "file-stream"]],
+
+  "cam-state-from-entity": [[16, "symbol"]],
+
+  "(method 9 cam-index)": [[16, "vector"]],
+
+  "(method 10 cam-index)": [[16, "vector"]],
+
+  "(method 15 tracking-spline)": [
+    [16, "tracking-spline-sampler"],
+    [32, "tracking-point"]
+  ],
+
+  "(method 16 tracking-spline)": [
+    [16, "tracking-spline-sampler"],
+    [32, "vector"]
+  ],
+
+  "(method 18 tracking-spline)": [
+    [16, "tracking-spline-sampler"],
+    [32, "vector"]
+  ],
+
+  "(method 20 tracking-spline)": [
+    [16, "vector"],
+    [32, "vector"]
+  ],
+
+  "(method 21 tracking-spline)": [
+    [16, "tracking-spline-sampler"],
+    [32, "vector"]
+  ],
+
+  "(method 22 tracking-spline)": [
+    [16, "tracking-spline-sampler"],
+    [32, "vector"]
+  ],
+
+  "cam-slave-init": [[16, "event-message-block"]],
+
+  "cam-curve-pos": [
+    [16, "vector"],
+    [32, "vector"],
+    [48, "vector"]
+  ],
+
+  "curve-length": [
+    [16, "vector"],
+    [32, "vector"]
+  ],
+
+  "curve-closest-point": [
+    [16, "vector"],
+    [32, "vector"]
+  ],
+
+  "cam-calc-follow!": [
+    [16, "event-message-block"],
+    [96, "vector"],
+    [112, "vector"],
+    [128, "vector"],
+    [144, "vector"]
+  ],
+
+  "mat-remove-z-rot": [
+    [16, "vector"],
+    [32, "matrix"]
+  ],
+
+  "slave-matrix-blend-2": [
+    [16, "vector"],
+    [32, "quaternion"],
+    [48, "quaternion"],
+    [64, "quaternion"]
+  ],
+
+  "vector-into-frustum-nosmooth!": [
+    [16, "matrix"],
+    [80, "vector"],
+    [96, "vector"]
+  ],
+
+  "slave-set-rotation!": [
+    [16, "vector"],
+    [32, "matrix"],
+    [96, "vector"],
+    [112, "matrix"], // guess
+    [176, "vector"] // guess
+  ],
+
+  "v-slrp2!": [
+    [16, "vector"],
+    [32, "vector"],
+    [48, "vector"],
+    [64, "matrix"],
+    [128, "vector"]
+  ],
+
+  "v-slrp3!": [
+    [16, "vector"],
+    [32, "vector"],
+    [48, "vector"],
+    [64, "matrix"],
+    [128, "vector"]
+  ],
+
+  "(anon-function 1 cam-combiner)": [
+    [16, "vector"],
+    [32, "matrix"],
+    [80, "vector"],
+    [96, "matrix"]
+  ],
+
+  "cam-master-init": [
+    [16, "vector"],
+    [32, "vector"]
+  ],
+
+  "plane-from-points": [[16, "vector"]],
+
+  "update-view-planes": [
+    [16, "view-frustum"],
+    [144, "vector"],
+    [160, "vector"],
+    [176, "vector"],
+    [192, "vector"],
+    [208, "vector"],
+    [224, "vector"]
+  ],
+
+  "move-camera-from-pad": [[16, "vector"]],
+
+  "cam-free-floating-move": [[16, "symbol"]],
+
+  "update-camera": [
+    [16, "vector"],
+    [32, "quaternion"],
+    [48, "vector"]
+  ]
 }

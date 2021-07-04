@@ -2151,34 +2151,34 @@
   "(method 10 game-info)": {
     "args": ["obj", "item", "amount", "source"],
     "vars": {
-      "v1-10":"proc",
-      "s4-1":"level-idx",
-      "a0-35":"buzz-task",
-      "s4-2":"buzz-index",
-      "f30-0":"buzz-count",
-      "s3-0":"ctrl",
-      "s5-2":"buzz-bits"
+      "v1-10": "proc",
+      "s4-1": "level-idx",
+      "a0-35": "buzz-task",
+      "s4-2": "buzz-index",
+      "f30-0": "buzz-count",
+      "s3-0": "ctrl",
+      "s5-2": "buzz-bits"
     }
   },
 
   "(method 14 game-info)": {
-    "args":["obj", "lev"],
+    "args": ["obj", "lev"],
     "vars": {
-      "s5-0":"perms",
-      "s4-0":"lev-entities",
-      "s3-0":"lev-entity-idx",
-      "s2-0":"lev-entity-perm",
-      "v1-8":"info-entity-perm"
+      "s5-0": "perms",
+      "s4-0": "lev-entities",
+      "s3-0": "lev-entity-idx",
+      "s2-0": "lev-entity-perm",
+      "v1-8": "info-entity-perm"
     }
   },
 
   "(method 15 game-info)": {
-    "args":["obj", "lev"],
+    "args": ["obj", "lev"],
     "vars": {
-      "s5-0":"lev-entities",
-      "s4-0":"lev-entity-idx",
-      "s3-0":"lev-entity-perm",
-      "v1-7":"info-entity-perm"
+      "s5-0": "lev-entities",
+      "s4-0": "lev-entity-idx",
+      "s3-0": "lev-entity-perm",
+      "v1-7": "info-entity-perm"
     }
   },
 
@@ -2206,8 +2206,20 @@
     "vars": {
       "s4-0": ["tag", "game-save-tag"],
       "s3-0": "tag-idx",
-      "s2-1":"prog-lev-idx",
-      "a2-13":"lev-name"
+      "s2-1": "prog-lev-idx",
+      "a2-13": "lev-name"
+    }
+  },
+
+  "(anon-function 1 cam-combiner)": {
+    "vars": {
+      "pp": ["pp", "process"]
+    }
+  },
+
+  "(anon-function 2 cam-combiner)": {
+    "vars": {
+      "a0-3": ["vec", "(pointer vector)"]
     }
   }
 }

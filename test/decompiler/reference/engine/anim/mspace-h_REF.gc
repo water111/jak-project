@@ -61,7 +61,7 @@
 (defmethod inspect bone ((obj bone))
   (format #t "[~8x] ~A~%" obj 'bone)
   (format #t "~Ttransform: #<matrix @ #x~X>~%" (-> obj transform))
-  (format #t "~Tposition: #<vector @ #x~X>~%" (-> obj position))
+  (format #t "~Tposition: #<vector @ #x~X>~%" (-> obj transform vector 3))
   (format #t "~Tscale: #<vector @ #x~X>~%" (-> obj scale))
   (format #t "~Tcache: #<bone-cache @ #x~X>~%" (-> obj cache))
   obj

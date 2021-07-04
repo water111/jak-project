@@ -1,10 +1,6 @@
 ;;-*-Lisp-*-
 (in-package goal)
 
-;; name: cam-update.gc
-;; name in dgo: cam-update
-;; dgos: GAME, ENGINE
-
 ;; definition for function plane-from-points
 ;; WARN: Unsupported inline assembly instruction kind - [mula.s f0, f3]
 ;; WARN: Unsupported inline assembly instruction kind - [madda.s f1, f4]

@@ -92,6 +92,7 @@
 (define-extern inspect (function object object))
 (define-extern mem-print (function (pointer uint32) int symbol))
 (define-extern print-tree-bitmask (function int int symbol))
+(define-extern quad-copy! (function pointer pointer int int)) ;; NOTE - actually returns none
 ;; has issues:
 (define-extern breakpoint-range-set! (function uint uint uint int))
 
@@ -115,11 +116,6 @@
 (define-extern *print-column* binteger)
 (define-extern *debug-segment* symbol)
 (define-extern *trace-list* pair)
-
-;; - Unknowns
-
-;;(define-extern quad-copy! UNKNOWN)
-
 
 ;; ----------------------
 ;; NO FILE
@@ -1166,7 +1162,7 @@
    (from       basic     :offset-assert 4)
    (num-params int32     :offset-assert 8)
    (message    basic     :offset-assert 12)
-   (param      uint64 7  :offset-assert 16)
+   (param      uint64 7  :offset-assert 16) ;; These can basically be anything
    )
   :method-count-assert 9
   :size-assert         #x48
@@ -1727,11 +1723,11 @@
   )
 
 (deftype vector (structure)
-  ((data float 4 :do-not-decompile :score -9999 :offset-assert 0)
-   (x float :offset 0)
+  ((x float :offset 0)
    (y float :offset 4)
    (z float :offset 8)
    (w float :offset 12)
+   (data float 4 :score -9999 :offset 0)
    (quad uint128 :offset 0)
    )
   :method-count-assert 9
@@ -1972,7 +1968,7 @@
 ;; - Types
 
 (deftype matrix (structure)
-  ((vector vector 4  :inline :offset 0)
+  ((vector vector 4  :score 999 :inline :offset 0)
    (quad   uint128 4  :offset 0)
    (data   float 16 :offset 0)
    )
@@ -2381,10 +2377,10 @@
 
 ;; - Functions
 
-(define-extern curve-length function)
-(define-extern curve-get-pos! function)
+(define-extern curve-length (function curve float))
+(define-extern curve-get-pos! (function vector float curve vector))
 (define-extern vector-vector-distance-squared (function vector vector float))
-(define-extern curve-evaluate! (function vector float int int vector int int))
+(define-extern curve-evaluate! (function vector float pointer int pointer int vector))
 (define-extern vector-vector-distance (function vector vector float))
 (define-extern circle-circle-xz-intersect (function vector vector vector vector int))
 (define-extern vector-normalize-copy! (function vector vector float vector))
@@ -2430,7 +2426,7 @@
 (define-extern find-knot-span function)
 (define-extern calculate-basis-functions-vector! function)
 (define-extern curve-copy! function)
-(define-extern curve-closest-point function)
+(define-extern curve-closest-point (function curve vector float float int float float)) ;; TODO - WARN: Stack slot offset 48 signed mismatch
 (define-extern vector-plane-distance function)
 
 
@@ -5001,8 +4997,8 @@
    (pfog0                      float              :offset-assert 832)
    (pfog1                      float              :offset-assert 836)
    (trans                      vector     :inline :offset-assert 848)
-   (plane                      uint128    4       :offset-assert 864)
-   (guard-plane                uint128    4       :offset-assert 928)
+   (plane                      plane    4       :inline :offset-assert 864)
+   (guard-plane                plane    4       :inline :offset-assert 928)
    (shrub-mat                  matrix     :inline :offset-assert 992)
    (fov-correction-factor      float              :offset-assert 1056)
    )
@@ -10790,9 +10786,9 @@
    (nav-flags             uint8              :offset-assert 145)
    (pad-byte              uint8      2       :offset-assert 146)
    (pat-ignore-mask       uint32             :offset-assert 148)
-   (event-self            basic              :offset-assert 152)
+   (event-self            symbol              :offset-assert 152)
    (event-other           basic              :offset-assert 156)
-   (root-prim             basic              :offset-assert 160)
+   (root-prim             collide-shape-prim-group              :offset-assert 160)
    (riders                basic              :offset-assert 164)
    (backup-collide-as     uint64             :offset-assert 168)
    (backup-collide-with   uint64             :offset-assert 176)
@@ -10845,8 +10841,8 @@
    (old-status            uint64             :offset-assert 280)
    (prev-status           uint64             :offset-assert 288)
    (reaction-flag         uint32             :offset-assert 296)
-   (reaction              basic              :offset-assert 300)
-   (no-reaction           basic              :offset-assert 304)
+   (reaction              function              :offset-assert 300)
+   (no-reaction           function              :offset-assert 304)
    (local-normal          vector     :inline :offset-assert 320)
    (surface-normal        vector     :inline :offset-assert 336)
    (poly-normal           vector     :inline :offset-assert 352)
@@ -10858,8 +10854,8 @@
    (poly-angle            float              :offset-assert 424)
    (touch-angle           float              :offset-assert 428)
    (coverage              float              :offset-assert 432)
-   (dynam                 basic              :offset-assert 436)
-   (surf                  basic              :offset-assert 440)
+   (dynam                 dynamics              :offset-assert 436)
+   (surf                  surface              :offset-assert 440)
    )
   :method-count-assert 65
   :size-assert         #x1bc
@@ -11576,7 +11572,7 @@
    (nodes (inline-array bsp-node) :offset-assert 120)
 
    (level level :offset-assert 124)
-   (unk-data-2 uint32 5 :offset-assert 128)
+   (unk-data-2 uint16 10 :offset-assert 128) ;; Printed as leaf-index in cam-update
 
    (boxes box8s-array :offset-assert 148)
    (unk-data-3 uint32 :offset-assert 152)
@@ -13393,14 +13389,14 @@
 
 (deftype cam-index (structure)
   ((flags uint32    :offset-assert 0)
-   (vec   uint128 2 :offset-assert 16)
+   (vec   vector  2 :inline :offset 16)
    )
   :method-count-assert 11
   :size-assert         #x30
   :flag-assert         #xb00000030
   (:methods
-    (dummy-9 () none 9)
-    (dummy-10 () none 10)
+    (dummy-9 (_type_ symbol entity vector curve) symbol 9)
+    (dummy-10 (_type_ vector) float 10) ; inlined vector-dot issue?
     )
   )
 
@@ -13445,20 +13441,20 @@
   :size-assert         #x664
   :flag-assert         #x1800000664
   (:methods
-    (dummy-9 () none 9)
-    (dummy-10 () none 10)
+    (TODO-RENAME-9 (_type_) none 9)
+    (TODO-RENAME-10 (_type_ vector) none 10)
     (dummy-11 () none 11)
     (dummy-12 () none 12)
-    (dummy-13 () none 13)
-    (dummy-14 () none 14)
-    (dummy-15 () none 15)
-    (dummy-16 () none 16)
-    (dummy-17 () none 17)
-    (dummy-18 () none 18)
-    (dummy-19 () none 19)
-    (dummy-20 () none 20)
-    (dummy-21 () none 21)
-    (dummy-22 () none 22)
+    (TODO-RENAME-13 (_type_ int) none 13)
+    (TODO-RENAME-14 (_type_ vector) none 14)
+    (TODO-RENAME-15 (_type_) none 15)
+    (TODO-RENAME-16 (_type_ float) none 16)
+    (TODO-RENAME-17 (_type_ vector float float symbol) int 17) ; - return value is actually none but they do a manual `return`
+    (TODO-RENAME-18 (_type_ float vector tracking-spline-sampler) vector 18)
+    (TODO-RENAME-19 (_type_ float vector tracking-spline-sampler) vector 19)
+    (TODO-RENAME-20 (_type_ vector int) none 20)
+    (TODO-RENAME-21 (_type_ vector float float) vector 21)
+    (TODO-RENAME-22 (_type_ float) none 22)
     (dummy-23 () none 23)
     )
   )
@@ -13518,7 +13514,7 @@
   )
 
 (deftype camera-combiner (process)
-  ((trans             vector               :inline :offset-assert 112)
+  ((trans             vector               :score 999 :inline :offset-assert 112)
    (inv-camera-rot    matrix               :inline :offset-assert 128)
    (fov               float                        :offset-assert 192)
    (interp-val        float                        :offset-assert 196)
@@ -13539,13 +13535,14 @@
   )
 
 (deftype camera-slave (process)
-  ((trans                         vector               :inline :offset-assert 112)
+  ((trans                         vector    :score 999 :inline :offset-assert 112)
    (fov                           float                        :offset-assert 128)
    (fov0                          float                        :offset-assert 132)
    (fov1                          float                        :offset-assert 136)
    (fov-index                     cam-index            :inline :offset-assert 144)
    (tracking                      cam-rotation-tracker :inline :offset-assert 192)
    (view-off-param                float                        :offset-assert 400)
+   (unknown-symbol                symbol                       :offset        412) ;; from - cam-combiner::lambda2 - I'm convinced `camera-slave` is the only matching process in this case
    (view-off                      vector               :inline :offset-assert 416)
    (min-z-override                float                        :offset-assert 432)
    (view-flat                     vector               :inline :offset-assert 448)
@@ -13558,7 +13555,7 @@
    (max-angle-offset              float                        :offset-assert 2192)
    (max-angle-curr                float                        :offset-assert 2196)
    (options                       uint32                       :offset-assert 2200)
-   (cam-entity                    basic                        :offset-assert 2204)
+   (cam-entity                    entity                       :offset-assert 2204) ; not totally confirmed yet, could be entity-actor
    (velocity                      vector               :inline :offset-assert 2208)
    (desired-pos                   vector               :inline :offset-assert 2224)
    (time-dist-too-far             uint32                       :offset-assert 2240)
@@ -13580,7 +13577,7 @@
    (spline-tt                     float                        :offset-assert 2480)
    (spline-follow-dist            float                        :offset-assert 2484)
    (change-event-from             uint32                       :offset-assert 2488)
-   (enter-has-run                 basic                        :offset-assert 2492)
+   (enter-has-run                 symbol                       :offset-assert 2492)
    (blend-from-type               uint64                       :offset-assert 2496)
    (blend-to-type                 uint64                       :offset-assert 2504)
    (have-phony-joystick           basic                        :offset-assert 2512)
@@ -13600,11 +13597,11 @@
 (deftype camera-master (process)
   ((master-options      uint32                    :offset-assert 112)
    (num-slaves          int32                     :offset-assert 116)
-   (slave               basic           2       :offset-assert 120)
+   (slave               (pointer camera-slave)           2       :offset-assert 120)
    (slave-options       uint32                    :offset-assert 128)
    (view-off-param-save float                     :offset-assert 132)
    (changer             uint32                    :offset-assert 136)
-   (cam-entity          basic                     :offset-assert 140)
+   (cam-entity          entity                     :offset-assert 140) ; not totally confirmed yet
    (stringMinLength     float                     :offset-assert 144)
    (stringMaxLength     float                     :offset-assert 148)
    (stringMinHeight     float                     :offset-assert 152)
@@ -14750,9 +14747,8 @@
 
 ;; - Functions
 
-;; TODO - not decompiling correctly due to vector-dot-product again i believe
 (define-extern ray-arbitrary-circle-intersect (function vector vector vector vector float float))
-(define-extern camera-line (function vector vector vector none))
+(define-extern camera-line (function vector vector rgba none))
 
 
 ;; ----------------------
@@ -14777,7 +14773,7 @@
 (define-extern print-cl-stat function)
 (define-extern clear-cl-stat function)
 (define-extern mem-usage-bsp-tree function)
-(define-extern bsp-camera-asm function)
+(define-extern bsp-camera-asm (function bsp-header vector none))
 (define-extern print-collide-stats function)
 
 ;; - Unknowns
@@ -16939,7 +16935,7 @@
 
 ;; - Unknowns
 
-;;(define-extern group-rain-screend-drop object) ;; unknown type
+(define-extern group-rain-screend-drop sparticle-launch-group) ;; not confirmed
 
 
 ;; ----------------------
@@ -17646,47 +17642,46 @@
 
 ;; - Functions
 
-(define-extern vector-into-frustum-nosmooth! function)
-(define-extern slave-matrix-blend-2 function)
-(define-extern mat-remove-z-rot function)
-(define-extern parameter-ease-sin-clamp function)
-(define-extern cam-slave-get-intro-step function)
-(define-extern cam-slave-get-float function)
-(define-extern cam-slave-init-vars function)
-(define-extern cam-calc-follow! function)
-(define-extern slave-set-rotation! function)
-(define-extern camera-slave-debug function)
-(define-extern camera-line-rel-len function)
-(define-extern cam-slave-get-flags function)
-(define-extern cam-slave-get-vector-with-offset function)
-(define-extern cam-slave-get-fov function)
-(define-extern cam-slave-get-interp-time function)
-(define-extern cam-slave-get-rot function)
-(define-extern cam-state-from-entity function)
-(define-extern parameter-ease-none function)
-(define-extern parameter-ease-clamp function)
-(define-extern parameter-ease-lerp-clamp function)
-(define-extern parameter-ease-sqrt-clamp function)
-(define-extern fourth-power function)
-(define-extern third-power function)
-(define-extern parameter-ease-sqr-clamp function)
-(define-extern cam-slave-go function)
-(define-extern cam-slave-init function)
-(define-extern cam-standard-event-handler function)
-(define-extern cam-curve-pos function)
-(define-extern cam-curve-setup function)
-(define-extern v-slrp2! function)
-(define-extern v-slrp3! function)
+(define-extern vector-into-frustum-nosmooth! (function matrix vector float vector))
+(define-extern slave-matrix-blend-2 (function matrix float vector matrix matrix))
+(define-extern mat-remove-z-rot (function matrix vector matrix))
+(define-extern parameter-ease-sin-clamp (function float float))
+(define-extern cam-slave-get-intro-step (function entity float))
+(define-extern cam-slave-get-float (function entity symbol float float))
+(define-extern cam-slave-init-vars (function none))
+(define-extern cam-calc-follow! (function cam-rotation-tracker vector symbol vector))
+(define-extern slave-set-rotation! (function cam-rotation-tracker vector float float symbol none))
+(define-extern camera-slave-debug (function object object object object object)) ;; passed to engine::method-15
+(define-extern camera-line-rel-len (function tracking-point vector float rgba none))
+(define-extern cam-slave-get-flags (function entity symbol uint128))
+(define-extern cam-slave-get-vector-with-offset (function entity-actor vector symbol symbol)) ;; TODO - invalid disable
+(define-extern cam-slave-get-fov (function entity float))
+(define-extern cam-slave-get-interp-time (function entity float))
+(define-extern cam-slave-get-rot (function entity-actor quaternion quaternion))
+(define-extern cam-state-from-entity (function entity state))
+(define-extern parameter-ease-none (function object object)) ;; stubbed and unused
+(define-extern parameter-ease-clamp (function float float)) ;; unused
+(define-extern parameter-ease-lerp-clamp (function float float)) ;; unused
+(define-extern parameter-ease-sqrt-clamp (function float float)) ;; unused
+(define-extern fourth-power (function float float)) ;; unused
+(define-extern third-power (function float float)) ;; unused
+(define-extern parameter-ease-sqr-clamp (function float float))
+(define-extern cam-slave-go (function camera-slave none))
+(define-extern cam-slave-init (function state entity none))
+(define-extern cam-standard-event-handler (function basic int basic event-message-block object none)) ;; TODO - first two args are not confirmed, last arg has a state at offset 16/20
+(define-extern cam-curve-pos (function vector vector curve symbol vector))
+(define-extern cam-curve-setup (function vector none))
+(define-extern v-slrp2! (function vector vector vector float vector float vector))
+(define-extern v-slrp3! (function vector vector vector vector float vector))
 
-;; - Unknowns
+;; - Symbols
 
-;;(define-extern *cam-res-string* object) ;; unknown type
-;;(define-extern cam-circular object) ;; unknown type
-;;(define-extern cam-standoff-read-entity object) ;; unknown type
-;;(define-extern cam-spline object) ;; unknown type
-;;(define-extern *camera-base-mode* object) ;; unknown type
-;;(define-extern cam-fixed-read-entity object) ;; unknown type
-
+(define-extern *cam-res-string* string)
+(define-extern cam-circular state)
+(define-extern cam-standoff-read-entity state)
+(define-extern cam-spline state)
+(define-extern *camera-base-mode* state)
+(define-extern cam-fixed-read-entity state)
 
 ;; ----------------------
 ;; File - cam-interface
@@ -17755,17 +17750,21 @@
 (define-extern setup-slave-for-hopefull function)
 (define-extern master-is-hopeful-better? function)
 (define-extern target-cam-pos function)
-(define-extern cam-master-init function)
+(define-extern cam-master-init (function none))
+
+;; - Symbols
+
+(define-extern cam-free-floating state)
+(define-extern cam-master-active state)
+(define-extern list-keeper-active state)
+(define-extern *CAMERA_MASTER-bank* camera-master-bank)
+
 
 ;; - Unknowns
 
-;;(define-extern cam-free-floating object) ;; unknown type
-;;(define-extern cam-master-active object) ;; unknown type
-;;(define-extern list-keeper-active object) ;; unknown type
 ;;(define-extern cam-fixed object) ;; unknown type
 ;;(define-extern cam-decel object) ;; unknown type
 ;;(define-extern cam-eye object) ;; unknown type
-;;(define-extern *CAMERA_MASTER-bank* object) ;; unknown type
 
 
 ;; ----------------------
@@ -17870,15 +17869,18 @@
 (define-extern cam-circular-code function)
 (define-extern cam-circular-position function)
 (define-extern cam-circular-position-into-max-angle function)
-(define-extern cam-standoff-calc-trans function)
+(define-extern cam-standoff-calc-trans (function cam-rotation-tracker vector symbol none)) ;; not confirmed
 (define-extern string-push-help function)
 (define-extern cam-draw-collide-cache function)
+
+;; - Symbols
+
+(define-extern cam-string state)
 
 ;; - Unknowns
 
 ;;(define-extern *CAM_BIKE-bank* object) ;; unknown type
 ;;(define-extern *CAM_STICK-bank* object) ;; unknown type
-;;(define-extern cam-string object) ;; unknown type
 ;;(define-extern *CAM_STRING-bank* object) ;; unknown type
 ;;(define-extern *CAM_BILLY-bank* object) ;; unknown type
 ;;(define-extern *CAM_EYE-bank* object) ;; unknown type
@@ -17955,14 +17957,17 @@
 
 ;; - Functions
 
-(define-extern cam-free-floating-move function)
-(define-extern cam-free-floating-input function)
+(define-extern cam-free-floating-move (function matrix vector vector int vector))
+(define-extern cam-free-floating-input (function vector vector symbol int vector))
+
+;; - Symbols
+
+(define-extern *CAM_FREE-bank* cam-free-bank)
 
 ;; - Unknowns
 
 ;;(define-extern *camera-orbit-info* object) ;; unknown type
 ;;(define-extern *CAM_ORBIT-bank* object) ;; unknown type
-;;(define-extern *CAM_FREE-bank* object) ;; unknown type
 ;;(define-extern *CAM_POINT_WATCH-bank* object) ;; unknown type
 ;;(define-extern cam-point-watch object) ;; unknown type
 ;;(define-extern cam-orbit object) ;; unknown type
@@ -17976,11 +17981,11 @@
 
 ;; - Functions
 
-(define-extern cam-combiner-init function)
+(define-extern cam-combiner-init (function none))
 
-;; - Unknowns
+;; - Symbols
 
-;;(define-extern cam-combiner-active object) ;; unknown type
+(define-extern cam-combiner-active state)
 
 
 ;; ----------------------
@@ -17991,20 +17996,20 @@
 
 ;; - Functions
 
-(define-extern move-camera-from-pad function)
-(define-extern update-view-planes function)
-(define-extern update-visible function)
-(define-extern set-point function)
-(define-extern plane-from-points function)
-(define-extern update-camera function)
+(define-extern move-camera-from-pad (function math-camera math-camera))
+(define-extern update-view-planes (function math-camera (inline-array plane) float float))
+(define-extern update-visible (function math-camera int uint uint symbol)) ;; second/third arg unused
+(define-extern set-point (function vector float float float float))
+(define-extern plane-from-points (function (inline-array plane) vector vector vector int float))
+(define-extern update-camera (function symbol))
 
-;; - Unknowns
+;; - Symbols
 
-;;(define-extern *start-timer* object) ;; unknown type
-;;(define-extern *timer-value* object) ;; unknown type
-;;(define-extern *start-pos* object) ;; unknown type
-;;(define-extern *save-camera-inv-rot* object) ;; unknown type
-;;(define-extern *update-leaf-when-outside-bsp* object) ;; unknown type
+(define-extern *start-timer* int)
+(define-extern *timer-value* int)
+(define-extern *start-pos* vector)
+(define-extern *save-camera-inv-rot* matrix)
+(define-extern *update-leaf-when-outside-bsp* symbol) ;; boolean
 
 
 ;; ----------------------
@@ -18200,7 +18205,7 @@
 (define-extern v-slrp! function)
 (define-extern interp-test-deg function)
 (define-extern camera-line-setup (function vector none))
-(define-extern camera-line-draw function)
+(define-extern camera-line-draw (function vector vector rgba none))
 (define-extern cam-layout-intersect-dist function)
 (define-extern clmf-button-test function)
 (define-extern clmf-bna function)
@@ -18378,9 +18383,9 @@
 
 ;; - Functions
 
-(define-extern cam-stop function)
-(define-extern reset-cameras function)
-(define-extern cam-start function)
+(define-extern cam-stop (function state))
+(define-extern reset-cameras (function none)) ;; defined in entity.gc
+(define-extern cam-start (function symbol none))
 
 
 ;; ----------------------

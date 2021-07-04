@@ -45,7 +45,7 @@
    (cameras             (array entity-camera)            :offset-assert 116)
    (nodes               (inline-array bsp-node)          :offset-assert 120)
    (level               level                            :offset-assert 124)
-   (unk-data-2          uint32                        5  :offset-assert 128)
+   (unk-data-2          uint16                        10 :offset-assert 128)
    (boxes               box8s-array                      :offset-assert 148)
    (unk-data-3          uint32                           :offset-assert 152)
    (ambients            drawable-inline-array-ambient    :offset-assert 156)

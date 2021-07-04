@@ -14,3 +14,8 @@
 (define-perm *camera-other-matrix* matrix (matrix-identity! (new 'global 'matrix)))
 (define-perm *camera-smush-control* smush-control (set-zero! (new 'global 'smush-control)))
 (define-perm *camera-other-root* vector (vector-reset! (new 'global 'vector)))
+
+
+;; TODO - actually defined in cam-states-dbg
+(define-extern cam-free-floating-move (function matrix vector vector int vector))
+(define-extern cam-free-floating-input (function vector vector symbol int vector))

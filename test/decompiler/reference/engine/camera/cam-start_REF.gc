@@ -1,10 +1,6 @@
 ;;-*-Lisp-*-
 (in-package goal)
 
-;; name: cam-start.gc
-;; name in dgo: cam-start
-;; dgos: GAME, ENGINE
-
 ;; definition for function cam-stop
 (defun cam-stop ()
   (kill-by-name 'camera-master *active-pool*)
@@ -72,3 +68,7 @@
 
 ;; failed to figure out what this is:
 (cam-start #f)
+
+
+
+
