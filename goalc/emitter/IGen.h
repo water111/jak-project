@@ -2436,13 +2436,34 @@ class IGen {
     return instr;
   }
 
-  static Instruction pextlw_swapped(Register dst, Register src0, Register src1) {
+  // Reminder - a word in MIPS = 32bits = a DWORD in x86
+  //     MIPS   ||   x86
+  // -----------------------
+  // byte       || byte
+  // halfword   || word
+  // word       || dword
+  // doubleword || quadword
+
+  // -- Unpack High Data Instructions
+  static Instruction pextub_swapped(Register dst, Register src0, Register src1) {
     assert(dst.is_xmm());
     assert(src0.is_xmm());
     assert(src1.is_xmm());
-    // VEX.128.66.0F.WIG 62/r VPUNPCKLDQ xmm1, xmm2, xmm3/m128
+    // VEX.128.66.0F.WIG 68/r VPUNPCKHBW xmm1,xmm2, xmm3/m128
     // reg, vex, r/m
-    Instruction instr(0x62);
+    Instruction instr(0x68);
+    instr.set_vex_modrm_and_rex(dst.hw_id(), src1.hw_id(), VEX3::LeadingBytes::P_0F, src0.hw_id(),
+                                false, VexPrefix::P_66);
+    return instr;
+  }
+
+  static Instruction pextuh_swapped(Register dst, Register src0, Register src1) {
+    assert(dst.is_xmm());
+    assert(src0.is_xmm());
+    assert(src1.is_xmm());
+    // VEX.128.66.0F.WIG 69/r VPUNPCKHWD xmm1,xmm2, xmm3/m128
+    // reg, vex, r/m
+    Instruction instr(0x69);
     instr.set_vex_modrm_and_rex(dst.hw_id(), src1.hw_id(), VEX3::LeadingBytes::P_0F, src0.hw_id(),
                                 false, VexPrefix::P_66);
     return instr;
@@ -2455,6 +2476,43 @@ class IGen {
     // VEX.128.66.0F.WIG 6A/r VPUNPCKHDQ xmm1, xmm2, xmm3/m128
     // reg, vex, r/m
     Instruction instr(0x6a);
+    instr.set_vex_modrm_and_rex(dst.hw_id(), src1.hw_id(), VEX3::LeadingBytes::P_0F, src0.hw_id(),
+                                false, VexPrefix::P_66);
+    return instr;
+  }
+
+  // -- Unpack Low Data Instructions
+  static Instruction pextlb_swapped(Register dst, Register src0, Register src1) {
+    assert(dst.is_xmm());
+    assert(src0.is_xmm());
+    assert(src1.is_xmm());
+    // VEX.128.66.0F.WIG 60/r VPUNPCKLBW xmm1,xmm2, xmm3/m128
+    // reg, vex, r/m
+    Instruction instr(0x60);
+    instr.set_vex_modrm_and_rex(dst.hw_id(), src1.hw_id(), VEX3::LeadingBytes::P_0F, src0.hw_id(),
+                                false, VexPrefix::P_66);
+    return instr;
+  }
+
+  static Instruction pextlh_swapped(Register dst, Register src0, Register src1) {
+    assert(dst.is_xmm());
+    assert(src0.is_xmm());
+    assert(src1.is_xmm());
+    // VEX.128.66.0F.WIG 61/r VPUNPCKLWD xmm1,xmm2, xmm3/m128
+    // reg, vex, r/m
+    Instruction instr(0x61);
+    instr.set_vex_modrm_and_rex(dst.hw_id(), src1.hw_id(), VEX3::LeadingBytes::P_0F, src0.hw_id(),
+                                false, VexPrefix::P_66);
+    return instr;
+  }
+
+  static Instruction pextlw_swapped(Register dst, Register src0, Register src1) {
+    assert(dst.is_xmm());
+    assert(src0.is_xmm());
+    assert(src1.is_xmm());
+    // VEX.128.66.0F.WIG 62/r VPUNPCKLDQ xmm1, xmm2, xmm3/m128
+    // reg, vex, r/m
+    Instruction instr(0x62);
     instr.set_vex_modrm_and_rex(dst.hw_id(), src1.hw_id(), VEX3::LeadingBytes::P_0F, src0.hw_id(),
                                 false, VexPrefix::P_66);
     return instr;

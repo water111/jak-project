@@ -1,0 +1,1283 @@
+;;-*-Lisp-*-
+(in-package goal)
+
+;; definition for function ocean-trans-camera-masks-bit?
+(defun ocean-trans-camera-masks-bit? ((arg0 uint) (arg1 uint))
+  (let ((v1-3 (- arg0 (* (-> *ocean-work* mid-minz) 4)))
+        (a0-4 (- arg1 (* (-> *ocean-work* mid-minx) 4)))
+        )
+   (cond
+    ((or
+      (< v1-3 0)
+      (>= v1-3 (the-as uint 16))
+      (< a0-4 0)
+      (>= a0-4 (the-as uint 16))
+      )
+     #f
+     )
+    (else
+     (let* ((a3-0 (shr v1-3 2))
+            (a2-3 (shr a0-4 2))
+            (a1-2 (logand v1-3 3))
+            (v1-4 (logand a0-4 3))
+            (a0-6 (+ (* a3-0 4) a2-3))
+            )
+      (nonzero?
+       (logand
+        (-> *ocean-work* trans-camera-masks 0 mask (+ a1-2 (* a0-6 8)))
+        (the-as uint (ash 1 v1-4))
+        )
+       )
+      )
+     )
+    )
+   )
+  )
+
+;; definition for function ocean-trans-mask-ptrs-bit?
+(defun ocean-trans-mask-ptrs-bit? ((arg0 int) (arg1 int))
+  (let ((v1-3 (- arg0 (the-as int (* (-> *ocean-work* mid-minz) 4))))
+        (a0-4 (- arg1 (the-as int (* (-> *ocean-work* mid-minx) 4))))
+        )
+   (cond
+    ((or
+      (< (the-as uint v1-3) 0)
+      (>= (the-as uint v1-3) (the-as uint 16))
+      (< (the-as uint a0-4) 0)
+      (>= (the-as uint a0-4) (the-as uint 16))
+      )
+     #f
+     )
+    (else
+     (let* ((a3-0 (shr v1-3 2))
+            (a2-3 (shr a0-4 2))
+            (a1-2 (logand v1-3 3))
+            (v1-4 (logand a0-4 3))
+            (a0-11
+             (->
+              *ocean-work*
+              trans-mask-ptrs
+              (+ (* (+ (* a3-0 4) a2-3) 4) a1-2)
+              )
+             )
+            )
+      (if a0-11
+       (nonzero? (logand (-> a0-11 1) (ash 1 v1-4)))
+       #f
+       )
+      )
+     )
+    )
+   )
+  )
+
+;; definition for function ocean-trans-mask-ptrs-set!
+(defun ocean-trans-mask-ptrs-set! ((arg0 int) (arg1 int))
+  (let ((v1-3 (- arg0 (the-as int (* (-> *ocean-work* mid-minz) 4))))
+        (a0-4 (- arg1 (the-as int (* (-> *ocean-work* mid-minx) 4))))
+        )
+   (cond
+    ((or
+      (< (the-as uint v1-3) 0)
+      (>= (the-as uint v1-3) (the-as uint 16))
+      (< (the-as uint a0-4) 0)
+      (>= (the-as uint a0-4) (the-as uint 16))
+      )
+     #f
+     )
+    (else
+     (let* ((a2-3 (shr v1-3 2))
+            (a1-2 (shr a0-4 2))
+            (v1-4 (logand v1-3 3))
+            (a0-5 (logand a0-4 3))
+            (a3-6
+             (->
+              *ocean-work*
+              trans-mask-ptrs
+              (+ (* (+ (* a2-3 4) a1-2) 4) v1-4)
+              )
+             )
+            )
+      (cond
+       (a3-6
+        (cond
+         ((nonzero? (logand (-> a3-6 1) (ash 1 a0-5)))
+          #f
+          )
+         (else
+          (let ((a1-6 (-> *ocean-work* trans-temp-masks (+ (* a2-3 4) a1-2))))
+           (set!
+            (-> a1-6 mask v1-4)
+            (logior (-> a1-6 mask v1-4) (the-as uint (ash 1 a0-5)))
+            )
+           )
+          #t
+          )
+         )
+        )
+       (else
+        #f
+        )
+       )
+      )
+     )
+    )
+   )
+  )
+
+;; definition for function ocean-trans-add-upload-table
+;; WARN: Function may read a register that is not set: f31
+;; Used lq/sq
+(defun
+  ocean-trans-add-upload-table
+  ((arg0 dma-buffer)
+   (arg1 int)
+   (arg2 int)
+   (arg3 (pointer float))
+   (arg4 int)
+   (arg5 symbol)
+   )
+  (local-vars
+   (r0-0 none)
+   (r0-1 int)
+   (r0-2 int)
+   (r0-3 int)
+   (r0-4 int)
+   (r0-5 int)
+   (v1-12 (inline-array vector))
+   (v1-14 float)
+   (a0-23 int)
+   (a0-24 int)
+   (a1-15 int)
+   (a1-16 int)
+   (a1-17 int)
+   (a2-15 int)
+   (a2-16 int)
+   (a3-10 int)
+   (f31-0 none)
+   )
+  (rlet ((acc :class vf)
+         (vf1 :class vf)
+         (vf10 :class vf)
+         (vf11 :class vf)
+         (vf12 :class vf)
+         (vf2 :class vf)
+         (vf3 :class vf)
+         (vf4 :class vf)
+         (vf5 :class vf)
+         (vf6 :class vf)
+         (vf7 :class vf)
+         (vf8 :class vf)
+         (vf9 :class vf)
+         )
+   (when (ocean-trans-mask-ptrs-set! arg1 arg2)
+    (let ((a1-2 (new-stack-vector0)))
+     (let ((v1-1 (-> *ocean-map* start-corner)))
+      (set! (-> a1-2 x) (+ (-> v1-1 x) (* 98304.0 (the float arg2))))
+      (set! (-> a1-2 y) (-> v1-1 y))
+      (set! (-> a1-2 z) (+ (-> v1-1 z) (* 98304.0 (the float arg1))))
+      )
+     (set! (-> a1-2 w) 1.0)
+     )
+    (ocean-mid-add-matrices arg0)
+    (let* ((a1-3 9)
+           (v1-3 arg0)
+           (a0-3 (the-as object (-> v1-3 base)))
+           )
+     (set!
+      (-> (the-as dma-packet a0-3) dma)
+      (new 'static 'dma-tag :id (dma-tag-id cnt) :qwc a1-3)
+      )
+     (set!
+      (-> (the-as dma-packet a0-3) vif0)
+      (new 'static 'vif-tag :imm #x404 :cmd (vif-cmd stcycl))
+      )
+     (set!
+      (-> (the-as dma-packet a0-3) vif1)
+      (new 'static 'vif-tag :imm #x8008 :cmd (vif-cmd unpack-v4-32) :num a1-3)
+      )
+     (set! (-> v1-3 base) (&+ (the-as pointer a0-3) 16))
+     )
+    (let ((v1-4 (the-as vector4w (-> arg0 base))))
+     (set! (-> v1-4 x) arg4)
+     (set! (-> v1-4 y) 0)
+     (set! (-> v1-4 z) 0)
+     (set! (-> v1-4 w) 0)
+     )
+    (set! (-> arg0 base) (&+ (-> arg0 base) 16))
+    (let* ((a0-5 (logand arg1 3))
+           (v1-7 (logand arg2 3))
+           (v1-8 (+ (* 5 a0-5) v1-7))
+           )
+     (let ((a0-8 (+ (* v1-8 16) (the-as int *ocean-trans-corner-table*))))
+      (.lvf vf5 (&-> (the-as (pointer int128) a0-8)))
+      )
+     (let
+      ((a0-11 (+ (* (+ v1-8 1) 16) (the-as int *ocean-trans-corner-table*))))
+      (.lvf vf6 (&-> (the-as (pointer int128) a0-11)))
+      )
+     (let
+      ((a0-14 (+ (* (+ v1-8 5) 16) (the-as int *ocean-trans-corner-table*))))
+      (.lvf vf7 (&-> (the-as (pointer int128) a0-14)))
+      )
+     (let
+      ((v1-11 (+ (* (+ v1-8 6) 16) (the-as int *ocean-trans-corner-table*))))
+      (.lvf vf8 (&-> (the-as (pointer int128) v1-11)))
+      )
+     )
+    (.mov v1-12 vf8)
+    (let ((v1-13 (the-as (inline-array vector) (-> arg0 base))))
+     (let ((a0-16 (/ arg1 4))
+           (a1-11 (/ arg2 4))
+           )
+      (.lvf vf1 (&-> *ocean-trans-st-table* 0 quad))
+      (.lvf vf2 (&-> *ocean-trans-st-table* 1 quad))
+      (.lvf vf3 (&-> *ocean-trans-st-table* 2 quad))
+      (.lvf vf4 (&-> *ocean-trans-st-table* 3 quad))
+      (.mul.x.vf acc vf1 vf5)
+      (nop!)
+      (.add.mul.y.vf acc vf2 vf5 acc)
+      (nop!)
+      (.add.mul.z.vf acc vf3 vf5 acc)
+      (nop!)
+      (.add.mul.w.vf vf9 vf4 vf5 acc)
+      (nop!)
+      (.mul.x.vf acc vf1 vf6)
+      (nop!)
+      (.add.mul.y.vf acc vf2 vf6 acc)
+      (nop!)
+      (.add.mul.z.vf acc vf3 vf6 acc)
+      (nop!)
+      (.add.mul.w.vf vf10 vf4 vf6 acc)
+      (.svf (&-> v1-13 0 quad) vf9)
+      (.mul.x.vf acc vf1 vf7)
+      (nop!)
+      (.add.mul.y.vf acc vf2 vf7 acc)
+      (nop!)
+      (.add.mul.z.vf acc vf3 vf7 acc)
+      (nop!)
+      (.add.mul.w.vf vf11 vf4 vf7 acc)
+      (.svf (&-> v1-13 1 quad) vf10)
+      (.mul.x.vf acc vf1 vf8)
+      (nop!)
+      (.add.mul.y.vf acc vf2 vf8 acc)
+      (nop!)
+      (.add.mul.z.vf acc vf3 vf8 acc)
+      (nop!)
+      (.add.mul.w.vf vf12 vf4 vf8 acc)
+      (.svf (&-> v1-13 2 quad) vf11)
+      (nop!)
+      (.svf (&-> v1-13 3 quad) vf12)
+      (let ((a2-14 (-> *ocean-map* ocean-colors colors (+ (* 52 a0-16) a1-11)))
+            (a3-9
+             (-> *ocean-map* ocean-colors colors (+ (+ a1-11 1) (* 52 a0-16)))
+             )
+            (t0-10
+             (-> *ocean-map* ocean-colors colors (+ (* 52 (+ a0-16 1)) a1-11))
+             )
+            (a0-22
+             (->
+              *ocean-map*
+              ocean-colors
+              colors
+              (+ (+ a1-11 1) (* 52 (+ a0-16 1)))
+              )
+             )
+            )
+       (.pextlb a1-15 r0-0 a2-14)
+       (.mov r0-1 f31-0)
+       (.pextlb a2-15 r0-1 a3-9)
+       (.mov r0-2 f31-0)
+       (.pextlb a3-10 r0-2 t0-10)
+       (.mov r0-3 f31-0)
+       (.pextlb a0-23 r0-3 a0-22)
+       )
+      )
+     (.mov r0-4 f31-0)
+     (.pextlh a1-16 r0-4 a1-15)
+     (.mov r0-5 f31-0)
+     (.pextlh a2-16 r0-5 a2-15)
+     (.mov vf1 a1-16)
+     (.pextlh a1-17 r0-5 a3-10)
+     (.mov vf2 a2-16)
+     (.pextlh a0-24 r0-5 a0-23)
+     (.mov vf3 a1-17)
+     (nop!)
+     (.mov vf4 a0-24)
+     (.itof.vf vf1 vf1)
+     (nop!)
+     (.itof.vf vf2 vf2)
+     (nop!)
+     (.itof.vf vf3 vf3)
+     (nop!)
+     (.itof.vf vf4 vf4)
+     (nop!)
+     (.mul.x.vf acc vf1 vf5)
+     (nop!)
+     (.add.mul.y.vf acc vf2 vf5 acc)
+     (nop!)
+     (.add.mul.z.vf acc vf3 vf5 acc)
+     (nop!)
+     (.add.mul.w.vf vf9 vf4 vf5 acc)
+     (nop!)
+     (.mul.x.vf acc vf1 vf6)
+     (nop!)
+     (.add.mul.y.vf acc vf2 vf6 acc)
+     (nop!)
+     (.add.mul.z.vf acc vf3 vf6 acc)
+     (nop!)
+     (.add.mul.w.vf vf10 vf4 vf6 acc)
+     (.svf (&-> v1-13 4 quad) vf9)
+     (.mul.x.vf acc vf1 vf7)
+     (nop!)
+     (.add.mul.y.vf acc vf2 vf7 acc)
+     (nop!)
+     (.add.mul.z.vf acc vf3 vf7 acc)
+     (nop!)
+     (.add.mul.w.vf vf11 vf4 vf7 acc)
+     (.svf (&-> v1-13 5 quad) vf10)
+     (.mul.x.vf acc vf1 vf8)
+     (nop!)
+     (.add.mul.y.vf acc vf2 vf8 acc)
+     (nop!)
+     (.add.mul.z.vf acc vf3 vf8 acc)
+     (nop!)
+     (.add.mul.w.vf vf12 vf4 vf8 acc)
+     (.svf (&-> v1-13 6 quad) vf11)
+     (nop!)
+     (.svf (&-> v1-13 7 quad) vf12)
+     )
+    (.mov v1-14 vf12)
+    (set! (-> arg0 base) (&+ (-> arg0 base) 128))
+    (let* ((v1-17 arg0)
+           (a0-25 (the-as object (-> v1-17 base)))
+           )
+     (set!
+      (-> (the-as dma-packet a0-25) dma)
+      (new 'static 'dma-tag
+       :id (dma-tag-id ref)
+       :addr (the-as int arg3)
+       :qwc arg4
+       )
+      )
+     (set!
+      (-> (the-as dma-packet a0-25) vif0)
+      (new 'static 'vif-tag :imm #x404 :cmd (vif-cmd stcycl))
+      )
+     (set!
+      (-> (the-as dma-packet a0-25) vif1)
+      (new 'static 'vif-tag :imm #x8011 :cmd (vif-cmd unpack-v4-32) :num arg4)
+      )
+     (set! (-> v1-17 base) (&+ (the-as pointer a0-25) 16))
+     )
+    (if arg5
+     (ocean-mid-add-call (the-as ocean-wave-info arg0) 275)
+     (ocean-mid-add-call (the-as ocean-wave-info arg0) 107)
+     )
+    )
+   (none)
+   )
+  )
+
+;; definition for function ocean-trans-add-upload-strip
+;; WARN: Function may read a register that is not set: f31
+;; Used lq/sq
+(defun
+  ocean-trans-add-upload-strip
+  ((arg0 dma-buffer)
+   (arg1 uint)
+   (arg2 uint)
+   (arg3 uint)
+   (arg4 uint)
+   (arg5 uint)
+   )
+  (local-vars
+   (r0-0 none)
+   (r0-1 int)
+   (r0-2 int)
+   (r0-3 int)
+   (r0-4 int)
+   (r0-5 int)
+   (v1-8 float)
+   (a0-23 int)
+   (a0-24 int)
+   (a0-25 int)
+   (a1-14 int)
+   (a1-15 int)
+   (a1-16 int)
+   (a2-15 int)
+   (a3-11 int)
+   (f31-0 none)
+   )
+  (rlet ((vf1 :class vf)
+         (vf2 :class vf)
+         (vf3 :class vf)
+         (vf4 :class vf)
+         )
+   (let ((a1-1 (new-stack-vector0)))
+    (let ((v1-1 (-> *ocean-map* start-corner)))
+     (set! (-> a1-1 x) (+ (-> v1-1 x) (* 393216.0 (the float arg2))))
+     (set! (-> a1-1 y) (-> v1-1 y))
+     (set! (-> a1-1 z) (+ (-> v1-1 z) (* 393216.0 (the float arg1))))
+     )
+    (set! (-> a1-1 w) 1.0)
+    )
+   (ocean-mid-add-matrices arg0)
+   (let* ((a1-2 9)
+          (v1-3 arg0)
+          (a0-2 (the-as object (-> v1-3 base)))
+          )
+    (set!
+     (-> (the-as dma-packet a0-2) dma)
+     (new 'static 'dma-tag :id (dma-tag-id cnt) :qwc a1-2)
+     )
+    (set!
+     (-> (the-as dma-packet a0-2) vif0)
+     (new 'static 'vif-tag :imm #x404 :cmd (vif-cmd stcycl))
+     )
+    (set!
+     (-> (the-as dma-packet a0-2) vif1)
+     (new 'static 'vif-tag :imm #x8008 :cmd (vif-cmd unpack-v4-32) :num a1-2)
+     )
+    (set! (-> v1-3 base) (&+ (the-as pointer a0-2) 16))
+    )
+   (let ((v1-4 (the-as object (-> arg0 base))))
+    (set!
+     (-> *ocean-work* trans-mask-ptrs (+ (* arg4 4) arg5))
+     (the-as (pointer int32) v1-4)
+     )
+    (set! (-> (the-as vector4w v1-4) x) 10)
+    (set! (-> (the-as vector4w v1-4) y) (the-as int arg3))
+    (set! (-> (the-as vector4w v1-4) z) 0)
+    (set! (-> (the-as vector4w v1-4) w) 0)
+    )
+   (set! (-> arg0 base) (&+ (-> arg0 base) 16))
+   (let ((v1-7 (the-as (inline-array vector) (-> arg0 base))))
+    (set! (-> v1-7 0 quad) (-> *ocean-trans-st-table* 0 quad))
+    (set! (-> v1-7 1 quad) (-> *ocean-trans-st-table* 1 quad))
+    (set! (-> v1-7 2 quad) (-> *ocean-trans-st-table* 2 quad))
+    (set! (-> v1-7 3 quad) (-> *ocean-trans-st-table* 3 quad))
+    (let
+     ((a0-22
+       (->
+        *ocean-map*
+        ocean-colors
+        colors
+        (+ (* 52 (the-as int arg1)) (the-as int arg2))
+        )
+       )
+      (a1-13
+       (->
+        *ocean-map*
+        ocean-colors
+        colors
+        (+ (+ arg2 1) (the-as uint (* 52 (the-as int arg1))))
+        )
+       )
+      (a2-14
+       (->
+        *ocean-map*
+        ocean-colors
+        colors
+        (+ (* 52 (the-as int (+ arg1 1))) (the-as int arg2))
+        )
+       )
+      (a3-10
+       (->
+        *ocean-map*
+        ocean-colors
+        colors
+        (+ (+ arg2 1) (the-as uint (* 52 (the-as int (+ arg1 1)))))
+        )
+       )
+      )
+     (.pextlb a0-23 r0-0 a0-22)
+     (.mov r0-1 f31-0)
+     (.pextlb a1-14 r0-1 a1-13)
+     (.mov r0-2 f31-0)
+     (.pextlb a2-15 r0-2 a2-14)
+     (.mov r0-3 f31-0)
+     (.pextlb a3-11 r0-3 a3-10)
+     )
+    (.mov r0-4 f31-0)
+    (.pextlh a0-24 r0-4 a0-23)
+    (.mov r0-5 f31-0)
+    (.pextlh a1-15 r0-5 a1-14)
+    (.mov vf1 a0-24)
+    (.pextlh a0-25 r0-5 a2-15)
+    (.mov vf2 a1-15)
+    (.pextlh a1-16 r0-5 a3-11)
+    (.mov vf3 a0-25)
+    (nop!)
+    (.mov vf4 a1-16)
+    (.itof.vf vf1 vf1)
+    (nop!)
+    (.itof.vf vf2 vf2)
+    (nop!)
+    (.itof.vf vf3 vf3)
+    (nop!)
+    (.itof.vf vf4 vf4)
+    (nop!)
+    (nop!)
+    (.svf (&-> v1-7 4 quad) vf1)
+    (nop!)
+    (.svf (&-> v1-7 5 quad) vf2)
+    (nop!)
+    (.svf (&-> v1-7 6 quad) vf3)
+    (nop!)
+    (.svf (&-> v1-7 7 quad) vf4)
+    )
+   (.mov v1-8 vf4)
+   (set! (-> arg0 base) (&+ (-> arg0 base) 128))
+   (let* ((a1-17 10)
+          (v1-11 arg0)
+          (a0-26 (the-as object (-> v1-11 base)))
+          )
+    (set!
+     (-> (the-as dma-packet a0-26) dma)
+     (new 'static 'dma-tag
+      :id (dma-tag-id ref)
+      :addr (the-as int (+ (+ (* 160 (the-as int arg5)) 0) (the-as int *ocean-trans-strip-array*)))
+      :qwc a1-17
+      )
+     )
+    (set!
+     (-> (the-as dma-packet a0-26) vif0)
+     (new 'static 'vif-tag :imm #x404 :cmd (vif-cmd stcycl))
+     )
+    (set!
+     (-> (the-as dma-packet a0-26) vif1)
+     (new 'static 'vif-tag :imm #x8011 :cmd (vif-cmd unpack-v4-32) :num a1-17)
+     )
+    (set! (-> v1-11 base) (&+ (the-as pointer a0-26) 16))
+    )
+   (ocean-mid-add-call (the-as ocean-wave-info arg0) 107)
+   (none)
+   )
+  )
+
+;; definition for function ocean-transition-check
+;; Used lq/sq
+(defun
+  ocean-transition-check
+  ((arg0 ocean-trans-mask) (arg1 int) (arg2 int) (arg3 vector))
+  (local-vars
+   (v0-0 symbol)
+   (v1-10 float)
+   (a3-2 float)
+   (a3-6 float)
+   (a3-10 float)
+   )
+  (rlet ((vf1 :class vf)
+         (vf2 :class vf)
+         (vf3 :class vf)
+         )
+   (let ((v1-0 (new-stack-vector0))
+         (t0-1 (-> *math-camera* trans))
+         )
+    1.0
+    (set! (-> v1-0 x) (+ (-> arg3 x) (* 98304.0 (the float arg1))))
+    (set! (-> v1-0 y) (-> arg3 y))
+    (set! (-> v1-0 z) (+ (-> arg3 z) (* 98304.0 (the float arg2))))
+    (let ((a3-1 v1-0)
+          (t1-0 t0-1)
+          )
+     (.lvf vf2 (&-> a3-1 quad))
+     (.lvf vf3 (&-> t1-0 quad))
+     )
+    (.sub.vf vf1 vf3 vf2)
+    (.mul.vf vf1 vf1 vf1)
+    (.add.y.vf vf1 vf1 vf1 :mask #b1)
+    (.add.z.vf vf1 vf1 vf1 :mask #b1)
+    (.mov a3-2 vf1)
+    (when (< a3-2 19327350000.0)
+     (set!
+      (-> arg0 mask arg2)
+      (logior (-> arg0 mask arg2) (the-as uint (ash 1 arg1)))
+      )
+     (return #f)
+     )
+    (set! (-> v1-0 x) (+ 98304.0 (-> v1-0 x)))
+    (let ((a3-5 v1-0)
+          (t1-1 t0-1)
+          )
+     (.lvf vf2 (&-> a3-5 quad))
+     (.lvf vf3 (&-> t1-1 quad))
+     )
+    (.sub.vf vf1 vf3 vf2)
+    (.mul.vf vf1 vf1 vf1)
+    (.add.y.vf vf1 vf1 vf1 :mask #b1)
+    (.add.z.vf vf1 vf1 vf1 :mask #b1)
+    (.mov a3-6 vf1)
+    (when (< a3-6 19327350000.0)
+     (set!
+      (-> arg0 mask arg2)
+      (logior (-> arg0 mask arg2) (the-as uint (ash 1 arg1)))
+      )
+     (return #f)
+     )
+    (set! (-> v1-0 z) (+ 98304.0 (-> v1-0 z)))
+    (let ((a3-9 v1-0)
+          (t1-2 t0-1)
+          )
+     (.lvf vf2 (&-> a3-9 quad))
+     (.lvf vf3 (&-> t1-2 quad))
+     )
+    (.sub.vf vf1 vf3 vf2)
+    (.mul.vf vf1 vf1 vf1)
+    (.add.y.vf vf1 vf1 vf1 :mask #b1)
+    (.add.z.vf vf1 vf1 vf1 :mask #b1)
+    (.mov a3-10 vf1)
+    (when (< a3-10 19327350000.0)
+     (set!
+      (-> arg0 mask arg2)
+      (logior (-> arg0 mask arg2) (the-as uint (ash 1 arg1)))
+      )
+     (return #f)
+     )
+    (set! (-> v1-0 x) (+ -98304.0 (-> v1-0 x)))
+    (.lvf vf2 (&-> v1-0 quad))
+    (.lvf vf3 (&-> t0-1 quad))
+    )
+   (.sub.vf vf1 vf3 vf2)
+   (.mul.vf vf1 vf1 vf1)
+   (.add.y.vf vf1 vf1 vf1 :mask #b1)
+   (.add.z.vf vf1 vf1 vf1 :mask #b1)
+   (.mov v1-10 vf1)
+   (when (< v1-10 19327350000.0)
+    (set!
+     (-> arg0 mask arg2)
+     (logior (-> arg0 mask arg2) (the-as uint (ash 1 arg1)))
+     )
+    (return #f)
+    v0-0
+    )
+   )
+  )
+
+;; definition for function ocean-make-trans-camera-masks
+;; Used lq/sq
+(defun
+  ocean-make-trans-camera-masks
+  ((arg0 uint) (arg1 uint) (arg2 uint) (arg3 uint))
+  (local-vars
+   (sv-48 ocean-trans-mask)
+   (sv-52 vector)
+   (sv-56 vector)
+   (sv-60 vector)
+   )
+  (set! sv-48 (-> *ocean-work* trans-camera-masks (+ (* arg2 4) arg3)))
+  (set! sv-52 (-> *math-camera* trans))
+  (set! sv-56 (new-stack-vector0))
+  (set! sv-60 (new-stack-vector0))
+  (set!
+   (-> sv-56 x)
+   (+ (-> *ocean-map* start-corner x) (* 393216.0 (the float arg1)))
+   )
+  (set! (-> sv-56 y) (-> *ocean-map* start-corner y))
+  (set!
+   (-> sv-56 z)
+   (+ (-> *ocean-map* start-corner z) (* 393216.0 (the float arg0)))
+   )
+  (set! (-> sv-56 w) 1.0)
+  (dotimes (gp-0 4)
+   (dotimes (s5-0 4)
+    (set!
+     (-> sv-60 x)
+     (- (+ (-> sv-56 x) (* 98304.0 (the float s5-0))) (-> sv-52 x))
+     )
+    (set! (-> sv-60 y) (- (-> sv-56 y) (-> sv-52 y)))
+    (set!
+     (-> sv-60 z)
+     (- (+ (-> sv-56 z) (* 98304.0 (the float gp-0))) (-> sv-52 z))
+     )
+    (ocean-transition-check sv-48 s5-0 gp-0 sv-56)
+    )
+   )
+  #f
+  )
+
+;; definition for function ocean-trans-add-upload
+(defun ocean-trans-add-upload ((arg0 int) (arg1 int) (arg2 int))
+  (when (not (ocean-trans-mask-ptrs-bit? arg1 arg2))
+   (let
+    ((s1-0
+      (ocean-trans-camera-masks-bit?
+       (the-as uint (+ arg1 -1))
+       (the-as uint arg2)
+       )
+      )
+     (s2-0
+      (ocean-trans-camera-masks-bit?
+       (the-as uint (+ arg1 1))
+       (the-as uint arg2)
+       )
+      )
+     (s3-0
+      (ocean-trans-camera-masks-bit?
+       (the-as uint arg1)
+       (the-as uint (+ arg2 -1))
+       )
+      )
+     (a0-6
+      (ocean-trans-camera-masks-bit?
+       (the-as uint arg1)
+       (the-as uint (+ arg2 1))
+       )
+      )
+     (v1-0 0)
+     )
+    (if s1-0
+     (+! v1-0 1)
+     )
+    (if s2-0
+     (+! v1-0 2)
+     )
+    (if s3-0
+     (+! v1-0 4)
+     )
+    (if a0-6
+     (+! v1-0 8)
+     )
+    (cond
+     ((= v1-0 1)
+      (if (not (ocean-trans-mask-ptrs-bit? (+ arg1 -1) arg2))
+       (ocean-trans-add-upload-table
+        (the-as dma-buffer arg0)
+        arg1
+        arg2
+        *ocean-trans-up-table*
+        11
+        #t
+        )
+       )
+      )
+     ((= v1-0 2)
+      (if (not (ocean-trans-mask-ptrs-bit? (+ arg1 1) arg2))
+       (ocean-trans-add-upload-table
+        (the-as dma-buffer arg0)
+        arg1
+        arg2
+        *ocean-trans-down-table*
+        11
+        #t
+        )
+       )
+      )
+     ((= v1-0 4)
+      (if (not (ocean-trans-mask-ptrs-bit? arg1 (+ arg2 -1)))
+       (ocean-trans-add-upload-table
+        (the-as dma-buffer arg0)
+        arg1
+        arg2
+        *ocean-trans-left-table*
+        11
+        #t
+        )
+       )
+      )
+     ((= v1-0 5)
+      (let ((s3-1 (ocean-trans-mask-ptrs-bit? (+ arg1 -1) arg2))
+            (v1-1 (ocean-trans-mask-ptrs-bit? arg1 (+ arg2 -1)))
+            )
+       (cond
+        ((and s3-1 v1-1)
+         )
+        (s3-1
+         (ocean-trans-add-upload-table
+          (the-as dma-buffer arg0)
+          arg1
+          arg2
+          *ocean-trans-left-table*
+          11
+          #t
+          )
+         )
+        (v1-1
+         (ocean-trans-add-upload-table
+          (the-as dma-buffer arg0)
+          arg1
+          arg2
+          *ocean-trans-up-table*
+          11
+          #t
+          )
+         )
+        (else
+         (ocean-trans-add-upload-table
+          (the-as dma-buffer arg0)
+          arg1
+          arg2
+          *ocean-trans-up-left-table*
+          18
+          #f
+          )
+         )
+        )
+       )
+      )
+     ((= v1-0 6)
+      (let ((s3-2 (ocean-trans-mask-ptrs-bit? (+ arg1 1) arg2))
+            (v1-2 (ocean-trans-mask-ptrs-bit? arg1 (+ arg2 -1)))
+            )
+       (cond
+        ((and s3-2 v1-2)
+         )
+        (s3-2
+         (ocean-trans-add-upload-table
+          (the-as dma-buffer arg0)
+          arg1
+          arg2
+          *ocean-trans-left-table*
+          11
+          #t
+          )
+         )
+        (v1-2
+         (ocean-trans-add-upload-table
+          (the-as dma-buffer arg0)
+          arg1
+          arg2
+          *ocean-trans-down-table*
+          11
+          #t
+          )
+         )
+        (else
+         (ocean-trans-add-upload-table
+          (the-as dma-buffer arg0)
+          arg1
+          arg2
+          *ocean-trans-down-left-table*
+          18
+          #t
+          )
+         )
+        )
+       )
+      )
+     ((= v1-0 8)
+      (if (not (ocean-trans-mask-ptrs-bit? arg1 (+ arg2 1)))
+       (ocean-trans-add-upload-table
+        (the-as dma-buffer arg0)
+        arg1
+        arg2
+        *ocean-trans-right-table*
+        11
+        #t
+        )
+       )
+      )
+     ((= v1-0 9)
+      (let ((s3-3 (ocean-trans-mask-ptrs-bit? (+ arg1 -1) arg2))
+            (v1-3 (ocean-trans-mask-ptrs-bit? arg1 (+ arg2 1)))
+            )
+       (cond
+        ((and s3-3 v1-3)
+         )
+        (s3-3
+         (ocean-trans-add-upload-table
+          (the-as dma-buffer arg0)
+          arg1
+          arg2
+          *ocean-trans-right-table*
+          11
+          #t
+          )
+         )
+        (v1-3
+         (ocean-trans-add-upload-table
+          (the-as dma-buffer arg0)
+          arg1
+          arg2
+          *ocean-trans-up-table*
+          11
+          #t
+          )
+         )
+        (else
+         (ocean-trans-add-upload-table
+          (the-as dma-buffer arg0)
+          arg1
+          arg2
+          *ocean-trans-up-right-table*
+          18
+          #t
+          )
+         )
+        )
+       )
+      )
+     ((= v1-0 10)
+      (let ((s3-4 (ocean-trans-mask-ptrs-bit? (+ arg1 1) arg2))
+            (v1-4 (ocean-trans-mask-ptrs-bit? arg1 (+ arg2 1)))
+            )
+       (cond
+        ((and s3-4 v1-4)
+         )
+        (s3-4
+         (ocean-trans-add-upload-table
+          (the-as dma-buffer arg0)
+          arg1
+          arg2
+          *ocean-trans-right-table*
+          11
+          #t
+          )
+         )
+        (v1-4
+         (ocean-trans-add-upload-table
+          (the-as dma-buffer arg0)
+          arg1
+          arg2
+          *ocean-trans-down-table*
+          11
+          #t
+          )
+         )
+        (else
+         (ocean-trans-add-upload-table
+          (the-as dma-buffer arg0)
+          arg1
+          arg2
+          *ocean-trans-down-right-table*
+          18
+          #f
+          )
+         )
+        )
+       )
+      )
+     )
+    )
+   )
+  (none)
+  )
+
+;; definition for function draw-ocean-transition-seams
+(defun draw-ocean-transition-seams ((arg0 dma-buffer))
+  (local-vars
+   (sv-32 uint)
+   (sv-33 uint)
+   (sv-34 uint)
+   (sv-35 uint)
+   (sv-36 sphere)
+   )
+  (set! sv-32 (-> *ocean-work* near-minx))
+  (set! sv-33 (-> *ocean-work* near-maxx))
+  (set! sv-34 (-> *ocean-work* near-minz))
+  (set! sv-35 (-> *ocean-work* near-maxz))
+  (set! sv-36 (new 'stack 'sphere))
+  (set! (-> sv-36 y) (-> *ocean-map* start-corner y))
+  (set! (-> sv-36 w) 69511.42)
+  (when (and (< sv-32 sv-33) (< sv-34 sv-35))
+   (let ((s5-0 sv-34)
+         (s4-0 sv-35)
+         )
+    (while (>= s4-0 s5-0)
+     (let ((s3-0 sv-32)
+           (s2-0 sv-33)
+           )
+      (while (>= s2-0 s3-0)
+       (set!
+        (-> sv-36 x)
+        (+
+         (+ 49152.0 (* 98304.0 (the float s3-0)))
+         (-> *ocean-map* start-corner x)
+         )
+        )
+       (set!
+        (-> sv-36 z)
+        (+
+         (+ 49152.0 (* 98304.0 (the float s5-0)))
+         (-> *ocean-map* start-corner z)
+         )
+        )
+       (when (sphere-cull sv-36)
+        (if (not (ocean-trans-camera-masks-bit? s5-0 s3-0))
+         (ocean-trans-add-upload
+          (the-as int arg0)
+          (the-as int s5-0)
+          (the-as int s3-0)
+          )
+         )
+        )
+       (+! s3-0 1)
+       )
+      )
+     (+! s5-0 1)
+     )
+    )
+   )
+  (dotimes (v1-27 16)
+   (when (nonzero? (-> *ocean-work* trans-camera-masks v1-27 word))
+    (dotimes (a0-12 4)
+     (let ((a1-8 (-> *ocean-work* trans-mask-ptrs (+ (* v1-27 4) a0-12))))
+      (if a1-8
+       (set!
+        (-> a1-8 1)
+        (logior
+         (-> a1-8 1)
+         (the-as
+          int
+          (-> *ocean-work* trans-temp-masks 0 mask (+ a0-12 (* v1-27 8)))
+          )
+         )
+        )
+       )
+      )
+     )
+    )
+   )
+  #f
+  )
+
+;; definition for function ocean-trans-add-constants
+(defun ocean-trans-add-constants ((arg0 dma-buffer))
+  (let* ((a2-0 4)
+         (v1-0 arg0)
+         (a1-0 (the-as object (-> v1-0 base)))
+         )
+   (set!
+    (-> (the-as dma-packet a1-0) dma)
+    (new 'static 'dma-tag :id (dma-tag-id cnt) :qwc a2-0)
+    )
+   (set!
+    (-> (the-as dma-packet a1-0) vif0)
+    (new 'static 'vif-tag :imm #x404 :cmd (vif-cmd stcycl))
+    )
+   (set!
+    (-> (the-as dma-packet a1-0) vif1)
+    (new 'static 'vif-tag :imm #x2fd :cmd (vif-cmd unpack-v4-32) :num a2-0)
+    )
+   (set! (-> v1-0 base) (&+ (the-as pointer a1-0) 16))
+   )
+  (let ((v1-1 (the-as matrix (-> arg0 base))))
+   (let ((a1-2 (-> v1-1 vector)))
+    (set! (-> a1-2 0 x) 0.0)
+    (set! (-> a1-2 0 y) 0.0)
+    (set! (-> a1-2 0 z) 0.0)
+    (set! (-> a1-2 0 w) 1.0)
+    )
+   (let ((a1-3 (-> v1-1 vector 1)))
+    (set! (-> a1-3 x) 98304.0)
+    (set! (-> a1-3 y) 0.0)
+    (set! (-> a1-3 z) 0.0)
+    (set! (-> a1-3 w) 1.0)
+    )
+   (let ((a1-4 (-> v1-1 vector 2)))
+    (set! (-> a1-4 x) 0.0)
+    (set! (-> a1-4 y) 0.0)
+    (set! (-> a1-4 z) 98304.0)
+    (set! (-> a1-4 w) 1.0)
+    )
+   (let ((v1-2 (the-as matrix (-> v1-1 vector 3))))
+    (set! (-> v1-2 vector 0 x) 98304.0)
+    (set! (-> v1-2 vector 0 y) 0.0)
+    (set! (-> v1-2 vector 0 z) 98304.0)
+    (set! (-> v1-2 vector 0 w) 1.0)
+    )
+   )
+  (let ((v0-0 (&+ (-> arg0 base) 64)))
+   (set! (-> arg0 base) v0-0)
+   v0-0
+   )
+  )
+
+;; definition for function draw-ocean-transition
+;; INFO: Return type mismatch int vs none.
+(defun draw-ocean-transition ((arg0 dma-buffer))
+  (local-vars
+   (sv-32 uint)
+   (sv-33 uint)
+   (sv-34 uint)
+   (sv-35 uint)
+   (sv-36 sphere)
+   (sv-40 ocean-trans-mask)
+   (sv-44 uint)
+   )
+  (dotimes (v1-0 16)
+   (set! (-> *ocean-work* trans-camera-masks v1-0 word) (the-as uint 0))
+   (set! (-> *ocean-work* near-mask-indices v1-0) (the-as uint -1))
+   )
+  (dotimes (v1-3 64)
+   (set! (-> *ocean-work* trans-mask-ptrs v1-3) (the-as (pointer int32) #f))
+   )
+  (set! sv-32 (-> *ocean-work* mid-minx))
+  (set! sv-33 (-> *ocean-work* mid-maxx))
+  (set! sv-34 (-> *ocean-work* mid-minz))
+  (set! sv-35 (-> *ocean-work* mid-maxz))
+  (set! sv-36 (new 'stack 'sphere))
+  (set! (-> sv-36 y) (-> *ocean-map* start-corner y))
+  (set! (-> sv-36 w) 278045.7)
+  (let ((s5-0 sv-34)
+        (s4-0 sv-35)
+        )
+   (while (>= s4-0 s5-0)
+    (let ((s3-0 sv-32)
+          (s2-0 sv-33)
+          )
+     (while (>= s2-0 s3-0)
+      (when (not (ocean-mid-mask-ptrs-bit? s5-0))
+       (when (ocean-mid-camera-masks-bit? s5-0)
+        (set!
+         (-> sv-36 x)
+         (+
+          (+ 196608.0 (* 393216.0 (the float s3-0)))
+          (-> *ocean-map* start-corner x)
+          )
+         )
+        (set!
+         (-> sv-36 z)
+         (+
+          (+ 196608.0 (* 393216.0 (the float s5-0)))
+          (-> *ocean-map* start-corner z)
+          )
+         )
+        (if (sphere-cull sv-36)
+         (ocean-make-trans-camera-masks s5-0 s3-0 (- s5-0 sv-34) (- s3-0 sv-32))
+         )
+        )
+       )
+      (+! s3-0 1)
+      )
+     )
+    (+! s5-0 1)
+    )
+   )
+  (let ((a2-2 192)
+        (a1-8 0)
+        (a0-11 192)
+        (v1-32 0)
+        )
+   (let ((a3-1 sv-34)
+         (t0-0 sv-35)
+         )
+    (while (>= t0-0 a3-1)
+     (let ((t1-0 sv-32)
+           (t2-0 sv-33)
+           )
+      (while (>= t2-0 t1-0)
+       (set!
+        sv-40
+        (->
+         *ocean-work*
+         trans-camera-masks
+         (+ (* (- a3-1 sv-34) 4) (- t1-0 sv-32))
+         )
+        )
+       (when (nonzero? (-> sv-40 word))
+        (dotimes (t3-10 4)
+         (let ((t4-5 (-> sv-40 mask t3-10)))
+          (when (nonzero? t4-5)
+           (let ((t5-2 (+ (* a3-1 4) (the-as uint t3-10))))
+            (if (< t5-2 (the-as uint a0-11))
+             (set! a0-11 (the-as int t5-2))
+             )
+            (if (< (the-as uint v1-32) t5-2)
+             (set! v1-32 (the-as int t5-2))
+             )
+            )
+           (dotimes (t5-3 4)
+            (when (nonzero? (logand t4-5 (the-as uint (ash 1 t5-3))))
+             (let ((t6-9 (+ (* t1-0 4) (the-as uint t5-3))))
+              (if (< t6-9 (the-as uint a2-2))
+               (set! a2-2 (the-as int t6-9))
+               )
+              (if (< (the-as uint a1-8) t6-9)
+               (set! a1-8 (the-as int t6-9))
+               )
+              )
+             )
+            )
+           )
+          )
+         )
+        )
+       (+! t1-0 1)
+       )
+      )
+     (+! a3-1 1)
+     )
+    )
+   (set! (-> *ocean-work* near-minx) (the-as uint (+ a2-2 -1)))
+   (set! (-> *ocean-work* near-maxx) (the-as uint (+ a1-8 1)))
+   (set! (-> *ocean-work* near-minz) (the-as uint (+ a0-11 -1)))
+   (set! (-> *ocean-work* near-maxz) (the-as uint (+ v1-32 1)))
+   )
+  (dotimes (v1-34 16)
+   (set!
+    (-> *ocean-work* trans-temp-masks v1-34 word)
+    (-> *ocean-work* trans-camera-masks v1-34 word)
+    )
+   )
+  (let ((s5-1 sv-34)
+        (s4-1 sv-35)
+        )
+   (while (>= s4-1 s5-1)
+    (let ((s3-1 sv-32)
+          (s2-1 sv-33)
+          )
+     (while (>= s2-1 s3-1)
+      (when (not (ocean-mid-mask-ptrs-bit? s5-1))
+       (when (ocean-mid-camera-masks-bit? s5-1)
+        (let
+         ((v1-43
+           (->
+            *ocean-map*
+            ocean-trans-indices
+            data
+            (+ (* (the-as uint 48) s5-1) s3-1)
+            )
+           )
+          )
+         (when (>= (-> v1-43 parent) 0)
+          (set! sv-44 (+ (* (- s5-1 sv-34) 4) (- s3-1 sv-32)))
+          (set!
+           (-> *ocean-work* near-mask-indices sv-44)
+           (the-as uint (-> v1-43 child))
+           )
+          (let
+           ((s1-0
+             (+
+              (the-as uint (-> *ocean-map* ocean-mid-masks data))
+              (the-as uint (* (-> v1-43 parent) 8))
+              )
+             )
+            )
+           (dotimes (s0-0 4)
+            (let ((a3-5 (-> (the-as ocean-mid-mask (+ s0-0 s1-0)) mask 0)))
+             (if (!= a3-5 255)
+              (ocean-trans-add-upload-strip
+               arg0
+               s5-1
+               s3-1
+               a3-5
+               sv-44
+               (the-as uint s0-0)
+               )
+              )
+             )
+            )
+           )
+          )
+         )
+        )
+       )
+      (+! s3-1 1)
+      )
+     )
+    (+! s5-1 1)
+    )
+   )
+  (ocean-mid-add-call-flush arg0 (the-as uint 41))
+  (ocean-trans-add-constants arg0)
+  (draw-ocean-transition-seams arg0)
+  (ocean-mid-add-call-flush arg0 (the-as uint 41))
+  0
+  (none)
+  )
+
+
+
+

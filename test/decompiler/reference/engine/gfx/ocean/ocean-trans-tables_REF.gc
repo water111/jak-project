@@ -1123,29 +1123,27 @@
    )
   )
 
-;; definition for symbol *ocean-trans-st-table*, type (pointer float)
+;; definition for symbol *ocean-trans-st-table*, type (inline-array vector)
 (define
   *ocean-trans-st-table*
-  (new 'static 'array float 16
-   0.0
-   0.0
-   1.0
-   0.0
-   1.0
-   0.0
-   1.0
-   0.0
-   0.0
-   1.0
-   1.0
-   0.0
-   1.0
-   1.0
-   1.0
-   0.0
+  (the-as (inline-array vector)
+   (new 'static 'array float 16
+    0.0
+    0.0
+    1.0
+    0.0
+    1.0
+    0.0
+    1.0
+    0.0
+    0.0
+    1.0
+    1.0
+    0.0
+    1.0
+    1.0
+    1.0
+    0.0
+    )
    )
   )
-
-
-
-

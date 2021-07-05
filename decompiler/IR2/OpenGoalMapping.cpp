@@ -12,7 +12,11 @@ const std::map<InstructionKind, OpenGOALAsm::Function> MIPS_ASM_TO_OPEN_GOAL_FUN
     {InstructionKind::PSRAW, {".pw.sra", {}}},
     {InstructionKind::PSUBW, {".psubw", {}}},
 
+    {InstructionKind::PEXTUB, {".pextub", {}}},
+    {InstructionKind::PEXTUH, {".pextuh", {}}},
     {InstructionKind::PEXTUW, {".pextuw", {}}},
+    {InstructionKind::PEXTLB, {".pextlb", {}}},
+    {InstructionKind::PEXTLH, {".pextlh", {}}},
     {InstructionKind::PEXTLW, {".pextlw", {}}},
     {InstructionKind::PCPYLD, {".pcpyld", {}}},
     {InstructionKind::PCPYUD, {".pcpyud", {}}},

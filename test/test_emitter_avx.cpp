@@ -373,6 +373,8 @@ TEST(EmitterAVX, VPSLLD) {
   EXPECT_EQ(tester.dump_to_hex_string(true), "C5E172F403C4C16172F604C59172F405C4C11172F606");
 }
 
+// TODO - add tests
+
 TEST(EmitterAVX, VPUNPCKLDQ) {
   CodeTester tester;
   tester.init_code_buffer(1024);

@@ -451,8 +451,12 @@ class Compiler {
   Val* compile_asm_pw_sll(const goos::Object& form, const goos::Object& rest, Env* env);
   Val* compile_asm_pw_srl(const goos::Object& form, const goos::Object& rest, Env* env);
   Val* compile_asm_pw_sra(const goos::Object& form, const goos::Object& rest, Env* env);
-  Val* compile_asm_pextlw(const goos::Object& form, const goos::Object& rest, Env* env);
+  Val* compile_asm_pextub(const goos::Object& form, const goos::Object& rest, Env* env);
+  Val* compile_asm_pextuh(const goos::Object& form, const goos::Object& rest, Env* env);
   Val* compile_asm_pextuw(const goos::Object& form, const goos::Object& rest, Env* env);
+  Val* compile_asm_pextlb(const goos::Object& form, const goos::Object& rest, Env* env);
+  Val* compile_asm_pextlh(const goos::Object& form, const goos::Object& rest, Env* env);
+  Val* compile_asm_pextlw(const goos::Object& form, const goos::Object& rest, Env* env);
   Val* compile_asm_pcpyud(const goos::Object& form, const goos::Object& rest, Env* env);
   Val* compile_asm_pcpyld(const goos::Object& form, const goos::Object& rest, Env* env);
   Val* compile_asm_pceqw(const goos::Object& form, const goos::Object& rest, Env* env);

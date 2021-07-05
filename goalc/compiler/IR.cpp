@@ -1518,8 +1518,20 @@ IR_Int128Math3Asm::IR_Int128Math3Asm(bool use_color,
 std::string IR_Int128Math3Asm::print() {
   std::string function = "";
   switch (m_kind) {
+    case Kind::PEXTLB:
+      function = ".pextlb";
+      break;
+    case Kind::PEXTLH:
+      function = ".pextlh";
+      break;
     case Kind::PEXTLW:
       function = ".pextlw";
+      break;
+    case Kind::PEXTUB:
+      function = ".pextub";
+      break;
+    case Kind::PEXTUH:
+      function = ".pextuh";
       break;
     case Kind::PEXTUW:
       function = ".pextuw";
@@ -1561,13 +1573,29 @@ void IR_Int128Math3Asm::do_codegen(emitter::ObjectGenerator* gen,
   auto src2 = get_reg_asm(m_src2, allocs, irec, m_use_coloring);
 
   switch (m_kind) {
-    case Kind::PEXTLW:
+    case Kind::PEXTUB:
       // NOTE: this is intentionally swapped because x86 and PS2 do this opposite ways.
-      gen->add_instr(IGen::pextlw_swapped(dst, src2, src1), irec);
+      gen->add_instr(IGen::pextub_swapped(dst, src2, src1), irec);
+      break;
+    case Kind::PEXTUH:
+      // NOTE: this is intentionally swapped because x86 and PS2 do this opposite ways.
+      gen->add_instr(IGen::pextuh_swapped(dst, src2, src1), irec);
       break;
     case Kind::PEXTUW:
       // NOTE: this is intentionally swapped because x86 and PS2 do this opposite ways.
       gen->add_instr(IGen::pextuw_swapped(dst, src2, src1), irec);
+      break;
+    case Kind::PEXTLB:
+      // NOTE: this is intentionally swapped because x86 and PS2 do this opposite ways.
+      gen->add_instr(IGen::pextlb_swapped(dst, src2, src1), irec);
+      break;
+    case Kind::PEXTLH:
+      // NOTE: this is intentionally swapped because x86 and PS2 do this opposite ways.
+      gen->add_instr(IGen::pextlh_swapped(dst, src2, src1), irec);
+      break;
+    case Kind::PEXTLW:
+      // NOTE: this is intentionally swapped because x86 and PS2 do this opposite ways.
+      gen->add_instr(IGen::pextlw_swapped(dst, src2, src1), irec);
       break;
     case Kind::PCPYLD:
       // NOTE: this is intentionally swapped because x86 and PS2 do this opposite ways.

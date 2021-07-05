@@ -5,3 +5,5 @@
 ;; name in dgo: ocean
 ;; dgos: GAME, ENGINE
 
+;; TODO - for ocean-transition
+(define-extern *ocean-map* ocean-map)

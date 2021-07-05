@@ -1411,7 +1411,6 @@
 ;; WARN: Stack slot offset 48 signed mismatch
 ;; WARN: Stack slot offset 48 signed mismatch
 ;; WARN: Stack slot offset 48 signed mismatch
-;; INFO: Return type mismatch float vs object.
 (defun
   curve-closest-point
   ((arg0 curve) (arg1 vector) (arg2 float) (arg3 float) (arg4 int) (arg5 float))
@@ -1482,7 +1481,3 @@
    arg2
    )
   )
-
-
-
-
