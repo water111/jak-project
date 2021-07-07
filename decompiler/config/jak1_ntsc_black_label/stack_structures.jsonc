@@ -509,5 +509,23 @@
   "curve-closest-point": [
     [16, "vector"],
     [32, "vector"]
-  ]
+  ],
+
+  "compute-and-draw-shadow": [
+    [16, "vector"],
+    [32, "vector"],
+    [48, "sparticle-cpuinfo"] // kinda a guess
+  ],
+
+  "find-ground-and-draw-shadow": [
+    [16, "vector"],
+    [32, "collide-cache"],
+    [48, "bone"] // what a guess!
+  ],
+
+  "(method 20 collide-cache)": [
+    [16, "vector"]
+  ],
+
+  "placeholder-do-not-add-below!": []
 }

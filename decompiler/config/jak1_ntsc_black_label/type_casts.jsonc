@@ -1023,5 +1023,10 @@
     [[0, 60], "f1", "float"]
   ],
 
+  "do-target-shadow": [
+    [[0, 999], "s6", "target"],
+    [46, "v1", "collide-shape-prim"] // `event-other` from collide-shape
+  ],
+
   "placeholder-do-not-add-below": []
 }
