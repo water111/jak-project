@@ -969,7 +969,7 @@
     (new (symbol type basic) _type_ 0)
     (activate (_type_ process-tree basic pointer) process-tree 9)
     (deactivate  (_type_) none 10)
-    (dummy-method-11 () none 11)
+    (dummy-method-11 (_type_) none 11)
     (run-logic? (_type_) symbol 12)
     (dummy-method () none 13)
     )
@@ -1147,7 +1147,7 @@
    (trans (function object)  :offset-assert 20)
    (post  function  :offset-assert 24)
    (enter (function object object object object object object object)  :offset-assert 28)
-   (event (function basic int basic event-message-block object)     :offset-assert 32)
+   (event (function process int symbol event-message-block object)     :offset-assert 32)
    )
   (:methods
     (new (symbol type basic function
@@ -1212,11 +1212,6 @@
    )
   (:methods
     (new (symbol type basic int) _type_ 0)
-    (activate (_type_ process-tree basic pointer) process-tree 9)
-    (deactivate  (process) none 10)
-    (dummy-method-11 () none 11)
-    (run-logic? (process) symbol 12)
-    (dummy-method () none 13)
     )
   :size-assert #x70
   :method-count-assert 14
@@ -10800,7 +10795,7 @@
    (pat-ignore-mask       uint32             :offset-assert 148)
    (event-self            basic              :offset-assert 152)
    (event-other           basic              :offset-assert 156)
-   (root-prim             basic              :offset-assert 160)
+   (root-prim             collide-shape-prim              :offset-assert 160)
    (riders                basic              :offset-assert 164)
    (backup-collide-as     uint64             :offset-assert 168)
    (backup-collide-with   uint64             :offset-assert 176)
@@ -15247,7 +15242,7 @@
 (define-extern ripple-execute (function none))
 (define-extern ripple-matrix-scale function)
 (define-extern ripple-add-debug-sphere (function process-drawable vector float float none)) ; TODO - this could be a child type of process-drawable instead
-(define-extern ripple-find-height (function process-drawable basic vector float))
+(define-extern ripple-find-height (function process-drawable int vector float))
 
 ;; - Symbols
 
@@ -17630,15 +17625,15 @@
   :flag-assert         #x1e007000d4
   ;; inherited inspect of process-drawable
   (:methods
-    (dummy-20 () none 20)
+    (dummy-20 (_type_) none 20) ;; TODO - 100% wrong, but involves states not sure yet!
     (dummy-21 () none 21)
-    (dummy-22 () none 22)
+    (dummy-22 (_type_) none 22)
     (dummy-23 () none 23)
     (dummy-24 () none 24)
-    (dummy-25 () none 25)
+    (TODO-RENAME-25 (_type_) none 25)
     (dummy-26 () none 26)
     (dummy-27 () none 27)
-    (dummy-28 () none 28)
+    (get-ripple-height (_type_ vector) float 28)
     (dummy-29 () none 29)
     )
   )
@@ -19773,7 +19768,7 @@
 
 (define-extern splash-spawn function)
 (define-extern part-water-splash-callback function)
-(define-extern ocean-get-height function)
+(define-extern ocean-get-height (function vector float))
 (define-extern birth-func-y->userdata function)
 (define-extern birth-func-ocean-height function)
 (define-extern check-water-level-drop function)
@@ -21624,20 +21619,20 @@
   :size-assert         #x1a8
   :flag-assert         #x17000001a8
   (:methods
-    (dummy-9 () none 9)
-    (dummy-10 () none 10)
-    (dummy-11 () none 11)
-    (dummy-12 () none 12)
-    (dummy-13 () none 13)
-    (dummy-14 () none 14)
-    (dummy-15 () none 15)
-    (dummy-16 () none 16)
-    (dummy-17 () none 17)
-    (dummy-18 () none 18)
-    (dummy-19 () none 19)
-    (dummy-20 () none 20)
-    (dummy-21 () none 21)
-    (dummy-22 () none 22)
+    (TODO-RENAME-9 (_type_ float float float float) none 9)
+    (dummy-10 (_type_ float) none 10)
+    (clear-force-torque! (_type_) none 11)
+    (clear-momentum! (_type_) none 12)
+    (TODO-RENAME-13 (_type_ vector vector) none 13)
+    (TODO-RENAME-14 (_type_ vector vector) none 14)
+    (TODO-RENAME-15 (_type_ vector) none 15)
+    (TODO-RENAME-16 (_type_ vector vector float) none 16)
+    (TODO-RENAME-17 (_type_ vector vector) vector 17)
+    (TODO-RENAME-18 (_type_ vector) vector 18)
+    (dummy-19 (_type_) none 19)
+    (dummy-20 (_type_) none 20)
+    (TODO-RENAME-21 (_type_) none 21)
+    (TODO-RENAME-22 (_type_ vector quaternion float float) none 22)
     )
   )
 
@@ -21660,100 +21655,78 @@
 
 ;; - Types
 
-; (deftype water-anim (water-vol)
-;   ((look                int32  :offset-assert 212)
-;    (play-ambient-sound? basic  :offset-assert 216)
-;    )
-;   :method-count-assert 30
-;   :size-assert         #xdc
-;   :flag-assert         #x1e007000dc
-;   ;; inherited inspect of water-vol
-;   (:methods
-;     (dummy-9 () none 9)
-;     (dummy-10 () none 10)
-;     (dummy-11 () none 11)
-;     (dummy-12 () none 12)
-;     (dummy-13 () none 13)
-;     (dummy-14 () none 14)
-;     (dummy-15 () none 15)
-;     (dummy-16 () none 16)
-;     (dummy-17 () none 17)
-;     (dummy-18 () none 18)
-;     (dummy-19 () none 19)
-;     (dummy-20 () none 20)
-;     (dummy-21 () none 21)
-;     (dummy-22 () none 22)
-;     (dummy-23 () none 23)
-;     (dummy-24 () none 24)
-;     (dummy-25 () none 25)
-;     (dummy-26 () none 26)
-;     (dummy-27 () none 27)
-;     (dummy-28 () none 28)
-;     (dummy-29 () none 29)
-;     )
-;   )
+(deftype water-anim (water-vol)
+  ((ppointer-water-anim (pointer water-anim)  :score 100 :offset 24)
+   (look                int32  :offset-assert 212)
+   (play-ambient-sound? basic  :offset-assert 216)
+   )
+  :method-count-assert 30
+  :heap-base           #x70
+  :size-assert         #xdc
+  :flag-assert         #x1e007000dc
+  )
 
-; (deftype water-anim-look (structure)
-;   ((skel-group         basic  :offset-assert 0)
-;    (anim               int32  :offset-assert 4)
-;    (ambient-sound-spec basic  :offset-assert 8)
-;    )
-;   :method-count-assert 9
-;   :size-assert         #xc
-;   :flag-assert         #x90000000c
-;   )
+(deftype water-anim-look (structure)
+  ((skel-group         skeleton-group  :offset-assert 0)
+   (anim               int32  :offset-assert 4)
+   (ambient-sound-spec sound-spec  :offset-assert 8)
+   )
+  :method-count-assert 9
+  :size-assert         #xc
+  :flag-assert         #x90000000c
+  )
 
 ;; - Unknowns
 
-;;(define-extern *water-anim-look* object) ;; unknown type
-;;(define-extern *water-anim-sunken-dark-eco-qbert-sg* object) ;; unknown type
-;;(define-extern *water-anim-sunken-dark-eco-platform-room-sg* object) ;; unknown type
-;;(define-extern *water-anim-sunken-dark-eco-helix-room-sg* object) ;; unknown type
-;;(define-extern *water-anim-sunken-big-room-sg* object) ;; unknown type
-;;(define-extern *water-anim-sunken-first-room-from-entrance-sg* object) ;; unknown type
-;;(define-extern *water-anim-sunken-qbert-room-sg* object) ;; unknown type
-;;(define-extern *water-anim-sunken-first-right-branch-sg* object) ;; unknown type
-;;(define-extern *water-anim-sunken-circular-with-bullys-sg* object) ;; unknown type
-;;(define-extern *water-anim-sunken-hall-with-one-whirlpool-sg* object) ;; unknown type
-;;(define-extern *water-anim-sunken-hall-with-three-whirlpools-sg* object) ;; unknown type
-;;(define-extern *water-anim-sunken-start-of-helix-slide-sg* object) ;; unknown type
-;;(define-extern *water-anim-sunken-room-above-exit-chamber-sg* object) ;; unknown type
-;;(define-extern *water-anim-sunken-hall-before-big-room-sg* object) ;; unknown type
-;;(define-extern *water-anim-sunken-short-piece-sg* object) ;; unknown type
-;;(define-extern *water-anim-sunken-big-room-upper-water-sg* object) ;; unknown type
-;;(define-extern *water-anim-maincave-center-pool-sg* object) ;; unknown type
-;;(define-extern *water-anim-maincave-lower-right-pool-sg* object) ;; unknown type
-;;(define-extern *water-anim-maincave-mid-right-pool-sg* object) ;; unknown type
-;;(define-extern *water-anim-maincave-lower-left-pool-sg* object) ;; unknown type
-;;(define-extern *water-anim-maincave-mid-left-pool-sg* object) ;; unknown type
-;;(define-extern *water-anim-maincave-water-with-crystal-sg* object) ;; unknown type
-;;(define-extern *water-anim-robocave-main-pool-sg* object) ;; unknown type
-;;(define-extern *water-anim-misty-mud-by-arena-sg* object) ;; unknown type
-;;(define-extern *water-anim-misty-mud-above-skeleton-sg* object) ;; unknown type
-;;(define-extern *water-anim-misty-mud-behind-skeleton-sg* object) ;; unknown type
-;;(define-extern *water-anim-misty-mud-above-skull-back-sg* object) ;; unknown type
-;;(define-extern *water-anim-misty-mud-above-skull-front-sg* object) ;; unknown type
-;;(define-extern *water-anim-misty-mud-other-near-skull-sg* object) ;; unknown type
-;;(define-extern *water-anim-misty-mud-near-skull-sg* object) ;; unknown type
-;;(define-extern *water-anim-misty-mud-under-spine-sg* object) ;; unknown type
-;;(define-extern *water-anim-misty-mud-by-dock-sg* object) ;; unknown type
-;;(define-extern *water-anim-misty-mud-island-near-dock-sg* object) ;; unknown type
-;;(define-extern *water-anim-misty-mud-lonely-island-sg* object) ;; unknown type
-;;(define-extern *water-anim-misty-dark-eco-pool-sg* object) ;; unknown type
-;;(define-extern *water-anim-ogre-lava-sg* object) ;; unknown type
-;;(define-extern *water-anim-jungle-river-sg* object) ;; unknown type
-;;(define-extern *water-anim-village3-lava-sg* object) ;; unknown type
-;;(define-extern *water-anim-training-lake-sg* object) ;; unknown type
-;;(define-extern *water-anim-darkcave-water-with-crystal-sg* object) ;; unknown type
-;;(define-extern *water-anim-rolling-water-back-sg* object) ;; unknown type
-;;(define-extern *water-anim-rolling-water-front-sg* object) ;; unknown type
-;;(define-extern *water-anim-finalboss-dark-eco-pool-sg* object) ;; unknown type
-;;(define-extern *water-anim-lavatube-energy-lava-sg* object) ;; unknown type
-;;(define-extern *water-anim-village1-rice-paddy-sg* object) ;; unknown type
-;;(define-extern *water-anim-village1-fountain-sg* object) ;; unknown type
-;;(define-extern *water-anim-village1-rice-paddy-mid-sg* object) ;; unknown type
-;;(define-extern *water-anim-village1-rice-paddy-top-sg* object) ;; unknown type
-;;(define-extern *water-anim-village2-bucket-sg* object) ;; unknown type
+(define-extern *water-anim-look* (array water-anim-look))
+(define-extern *water-anim-sunken-dark-eco-qbert-sg* skeleton-group)
+(define-extern *water-anim-sunken-dark-eco-platform-room-sg* skeleton-group)
+(define-extern *water-anim-sunken-dark-eco-helix-room-sg* skeleton-group)
+(define-extern *water-anim-sunken-big-room-sg* skeleton-group)
+(define-extern *water-anim-sunken-first-room-from-entrance-sg* skeleton-group)
+(define-extern *water-anim-sunken-qbert-room-sg* skeleton-group)
+(define-extern *water-anim-sunken-first-right-branch-sg* skeleton-group)
+(define-extern *water-anim-sunken-circular-with-bullys-sg* skeleton-group)
+(define-extern *water-anim-sunken-hall-with-one-whirlpool-sg* skeleton-group)
+(define-extern *water-anim-sunken-hall-with-three-whirlpools-sg* skeleton-group)
+(define-extern *water-anim-sunken-start-of-helix-slide-sg* skeleton-group)
+(define-extern *water-anim-sunken-room-above-exit-chamber-sg* skeleton-group)
+(define-extern *water-anim-sunken-hall-before-big-room-sg* skeleton-group)
+(define-extern *water-anim-sunken-short-piece-sg* skeleton-group)
+(define-extern *water-anim-sunken-big-room-upper-water-sg* skeleton-group)
+(define-extern *water-anim-maincave-center-pool-sg* skeleton-group)
+(define-extern *water-anim-maincave-lower-right-pool-sg* skeleton-group)
+(define-extern *water-anim-maincave-mid-right-pool-sg* skeleton-group)
+(define-extern *water-anim-maincave-lower-left-pool-sg* skeleton-group)
+(define-extern *water-anim-maincave-mid-left-pool-sg* skeleton-group)
+(define-extern *water-anim-maincave-water-with-crystal-sg* skeleton-group)
+(define-extern *water-anim-robocave-main-pool-sg* skeleton-group)
+(define-extern *water-anim-misty-mud-by-arena-sg* skeleton-group)
+(define-extern *water-anim-misty-mud-above-skeleton-sg* skeleton-group)
+(define-extern *water-anim-misty-mud-behind-skeleton-sg* skeleton-group)
+(define-extern *water-anim-misty-mud-above-skull-back-sg* skeleton-group)
+(define-extern *water-anim-misty-mud-above-skull-front-sg* skeleton-group)
+(define-extern *water-anim-misty-mud-other-near-skull-sg* skeleton-group)
+(define-extern *water-anim-misty-mud-near-skull-sg* skeleton-group)
+(define-extern *water-anim-misty-mud-under-spine-sg* skeleton-group)
+(define-extern *water-anim-misty-mud-by-dock-sg* skeleton-group)
+(define-extern *water-anim-misty-mud-island-near-dock-sg* skeleton-group)
+(define-extern *water-anim-misty-mud-lonely-island-sg* skeleton-group)
+(define-extern *water-anim-misty-dark-eco-pool-sg* skeleton-group)
+(define-extern *water-anim-ogre-lava-sg* skeleton-group)
+(define-extern *water-anim-jungle-river-sg* skeleton-group)
+(define-extern *water-anim-village3-lava-sg* skeleton-group)
+(define-extern *water-anim-training-lake-sg* skeleton-group)
+(define-extern *water-anim-darkcave-water-with-crystal-sg* skeleton-group)
+(define-extern *water-anim-rolling-water-back-sg* skeleton-group)
+(define-extern *water-anim-rolling-water-front-sg* skeleton-group)
+(define-extern *water-anim-finalboss-dark-eco-pool-sg* skeleton-group)
+(define-extern *water-anim-lavatube-energy-lava-sg* skeleton-group)
+(define-extern *water-anim-village1-rice-paddy-sg* skeleton-group)
+(define-extern *water-anim-village1-fountain-sg* skeleton-group)
+(define-extern *water-anim-village1-rice-paddy-mid-sg* skeleton-group)
+(define-extern *water-anim-village1-rice-paddy-top-sg* skeleton-group)
+(define-extern *water-anim-village2-bucket-sg* skeleton-group)
 
 
 ;; ----------------------
@@ -21812,107 +21785,96 @@
 
 ;; - Types
 
-; (deftype rigid-body-platform-constants (structure)
-;   ((drag-factor           float   :offset-assert 0)
-;    (buoyancy-factor       float   :offset-assert 4)
-;    (max-buoyancy-depth    meters  :offset-assert 8)
-;    (gravity-factor        float   :offset-assert 12)
-;    (gravity               meters  :offset-assert 16)
-;    (player-weight         meters  :offset-assert 20)
-;    (player-bonk-factor    float   :offset-assert 24)
-;    (player-dive-factor    float   :offset-assert 28)
-;    (player-force-distance meters  :offset-assert 32)
-;    (player-force-clamp    meters  :offset-assert 36)
-;    (player-force-timeout  uint64  :offset-assert 40)
-;    (explosion-force       meters  :offset-assert 48)
-;    (linear-damping        float   :offset-assert 52)
-;    (angular-damping       float   :offset-assert 56)
-;    (control-point-count   int32   :offset-assert 60)
-;    (mass                  float   :offset-assert 64)
-;    (inertial-tensor-x     meters  :offset-assert 68)
-;    (inertial-tensor-y     meters  :offset-assert 72)
-;    (inertial-tensor-z     meters  :offset-assert 76)
-;    (cm-joint-x            meters  :offset-assert 80)
-;    (cm-joint-y            meters  :offset-assert 84)
-;    (cm-joint-z            meters  :offset-assert 88)
-;    (idle-distance         meters  :offset-assert 92)
-;    (platform              basic   :offset-assert 96)
-;    (sound-name            basic   :offset-assert 100)
-;    )
-;   :method-count-assert 9
-;   :size-assert         #x68
-;   :flag-assert         #x900000068
-;   )
+(deftype rigid-body-platform-constants (structure)
+  ((drag-factor           float   :offset-assert 0)
+   (buoyancy-factor       float   :offset-assert 4)
+   (max-buoyancy-depth    float  :offset-assert 8) ; meters
+   (gravity-factor        float   :offset-assert 12)
+   (gravity               float  :offset-assert 16) ; meters
+   (player-weight         float  :offset-assert 20) ; meters
+   (player-bonk-factor    float   :offset-assert 24)
+   (player-dive-factor    float   :offset-assert 28)
+   (player-force-distance float  :offset-assert 32) ; meters
+   (player-force-clamp    float  :offset-assert 36) ; meters
+   (player-force-timeout  uint64  :offset-assert 40)
+   (explosion-force       float  :offset-assert 48) ; meters
+   (linear-damping        float   :offset-assert 52)
+   (angular-damping       float   :offset-assert 56)
+   (control-point-count   int32   :offset-assert 60)
+   (mass                  float   :offset-assert 64)
+   (inertial-tensor-x     float  :offset-assert 68) ; meters
+   (inertial-tensor-y     float  :offset-assert 72) ; meters
+   (inertial-tensor-z     float  :offset-assert 76) ; meters
+   (cm-joint-x            float  :offset-assert 80) ; meters
+   (cm-joint-y            float  :offset-assert 84) ; meters
+   (cm-joint-z            float  :offset-assert 88) ; meters
+   (idle-distance         float  :offset-assert 92) ; meters
+   (platform              basic   :offset-assert 96)
+   (sound-name            basic   :offset-assert 100)
+   )
+  :method-count-assert 9
+  :size-assert         #x68
+  :flag-assert         #x900000068
+  )
 
-; (deftype rigid-body-control-point-inline-array (inline-array-class)
-;   ((length           int32            :offset-assert 4)
-;    (allocated-length int32            :offset-assert 8)
-;    (data             UNKNOWN :dynamic :offset-assert 16)
-;    )
-;   :method-count-assert 9
-;   :size-assert         #x10
-;   :flag-assert         #x900000010
-;   )
+(deftype rigid-body-control-point-inline-array (inline-array-class)
+  ((data  rigid-body-control-point  :inline :dynamic :offset 16)
+   )
+  :method-count-assert 9
+  :size-assert         #x10
+  :flag-assert         #x900000010
+  )
 
-; (deftype rigid-body-platform (process-drawable)
-;   ((info                  rigid-body-platform-constants         :offset-assert 176)
-;    (rbody                 rigid-body                    :inline :offset-assert 192)
-;    (control-point-array   basic                                 :offset-assert 616)
-;    (player-velocity       vector                        :inline :offset-assert 624)
-;    (player-velocity-prev  vector                        :inline :offset-assert 640)
-;    (player-force-position vector                        :inline :offset-assert 656)
-;    (player-force          vector                        :inline :offset-assert 672)
-;    (sim-time-remaining    float                                 :offset-assert 688)
-;    (float-height-offset   float                                 :offset-assert 692)
-;    (player-attack-id      int32                                 :offset-assert 696)
-;    (player-bonk-timeout   uint64                                :offset-assert 704)
-;    (water-anim            basic                                 :offset-assert 712)
-;    (player-contact        basic                                 :offset-assert 716)
-;    (player-impulse        basic                                 :offset-assert 720)
-;    )
-;   :method-count-assert 35
-;   :size-assert         #x2d4
-;   :flag-assert         #x23027002d4
-;   ;; inherited inspect of process-drawable
-;   (:methods
-;     (dummy-9 () none 9)
-;     (dummy-10 () none 10)
-;     (dummy-11 () none 11)
-;     (dummy-12 () none 12)
-;     (dummy-13 () none 13)
-;     (dummy-14 () none 14)
-;     (dummy-15 () none 15)
-;     (dummy-16 () none 16)
-;     (dummy-17 () none 17)
-;     (dummy-18 () none 18)
-;     (dummy-19 () none 19)
-;     (dummy-20 () none 20)
-;     (dummy-21 () none 21)
-;     (dummy-22 () none 22)
-;     (dummy-23 () none 23)
-;     (dummy-24 () none 24)
-;     (dummy-25 () none 25)
-;     (dummy-26 () none 26)
-;     (dummy-27 () none 27)
-;     (dummy-28 () none 28)
-;     (dummy-29 () none 29)
-;     (dummy-30 () none 30)
-;     (dummy-31 () none 31)
-;     (dummy-32 () none 32)
-;     (dummy-33 () none 33)
-;     (dummy-34 () none 34)
-;     )
-;   )
+(deftype rigid-body-platform (process-drawable)
+  ((root-overlay          collide-shape-moving                  :score 100 :offset 112)
+   (info                  rigid-body-platform-constants         :offset-assert 176)
+   (rbody                 rigid-body                    :inline :offset-assert 192)
+   (control-point-array   rigid-body-control-point-inline-array      :offset-assert 616)
+   (player-velocity       vector                        :inline :offset-assert 624)
+   (player-velocity-prev  vector                        :inline :offset-assert 640)
+   (player-force-position vector                        :inline :offset-assert 656)
+   (player-force          vector                        :inline :offset-assert 672)
+   (sim-time-remaining    float                                 :offset-assert 688)
+   (float-height-offset   float                                 :offset-assert 692)
+   (player-attack-id      int32                                 :offset-assert 696)
+   (player-bonk-timeout   uint64                                :offset-assert 704)
+   (water-anim            water-anim                            :offset-assert 712)
+   (player-contact        basic                                 :offset-assert 716) ; not a basic
+   (player-impulse        collide-shape-prim-mesh               :offset-assert 720)
+   )
+  :method-count-assert 35
+  :heap-base           #x270
+  :size-assert         #x2d4
+  :flag-assert         #x23027002d4
+  ;; inherited inspect of process-drawable
+  (:methods
+    (dummy-20 (_type_) none 20)
+    (dummy-21 (_type_) none 21)
+    (dummy-22 (_type_ vector) none 22) ;; TODO - weird state handling, not completely done yet
+    (dummy-23 (_type_) none 23) ;; TODO - missing arg that is passed to 24
+    (TODO-RENAME-24 (_type_ rigid-body-control-point) none 24) ;; TODO - there is an unused 3rd arg
+    (TODO-RENAME-25 (_type_) none 25)
+    (TODO-RENAME-26 (_type_) none 26)
+    (TODO-RENAME-27 (_type_ vector) none 27)
+    (TODO-RENAME-28 (_type_)  none 28)
+    (TODO-RENAME-29 (_type_ rigid-body-platform-constants) none 29)
+    (TODO-RENAME-30 (_type_) none 30)
+    (TODO-RENAME-31 (_type_) none 31)
+    (dummy-32 (_type_) none 32)
+    (dummy-33 (_type_) none 33)
+    (TODO-RENAME-34 (_type_) none 34)
+    )
+  )
 
 ;; - Functions
 
-(define-extern matrix-3x3-triple-transpose-product function)
+(define-extern matrix-3x3-triple-transpose-product (function matrix matrix matrix matrix))
 (define-extern rigid-body-platform-event-handler function)
-(define-extern rigid-body-platform-post function)
+(define-extern rigid-body-platform-post (function int :behavior rigid-body-platform))
 
 ;; - Unknowns
 
-;;(define-extern *rigid-body-platform-constants* object) ;; unknown type
+(define-extern *rigid-body-platform-constants* rigid-body-platform-constants)
 
 
 ;; ----------------------
@@ -25873,32 +25835,22 @@
 
 ;; - Types
 
-; (deftype citb-base-plat (process-drawable)
-;   ((idle-distance float  :offset-assert 176)
-;    )
-;   :method-count-assert 25
-;   :size-assert         #xb4
-;   :flag-assert         #x19005000b4
-;   ;; inherited inspect of process-drawable
-;   (:methods
-;     (dummy-9 () none 9)
-;     (dummy-10 () none 10)
-;     (dummy-11 () none 11)
-;     (dummy-12 () none 12)
-;     (dummy-13 () none 13)
-;     (dummy-14 () none 14)
-;     (dummy-15 () none 15)
-;     (dummy-16 () none 16)
-;     (dummy-17 () none 17)
-;     (dummy-18 () none 18)
-;     (dummy-19 () none 19)
-;     (dummy-20 () none 20)
-;     (dummy-21 () none 21)
-;     (dummy-22 () none 22)
-;     (dummy-23 () none 23)
-;     (dummy-24 () none 24)
-;     )
-;   )
+(deftype citb-base-plat (process-drawable)
+  ((idle-distance float  :offset-assert 176)
+   )
+  :method-count-assert 25
+  :heap-base           #x50
+  :size-assert         #xb4
+  :flag-assert         #x19005000b4
+  ;; inherited inspect of process-drawable
+  (:methods
+    (dummy-20 () none 20)
+    (dummy-21 () none 21)
+    (dummy-22 () none 22)
+    (dummy-23 () none 23)
+    (dummy-24 () none 24)
+    )
+  )
 
 ; (deftype citb-plat-eco (plat-eco)
 ;   ()
@@ -25999,46 +25951,19 @@
 ;     )
 ;   )
 
-; (deftype citb-chain-plat (rigid-body-platform)
-;   ((orig-trans   vector     :inline :offset-assert 736)
-;    (orig-quat    quaternion :inline :offset-assert 752)
-;    (beam-end     vector     :inline :offset-assert 768)
-;    (float-offset float              :offset-assert 784)
-;    (idle-offset  float              :offset-assert 788)
-;    )
-;   :method-count-assert 35
-;   :size-assert         #x318
-;   :flag-assert         #x2302b00318
-;   ;; inherited inspect of rigid-body-platform
-;   (:methods
-;     (dummy-9 () none 9)
-;     (dummy-10 () none 10)
-;     (dummy-11 () none 11)
-;     (dummy-12 () none 12)
-;     (dummy-13 () none 13)
-;     (dummy-14 () none 14)
-;     (dummy-15 () none 15)
-;     (dummy-16 () none 16)
-;     (dummy-17 () none 17)
-;     (dummy-18 () none 18)
-;     (dummy-19 () none 19)
-;     (dummy-20 () none 20)
-;     (dummy-21 () none 21)
-;     (dummy-22 () none 22)
-;     (dummy-23 () none 23)
-;     (dummy-24 () none 24)
-;     (dummy-25 () none 25)
-;     (dummy-26 () none 26)
-;     (dummy-27 () none 27)
-;     (dummy-28 () none 28)
-;     (dummy-29 () none 29)
-;     (dummy-30 () none 30)
-;     (dummy-31 () none 31)
-;     (dummy-32 () none 32)
-;     (dummy-33 () none 33)
-;     (dummy-34 () none 34)
-;     )
-;   )
+(deftype citb-chain-plat (rigid-body-platform)
+  ((orig-trans   vector     :inline :offset-assert 736)
+   (orig-quat    quaternion :inline :offset-assert 752)
+   (beam-end     vector     :inline :offset-assert 768)
+   (float-offset float              :offset-assert 784)
+   (idle-offset  float              :offset-assert 788)
+   )
+  :method-count-assert 35
+  :heap-base           #x2b0
+  :size-assert         #x318
+  :flag-assert         #x2302b00318
+  ;; inherited inspect of rigid-body-platform
+  )
 
 ; (deftype citb-rotatebox (citb-base-plat)
 ;   ()
@@ -34298,116 +34223,32 @@
 ;     )
 ;   )
 
-; (deftype pontoon (rigid-body-platform)
-;   ((anchor-point vector :inline :offset-assert 736)
-;    (task         uint8          :offset-assert 752)
-;    (alt-task     uint8          :offset-assert 753)
-;    )
-;   :method-count-assert 35
-;   :size-assert         #x2f2
-;   :flag-assert         #x23029002f2
-;   ;; inherited inspect of rigid-body-platform
-;   (:methods
-;     (dummy-9 () none 9)
-;     (dummy-10 () none 10)
-;     (dummy-11 () none 11)
-;     (dummy-12 () none 12)
-;     (dummy-13 () none 13)
-;     (dummy-14 () none 14)
-;     (dummy-15 () none 15)
-;     (dummy-16 () none 16)
-;     (dummy-17 () none 17)
-;     (dummy-18 () none 18)
-;     (dummy-19 () none 19)
-;     (dummy-20 () none 20)
-;     (dummy-21 () none 21)
-;     (dummy-22 () none 22)
-;     (dummy-23 () none 23)
-;     (dummy-24 () none 24)
-;     (dummy-25 () none 25)
-;     (dummy-26 () none 26)
-;     (dummy-27 () none 27)
-;     (dummy-28 () none 28)
-;     (dummy-29 () none 29)
-;     (dummy-30 () none 30)
-;     (dummy-31 () none 31)
-;     (dummy-32 () none 32)
-;     (dummy-33 () none 33)
-;     (dummy-34 () none 34)
-;     )
-;   )
+(deftype pontoon (rigid-body-platform)
+  ((anchor-point vector :inline :offset-assert 736)
+   (task         uint8          :offset-assert 752)
+   (alt-task     uint8          :offset-assert 753)
+   )
+  :method-count-assert 35
+  :heap-base           #x290
+  :size-assert         #x2f2
+  :flag-assert         #x23029002f2
+  )
 
-; (deftype pontoonfive (pontoon)
-;   ()
-;   :method-count-assert 35
-;   :size-assert         #x2f2
-;   :flag-assert         #x23029002f2
-;   ;;  not enough basic ops
-;   (:methods
-;     (dummy-9 () none 9)
-;     (dummy-10 () none 10)
-;     (dummy-11 () none 11)
-;     (dummy-12 () none 12)
-;     (dummy-13 () none 13)
-;     (dummy-14 () none 14)
-;     (dummy-15 () none 15)
-;     (dummy-16 () none 16)
-;     (dummy-17 () none 17)
-;     (dummy-18 () none 18)
-;     (dummy-19 () none 19)
-;     (dummy-20 () none 20)
-;     (dummy-21 () none 21)
-;     (dummy-22 () none 22)
-;     (dummy-23 () none 23)
-;     (dummy-24 () none 24)
-;     (dummy-25 () none 25)
-;     (dummy-26 () none 26)
-;     (dummy-27 () none 27)
-;     (dummy-28 () none 28)
-;     (dummy-29 () none 29)
-;     (dummy-30 () none 30)
-;     (dummy-31 () none 31)
-;     (dummy-32 () none 32)
-;     (dummy-33 () none 33)
-;     (dummy-34 () none 34)
-;     )
-;   )
+(deftype pontoonfive (pontoon)
+  ()
+  :method-count-assert 35
+  :heap-base           #x290
+  :size-assert         #x2f2
+  :flag-assert         #x23029002f2
+  )
 
-; (deftype pontoonten (pontoon)
-;   ()
-;   :method-count-assert 35
-;   :size-assert         #x2f2
-;   :flag-assert         #x23029002f2
-;   ;;  not enough basic ops
-;   (:methods
-;     (dummy-9 () none 9)
-;     (dummy-10 () none 10)
-;     (dummy-11 () none 11)
-;     (dummy-12 () none 12)
-;     (dummy-13 () none 13)
-;     (dummy-14 () none 14)
-;     (dummy-15 () none 15)
-;     (dummy-16 () none 16)
-;     (dummy-17 () none 17)
-;     (dummy-18 () none 18)
-;     (dummy-19 () none 19)
-;     (dummy-20 () none 20)
-;     (dummy-21 () none 21)
-;     (dummy-22 () none 22)
-;     (dummy-23 () none 23)
-;     (dummy-24 () none 24)
-;     (dummy-25 () none 25)
-;     (dummy-26 () none 26)
-;     (dummy-27 () none 27)
-;     (dummy-28 () none 28)
-;     (dummy-29 () none 29)
-;     (dummy-30 () none 30)
-;     (dummy-31 () none 31)
-;     (dummy-32 () none 32)
-;     (dummy-33 () none 33)
-;     (dummy-34 () none 34)
-;     )
-;   )
+(deftype pontoonten (pontoon)
+  ()
+  :method-count-assert 35
+  :heap-base           #x290
+  :size-assert         #x2f2
+  :flag-assert         #x23029002f2
+  )
 
 ; (deftype allpontoons (process-drawable)
 ;   ((task uint8  :offset-assert 176)

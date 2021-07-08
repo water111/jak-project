@@ -509,5 +509,53 @@
   "curve-closest-point": [
     [16, "vector"],
     [32, "vector"]
+  ],
+
+  "(method 17 rigid-body)": [
+    [16, "vector"]
+  ],
+
+  "matrix-3x3-triple-transpose-product": [
+    [16, "matrix"],
+    [80, "matrix"]
+  ],
+
+  "(method 10 rigid-body)": [
+    [16, "quaternion"]
+  ],
+
+  "(method 13 rigid-body)": [
+    [16, "vector"],
+    [32, "vector"]
+  ],
+
+  "(method 16 rigid-body)": [
+    [16, "vector"],
+    [32, "vector"]
+  ],
+
+  "(method 14 rigid-body)": [
+    [16, "vector"],
+    [32, "vector"]
+  ],
+
+  "(method 18 rigid-body)": [
+    [16, "vector"]
+  ],
+
+  "(method 24 rigid-body-platform)": [
+    [16, "vector"]
+  ],
+
+  "(method 26 rigid-body-platform)": [
+    [16, "vector"]
+  ],
+
+  "(method 27 rigid-body-platform)": [
+    [16, "vector"]
+  ],
+
+  "(method 22 water-anim)": [
+    [16, "vector"]
   ]
 }

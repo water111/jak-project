@@ -1023,5 +1023,49 @@
     [[0, 60], "f1", "float"]
   ],
 
+  "(anon-function 6 water-anim)": [
+    [[0, 999], "s6", "water-anim"],
+    [6, "a0", "vector"]
+  ],
+
+  "(anon-function 5 water-anim)": [
+    [[0, 999], "s6", "water-anim"]
+  ],
+
+  "rigid-body-platform-post": [
+    [[0, 999], "s6", "rigid-body-platform"]
+  ],
+
+  "(anon-function 8 rigid-body)": [
+    [[0, 999], "s6", "rigid-body-platform"],
+    [[16, 21], "t9", "(function object)"]
+  ],
+
+  "(anon-function 7 rigid-body)": [
+    [[0, 999], "s6", "rigid-body-platform"]
+  ],
+
+  "(anon-function 6 rigid-body)": [
+    [[0, 999], "s6", "rigid-body-platform"],
+    [[16, 21], "t9", "(function object)"]
+  ],
+
+  "(anon-function 5 rigid-body)": [
+    [[0, 999], "s6", "rigid-body-platform"]
+  ],
+
+  "(method 34 rigid-body-platform)": [
+    [[0, 5], "t9", "(function object)"]
+  ],
+
+  "(anon-function 4 water-anim)": [
+    [[0, 999], "s6", "water-anim"]
+  ],
+
+  "(method 22 water-anim)": [
+    [[9, 14], "t9", "(function object object)"],
+    [[32, 37], "t9", "(function object object)"]
+  ],
+
   "placeholder-do-not-add-below": []
 }

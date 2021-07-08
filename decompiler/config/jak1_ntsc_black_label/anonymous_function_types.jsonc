@@ -568,5 +568,18 @@
     [90, "(function debug-menu debug-menu symbol)"] // not 100% sure about the debug-menu, but it has a string at offset 0
   ],
 
+  "rigid-body": [
+    [5, "(function none :behavior rigid-body-platform)"],
+    [6, "(function none :behavior rigid-body-platform)"],
+    [7, "(function none :behavior rigid-body-platform)"],
+    [8, "(function none :behavior rigid-body-platform)"]
+  ],
+
+  "water-anim": [
+    [4, "(function none :behavior water-anim)"],
+    [5, "(function none :behavior water-anim)"],
+    [6, "(function process int symbol event-message-block process-mask :behavior water-anim)"]
+  ],
+
   "placeholder-do-not-add-below": []
 }
