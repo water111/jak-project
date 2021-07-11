@@ -540,5 +540,40 @@
     [64, "vector"]
   ],
 
+  "birth-func-copy-target-y-rot": [
+    [16, "matrix"]
+  ],
+
+  "birth-func-ground-orient": [
+    [16, "vector"],
+    [32, "bone"],
+    [128, "vector"],
+    [144, "quaternion"],
+    [160, "quaternion"]
+  ],
+
+  "birth-func-target-orient": [
+    [32, "vector"],
+    [48, "vector"], // unused
+    [64, "vector"],
+    [80, "quaternion"]
+  ],
+
+  "birth-func-vector-orient": [
+    [16, "vector"],
+    [32, "vector"], // unused
+    [48, "quaternion"]
+  ],
+
+  "part-tracker-track-target-joint": [
+    [16, "vector"]
+  ],
+
+  "process-drawable-burn-effect": [
+    [16, "rgbaf"],
+    [32, "rgbaf"],
+    [48, "vector"]
+  ],
+
   "placeholder-do-not-add-below!": []
 }

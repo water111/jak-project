@@ -10813,7 +10813,7 @@
    (pat-ignore-mask       uint32             :offset-assert 148)
    (event-self            basic              :offset-assert 152)
    (event-other           basic              :offset-assert 156)
-   (root-prim             basic              :offset-assert 160)
+   (root-prim             collide-shape-prim              :offset-assert 160)
    (riders                basic              :offset-assert 164)
    (backup-collide-as     uint64             :offset-assert 168)
    (backup-collide-with   uint64             :offset-assert 176)
@@ -13285,7 +13285,7 @@
    (flags         uint32                         :offset-assert 104)
    (user-int32    int32                          :offset-assert 108)
    (user-uint32   uint32                         :offset 108)
-   (user-float    float                          :offset 108)
+   (user-float    float                          :score 100 :offset 108) ;; TODO temporary to workaround type-casting support limitations
    (user-pntr     uint32                         :offset 108)
    (user-sprite   sprite-vec-data-2d             :offset 108)
    (func          basic                          :offset-assert 112)
@@ -16066,7 +16066,7 @@
 (define-extern kill-all-particles-with-key function)
 (define-extern sp-relaunch-setup-fields function)
 (define-extern sp-init-fields! function)
-(define-extern sp-launch-particles-var function)
+(define-extern sp-launch-particles-var (function sparticle-system sparticle-launcher vector symbol symbol float none)) ;; asm - ret not confirmed, last float might be flags?
 (define-extern sp-get-particle function)
 (define-extern particle-adgif function)
 (define-extern lookup-part-group-by-name function)
@@ -16140,7 +16140,7 @@
 ;; - Unknowns
 
 ;;(define-extern *particles-flag* object) ;; unknown type
-;;(define-extern *sp-particle-system-2d* object) ;; unknown type
+(define-extern *sp-particle-system-2d* sparticle-system) ;; unknown type
 ;;(define-extern *sp-particle-system-3d* object) ;; unknown type
 
 
@@ -18641,7 +18641,7 @@
 ;; - Functions
 
 (define-extern line-in-view-frustum? function)
-(define-extern process-drawable-random-point! function)
+(define-extern process-drawable-random-point! (function process-drawable vector vector))
 (define-extern process-drawable-from-entity! function)
 (define-extern cam-launcher-long-joystick function)
 (define-extern hide-hud-quick function)
@@ -18831,12 +18831,12 @@
 
 ;; - Functions
 
-(define-extern birth-func-copy-target-y-rot function)
-(define-extern birth-func-ground-orient function)
-(define-extern birth-func-target-orient function)
-(define-extern birth-func-vector-orient function)
-(define-extern part-tracker-track-target-joint function)
-(define-extern process-drawable-burn-effect function)
+(define-extern birth-func-copy-target-y-rot (function int sparticle-cpuinfo sparticle-launchinfo none))
+(define-extern birth-func-ground-orient (function int sparticle-cpuinfo sparticle-launchinfo none))
+(define-extern birth-func-target-orient (function int sparticle-cpuinfo sparticle-launchinfo none))
+(define-extern birth-func-vector-orient (function int sparticle-cpuinfo sparticle-launchinfo none))
+(define-extern part-tracker-track-target-joint (function int sparticle-cpuinfo sparticle-launchinfo none)) ;; 3rd arg could also be a vector
+(define-extern process-drawable-burn-effect (function int rgbaf :behavior target))
 
 
 ;; ----------------------

@@ -11,9 +11,18 @@
       "filterFileRegex": ".*ir2\\.asm",
       "decorations": [
         {
-          "overviewRulerColor": "transparent", // TODO - fix this bug, it extends beyond the line match
+          "overviewRulerColor": "transparent",
           "color": "#41f041",
           "fontWeight": "bold"
+        }
+      ]
+    },
+    "(<uninitialized>)": {
+      "filterFileRegex": ".*ir2\\.asm",
+      "decorations": [
+        {
+          "overviewRulerColor": "transparent",
+          "color": "#c72855"
         }
       ]
     },
@@ -23,8 +32,27 @@
         {
           "overviewRulerColor": "transparent",
           "color": "yellow",
-          "fontWeight": "bold",
-          "filterFileRegex": ".*ir2\\.asm"
+          "fontWeight": "bold"
+        }
+      ]
+    },
+    "(sp, -?\\d+ )": {
+      "filterFileRegex": ".*ir2\\.asm",
+      "decorations": [
+        {
+          "overviewRulerColor": "transparent",
+          "color": "#00ff08",
+          "fontWeight": "bold"
+        }
+      ]
+    },
+    "( \\d+\\(sp\\))": {
+      "filterFileRegex": ".*ir2\\.asm",
+      "decorations": [
+        {
+          "overviewRulerColor": "transparent",
+          "color": "#00ff08",
+          "fontWeight": "bold"
         }
       ]
     },
@@ -57,6 +85,24 @@
         }
       ]
     },
+    "(lwu t9)": {
+      "filterFileRegex": ".*ir2\\.asm",
+      "decorations": [
+        {
+          "overviewRulerColor": "transparent",
+          "color": "magenta"
+        }
+      ]
+    },
+    "(jalr)": {
+      "filterFileRegex": ".*ir2\\.asm",
+      "decorations": [
+        {
+          "overviewRulerColor": "transparent",
+          "color": "magenta"
+        }
+      ]
+    },
     "(L\\d+)": {
       "filterFileRegex": ".*ir2\\.asm",
       "decorations": [
@@ -75,117 +121,130 @@
         }
       ]
     },
-    "(at)": {
+    "([\\s\\(])(at)([\\s\\),:-])": {
       "filterFileRegex": ".*ir2\\.asm",
       "decorations": [
+        {},
         {
           "overviewRulerColor": "transparent",
           "color": "red"
         }
       ]
     },
-    "(gp)": {
+    "([\\s\\(])(gp)([\\s\\),:-])": {
       "filterFileRegex": ".*ir2\\.asm",
       "decorations": [
+        {},
         {
           "overviewRulerColor": "transparent",
           "color": "#64c5e3"
         }
       ]
     },
-    "(v0)": {
+    "([\\s\\(])(v0)([\\s\\),:-])": {
       "filterFileRegex": ".*ir2\\.asm",
       "decorations": [
+        {},
         {
           "overviewRulerColor": "transparent",
           "color": "#c6c1e6"
         }
       ]
     },
-    "(v1)": {
+    "([\\s\\(])(v1)([\\s\\),:-])": {
       "filterFileRegex": ".*ir2\\.asm",
       "decorations": [
+        {},
         {
           "overviewRulerColor": "transparent",
           "color": "#dae6be"
         }
       ]
     },
-    "(s6)": {
+    "([\\s\\(])(s6)([\\s\\),:-])": {
       "filterFileRegex": ".*ir2\\.asm",
       "decorations": [
+        {},
         {
           "overviewRulerColor": "transparent",
           "color": "#41f0b0"
         }
       ]
     },
-    "(a0)": {
+    "([\\s\\(])(a0)([\\s\\),:-])": {
       "filterFileRegex": ".*ir2\\.asm",
       "decorations": [
+        {},
         {
           "overviewRulerColor": "transparent",
           "color": "pink"
         }
       ]
     },
-    "(a1)": {
+    "([\\s\\(])(a1)([\\s\\),:-])": {
       "filterFileRegex": ".*ir2\\.asm",
       "decorations": [
+        {},
         {
           "overviewRulerColor": "transparent",
           "color": "#e065bb"
         }
       ]
     },
-    "(a2)": {
+    "([\\s\\(])(a2)([\\s\\),:-])": {
       "filterFileRegex": ".*ir2\\.asm",
       "decorations": [
+        {},
         {
           "overviewRulerColor": "transparent",
           "color": "#6dd1a6"
         }
       ]
     },
-    "(a3)": {
+    "([\\s\\(])(a3)([\\s\\),:-])": {
       "filterFileRegex": ".*ir2\\.asm",
       "decorations": [
+        {},
         {
           "overviewRulerColor": "transparent",
           "color": "#bad192"
         }
       ]
     },
-    "(t0)": {
+    "([\\s\\(])(t0)([\\s\\),:-])": {
       "filterFileRegex": ".*ir2\\.asm",
       "decorations": [
+        {},
         {
           "overviewRulerColor": "transparent",
           "color": "#b56b82"
         }
       ]
     },
-    "(t1)": {
+    "([\\s\\(])(t1)([\\s\\),:-])": {
       "filterFileRegex": ".*ir2\\.asm",
       "decorations": [
+        {},
         {
           "overviewRulerColor": "transparent",
           "color": "#6d32ba"
         }
       ]
     },
-    "(t2)": {
+    "([\\s\\(])(t2)([\\s\\),:-])": {
       "filterFileRegex": ".*ir2\\.asm",
       "decorations": [
+        {},
         {
           "overviewRulerColor": "transparent",
           "color": "#db9267"
         }
       ]
     },
-    "(t3)": {
+    "([\\s\\(])(t3)([\\s\\),:-])": {
       "filterFileRegex": ".*ir2\\.asm",
       "decorations": [
+        {},
         {
           "overviewRulerColor": "transparent",
           "color": "#92db67"

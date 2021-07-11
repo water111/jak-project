@@ -1154,5 +1154,21 @@
     [6, "a3", "symbol"]
   ],
 
+  "birth-func-vector-orient": [
+    [[7, 24], "s3", "sprite-vec-data-2d"]
+  ],
+
+  "process-drawable-burn-effect": [
+    [[0, 999], "s6", "target"],
+    [28, "a0", "process-drawable"],
+    [105, "v1", "process-drawable"],
+    [49, "a0", "process-drawable"],
+    [64, "a0", "process-drawable"]
+  ],
+
+  "process-drawable-random-point!": [
+    [[28, 40], "s4", "collide-shape"]
+  ],
+
   "placeholder-do-not-add-below": []
 }
