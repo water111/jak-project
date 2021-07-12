@@ -414,9 +414,7 @@
     [157, "a0", "(pointer process-drawable)"]
   ],
 
-  "load-game-text-info": [
-    [4, "v1", "game-text-info"]
-  ],
+  "load-game-text-info": [[4, "v1", "game-text-info"]],
 
   "texture-relocate": [
     [[17, 21], "t4", "dma-packet"],
@@ -791,7 +789,6 @@
   "debug-percent-bar": [[[32, 43], "v1", "dma-packet"]],
   "debug-pad-display": [[[70, 75], "v1", "dma-packet"]],
   "internal-draw-debug-text-3d": [[[54, 59], "v1", "dma-packet"]],
-  "drawable-frag-count": [[[14, 20], "s5", "drawable-group"]],
   "generic-init-buffers": [[[39, 44], "v1", "dma-packet"]],
 
   "(method 13 drawable-inline-array-collide-fragment)": [
@@ -890,11 +887,6 @@
     [[115, 154], "s3", "continue-point"]
   ],
   "(method 20 level)": [[[43, 45], "s3", "ramdisk-rpc-fill"]],
-  //"bg": [[[25, 52], "a0", "string"]],
-
-  "(anon-function 29 process-drawable)": [
-    [[0, 99999], "s6", "process-drawable"]
-  ],
   //"bg": [[[25, 52], "a0", "string"]],
 
   "(anon-function 29 process-drawable)": [[[0, 999], "s6", "process-drawable"]],
@@ -1171,6 +1163,21 @@
   "letterbox": [[[29, 33], "v1", "dma-packet"]],
 
   "blackout": [[[20, 24], "v1", "dma-packet"]],
+
+  "drawable-frag-count": [[[14, 20], "s5", "drawable-group"]],
+
+  "sp-adjust-launch": [
+    [[18, 21], "a0", "vector3s"],
+    [[19, 21], "a1", "vector3s"],
+    [[27, 31], "a0", "vector3s"],
+    [[28, 31], "a1", "vector3s"]
+  ],
+  "(method 9 sparticle-launch-control)": [
+    [16, "v1", "(inline-array sparticle-launch-state)"]
+  ],
+  "(method 9 sparticle-launch-group)": [
+    [[10, 15], "t9", "(function object object)"]
+  ],
 
   "placeholder-do-not-add-below": []
 }

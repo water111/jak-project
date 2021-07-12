@@ -541,5 +541,36 @@
 
   "(method 10 align-control)": [[16, "vector"]],
 
+  "sp-adjust-launch": [
+    [16, "transform"], // A guess, theres a lot of things that contain 3 vectors...
+    [64, "matrix"],
+    [128, "vector"],
+    [144, "matrix"]
+  ],
+
+  "sp-rotate-system": [
+    [16, "matrix"],
+    [80, "vector3s"]
+  ],
+
+  "sp-euler-convert": [
+    [16, "vector"], // a guess
+    [32, "quaternion"]
+  ],
+
+  "sp-relaunch-particle-3d": [
+    [16, "vector"],
+    [32, "vector"],
+    [48, "quaternion"]
+  ],
+
+  "(method 10 sparticle-launch-control)": [
+    [16, "vector"]
+  ],
+
+  "sp-launch-particles-death": [
+    [16, "transform"]
+  ],
+
   "placeholder-do-not-add-below!": []
 }
