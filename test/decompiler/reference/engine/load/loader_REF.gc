@@ -1,0 +1,1452 @@
+;;-*-Lisp-*-
+(in-package goal)
+
+;; definition for method 3 of type load-dir
+;; Used lq/sq
+(defmethod inspect load-dir ((obj load-dir))
+  (local-vars (sv-16 basic))
+  (format #t "[~8x] ~A~%" obj (-> obj type))
+  (format #t "~Tlevel: ~A~%" (-> obj unknown))
+  (format #t "~Tallocated-length: ~D~%" (-> obj string-array allocated-length))
+  (format #t "~Tlength: ~D~%" (-> obj string-array length))
+  (dotimes (s5-0 (-> obj string-array length))
+   (let ((s4-0 format)
+         (s3-0 #t)
+         (s2-0 "~T  [~D] ~S ~A  (~D bytes)~%")
+         (s1-0 s5-0)
+         (s0-0 (-> obj string-array s5-0))
+         )
+    (set! sv-16 (-> obj data-array s5-0))
+    (let ((t1-0 (mem-size (-> obj data-array s5-0) #f 0)))
+     (s4-0 s3-0 s2-0 s1-0 s0-0 sv-16 t1-0)
+     )
+    )
+   )
+  obj
+  )
+
+;; definition for method 8 of type load-dir
+;; INFO: Return type mismatch symbol vs load-dir.
+(defmethod
+  mem-usage
+  load-dir
+  ((obj load-dir) (arg0 memory-usage-block) (arg1 int))
+  (set! (-> arg0 length) (max 82 (-> arg0 length)))
+  (set! (-> arg0 data 81 name) "array")
+  (+! (-> arg0 data 81 count) 1)
+  (let ((v1-6 (asize-of obj)))
+   (+! (-> arg0 data 81 used) v1-6)
+   (+! (-> arg0 data 81 total) (logand -16 (+ v1-6 15)))
+   )
+  (set! (-> arg0 length) (max 82 (-> arg0 length)))
+  (set! (-> arg0 data 81 name) "array")
+  (set! (-> arg0 data 81 count) (-> arg0 data 81 count))
+  (let ((v1-15 (asize-of (-> obj string-array))))
+   (+! (-> arg0 data 81 used) v1-15)
+   (+! (-> arg0 data 81 total) (logand -16 (+ v1-15 15)))
+   )
+  (set! (-> arg0 length) (max 82 (-> arg0 length)))
+  (set! (-> arg0 data 81 name) "array")
+  (set! (-> arg0 data 81 count) (-> arg0 data 81 count))
+  (let ((v1-24 (asize-of (-> obj data-array))))
+   (+! (-> arg0 data 81 used) v1-24)
+   (+! (-> arg0 data 81 total) (logand -16 (+ v1-24 15)))
+   )
+  (dotimes (s3-0 (-> obj data-array length))
+   (mem-usage (-> obj data-array s3-0) arg0 arg1)
+   )
+  (the-as load-dir #f)
+  )
+
+;; definition for method 9 of type load-dir-art-group
+;; INFO: Return type mismatch art-group vs basic.
+(defmethod
+  dummy-9
+  load-dir-art-group
+  ((obj load-dir-art-group) (arg0 string) (arg1 symbol) (arg2 kheap) (arg3 int))
+  (let ((s5-0 (-> obj string-array)))
+   (dotimes (s3-0 (-> s5-0 length))
+    (when (string= arg0 (-> s5-0 s3-0))
+     (when arg1
+      (let ((v1-4 (art-group-load-check arg0 arg2 arg3)))
+       (if v1-4
+        (set! (-> obj art-group-array s3-0) v1-4)
+        )
+       )
+      )
+     (return (-> obj art-group-array s3-0))
+     )
+    )
+   (let ((v0-2 (art-group-load-check arg0 arg2 arg3)))
+    (when v0-2
+     (set! (-> s5-0 (-> s5-0 length)) arg0)
+     (set! (-> obj art-group-array (-> s5-0 length)) v0-2)
+     (+! (-> s5-0 length) 1)
+     (+! (-> obj art-group-array length) 1)
+     )
+    v0-2
+    )
+   )
+  )
+
+;; definition for method 10 of type load-dir-art-group
+(defmethod
+  dummy-10
+  load-dir-art-group
+  ((obj load-dir-art-group) (arg0 art-group))
+  (let ((s4-0 (-> obj string-array)))
+   (dotimes (s3-0 (-> s4-0 length))
+    (when (string= (-> arg0 name) (-> s4-0 s3-0))
+     (set! (-> obj art-group-array s3-0) arg0)
+     (set! arg0 (-> obj art-group-array s3-0))
+     (goto cfg-7)
+     )
+    )
+   (set! (-> s4-0 (-> s4-0 length)) (-> arg0 name))
+   (set! (-> obj art-group-array (-> s4-0 length)) arg0)
+   (+! (-> s4-0 length) 1)
+   )
+  (+! (-> obj art-group-array length) 1)
+  (label cfg-7)
+  arg0
+  )
+
+;; definition for function drawable-load
+(defun drawable-load ((arg0 drawable) (arg1 kheap))
+  (local-vars (sp-0 none))
+  (cond
+   ((type-type? (-> arg0 type) string)
+    sp-0
+    (if (< (the-as uint sp-0) (the-as uint *stack-top*))
+     (&+ *kernel-sp* -1024)
+     )
+    (let ((s5-1 (loado (the-as string arg0) arg1)))
+     (if (and s5-1 (type-type? (-> s5-1 type) drawable))
+      (login s5-1)
+      )
+     )
+    )
+   ((type-type? (-> arg0 type) drawable)
+    (login arg0)
+    )
+   )
+  )
+
+;; definition for function art-load
+(defun art-load ((arg0 string) (arg1 kheap))
+  (local-vars (sp-0 none))
+  sp-0
+  (if (< (the-as uint sp-0) (the-as uint *stack-top*))
+   (&+ *kernel-sp* -1024)
+   )
+  (let ((s5-0 (loado arg0 arg1)))
+   (the-as art (if (type-type? (-> s5-0 type) art)
+                (dummy-9 s5-0)
+                (the-as art #f)
+                )
+    )
+   )
+  )
+
+;; definition for function art-group-load-check
+(defun art-group-load-check ((arg0 string) (arg1 kheap) (arg2 int))
+  (local-vars (sp-0 none))
+  (when *debug-segment*
+   sp-0
+   (if (< (the-as uint sp-0) (the-as uint *stack-top*))
+    (&+ *kernel-sp* -1024)
+    )
+   (let
+    ((s3-1 (loado (make-file-name (file-kind art-group) arg0 arg2 #f) arg1)))
+    (the-as art-group (cond
+                       ((not s3-1)
+                        (format
+                         0
+                         "ERROR: art-group ~A is not a valid file.~%"
+                         arg0
+                         )
+                        (the-as art-group #f)
+                        )
+                       ((not (type-type? (-> s3-1 type) art-group))
+                        (format
+                         0
+                         "ERROR: art-group ~A is not a art-group.~%"
+                         arg0
+                         )
+                        (the-as art-group #f)
+                        )
+                       ((not
+                         (file-info-correct-version?
+                          (-> s3-1 info)
+                          (file-kind art-group)
+                          arg2
+                          )
+                         )
+                        (the-as art-group #f)
+                        )
+                       (else
+                        (dummy-9 s3-1)
+                        )
+                       )
+     )
+    )
+   )
+  )
+
+;; definition for method 9 of type external-art-buffer
+(defmethod
+  want-file
+  external-art-buffer
+  ((obj external-art-buffer)
+   (arg0 string)
+   (arg1 int)
+   (arg2 handle)
+   (arg3 float)
+   )
+  (set! (-> obj pending-load-file) arg0)
+  (set! (-> obj pending-load-file-part) arg1)
+  (set! (-> obj pending-load-file-owner) arg2)
+  (set! (-> obj pending-load-file-priority) arg3)
+  0
+  )
+
+;; definition for method 15 of type external-art-buffer
+(defmethod unlock! external-art-buffer ((obj external-art-buffer))
+  (set! (-> obj locked?) #f)
+  #f
+  )
+
+;; definition for method 11 of type external-art-buffer
+(defmethod inactive? external-art-buffer ((obj external-art-buffer))
+  (!= (-> obj status) 'active)
+  )
+
+;; definition for method 12 of type external-art-buffer
+(defmethod
+  file-status
+  external-art-buffer
+  ((obj external-art-buffer) (arg0 string) (arg1 int))
+  (when
+   (and
+    (name= (-> obj pending-load-file) arg0)
+    (= (-> obj pending-load-file-part) arg1)
+    )
+   (if (and (name= (-> obj load-file) arg0) (= (-> obj load-file-part) arg1))
+    (-> obj status)
+    'pending
+    )
+   )
+  )
+
+;; definition for method 13 of type art-group
+(defmethod link-art! art-group ((obj art-group))
+  (when obj
+   (countdown (s5-0 (-> obj length))
+    (let* ((art-elt (-> obj data s5-0))
+           (janim
+            (if
+             (and
+              (nonzero? art-elt)
+              (type-type? (-> art-elt type) art-joint-anim)
+              )
+             (the-as art-joint-anim art-elt)
+             )
+            )
+           (success #f)
+           )
+     (when janim
+      (let ((s3-1 3))
+       (while (begin
+               (label cfg-22)
+               (nonzero? s3-1)
+               )
+        (+! s3-1 -1)
+        (let
+         ((janim-group
+           (art-group-get-by-name
+            (-> *level* level s3-1)
+            (-> janim master-art-group-name)
+            )
+           )
+          )
+         (when janim-group
+          (cond
+           ((and
+             (< (-> janim master-art-group-index) (-> janim-group length))
+             (not (-> janim-group data (-> janim master-art-group-index)))
+             )
+            (set! (-> janim-group data (-> janim master-art-group-index)) janim)
+            (set! success #t)
+            )
+           (else
+            (countdown (a0-14 (-> janim-group length))
+             (when (not (-> janim-group data a0-14))
+              (set! (-> janim-group data a0-14) janim)
+              (set! success #t)
+              (goto cfg-22)
+              )
+             )
+            )
+           )
+          )
+         )
+        )
+       )
+      (if (not success)
+       (format
+        0
+        "ERROR: ~A could not find a master slot to link for ~A.~%"
+        (-> obj name)
+        janim
+        )
+       )
+      )
+     )
+    )
+   )
+  obj
+  )
+
+;; definition for method 14 of type art-group
+(defmethod unlink-art! art-group ((obj art-group))
+  (when obj
+   (countdown (s5-0 (-> obj length))
+    (let* ((art-elt (-> obj data s5-0))
+           (janim
+            (if
+             (and
+              (nonzero? art-elt)
+              (type-type? (-> art-elt type) art-joint-anim)
+              )
+             (the-as art-joint-anim art-elt)
+             )
+            )
+           (success #f)
+           )
+     (when janim
+      (let ((s2-0 3))
+       (while (begin
+               (label cfg-16)
+               (nonzero? s2-0)
+               )
+        (+! s2-0 -1)
+        (let
+         ((janim-group
+           (art-group-get-by-name
+            (-> *level* level s2-0)
+            (-> janim master-art-group-name)
+            )
+           )
+          )
+         (when janim-group
+          (countdown (a0-5 (-> janim-group length))
+           (when (= janim (-> janim-group data a0-5))
+            (set! (-> janim-group data a0-5) #f)
+            (set! success #t)
+            (goto cfg-16)
+            )
+           )
+          )
+         )
+        )
+       )
+      (if (not success)
+       (format
+        0
+        "ERROR: ~A could not find a master slot to unlink for ~A.~%"
+        (-> obj name)
+        janim
+        )
+       )
+      )
+     )
+    )
+   )
+  0
+  )
+
+;; definition for method 13 of type external-art-buffer
+(defmethod
+  link-file
+  external-art-buffer
+  ((obj external-art-buffer) (arg0 art-group))
+  (when arg0
+   (link-art! arg0)
+   (set! (-> obj art-group) arg0)
+   )
+  arg0
+  )
+
+;; definition for method 14 of type external-art-buffer
+(defmethod
+  unlink-file
+  external-art-buffer
+  ((obj external-art-buffer) (arg0 art-group))
+  (when arg0
+   (unlink-art! arg0)
+   (set! (-> obj art-group) #f)
+   )
+  0
+  )
+
+;; definition for method 10 of type external-art-buffer
+;; WARN: Found some very strange gotos. Check result carefully, this is not well tested.
+(defmethod update external-art-buffer ((obj external-art-buffer))
+  (local-vars (v1-54 handle))
+  (when
+   (or
+    (not (name= (-> obj pending-load-file) (-> obj load-file)))
+    (!= (-> obj pending-load-file-part) (-> obj load-file-part))
+    )
+   (when (not (handle->process (-> obj pending-load-file-owner)))
+    (set! (-> obj pending-load-file) #f)
+    (set! (-> obj pending-load-file-part) -1)
+    (set! (-> obj pending-load-file-owner) (the-as handle #f))
+    (set! (-> obj pending-load-file-priority) 100000000.0)
+    )
+   (when (= (-> obj status) 'initialize)
+    (let ((v1-11 (-> obj heap)))
+     (set!
+      (-> v1-11 base)
+      (the-as pointer (+ #x84000 (* #x3dc00 (-> obj index))))
+      )
+     (set! (-> v1-11 current) (-> v1-11 base))
+     (set! (-> v1-11 top-base) (&+ (-> v1-11 base) #x3dc00))
+     (set! (-> v1-11 top) (-> v1-11 top-base))
+     )
+    (set! (-> obj status) 'inactive)
+    )
+   (cond
+    ((-> obj load-file)
+     (if (= (-> obj status) 'loading)
+      (str-load-cancel)
+      )
+     (set! (-> obj load-file) #f)
+     (set! (-> obj load-file-part) -1)
+     (set! (-> obj load-file-owner) (the-as handle #f))
+     (set! (-> obj load-file-priority) 100000000.0)
+     )
+    (else
+     (set! (-> obj load-file) (-> obj pending-load-file))
+     (set! (-> obj load-file-part) (-> obj pending-load-file-part))
+     (set! (-> obj load-file-owner) (-> obj pending-load-file-owner))
+     (set! (-> obj load-file-priority) (-> obj pending-load-file-priority))
+     )
+    )
+   )
+  (label cfg-18)
+  (cond
+   ((-> obj load-file)
+    (case (-> obj status) 
+     (('active 'reserved)
+       )
+     (('error)
+      (set! (-> obj status) 'inactive)
+      (set! (-> obj load-file) #f)
+      (set! (-> obj load-file-part) -1)
+      (set! (-> obj load-file-owner) (the-as handle #f))
+      (set! (-> obj load-file-priority) 100000000.0)
+      (set! (-> obj pending-load-file) #f)
+      (set! (-> obj pending-load-file-part) -1)
+      (set! (-> obj pending-load-file-owner) (the-as handle #f))
+      (set! (-> obj pending-load-file-priority) 100000000.0)
+      (set! (-> obj art-group) #f)
+      )
+     (('inactive)
+      (let ((v1-28 (-> obj heap)))
+       (set! (-> v1-28 current) (-> v1-28 base))
+       )
+      (cond
+       ((string= (-> obj load-file) "reserved")
+        (cond
+         ((-> *art-control* reserve-buffer)
+          (format
+           0
+           "ERROR: trying double reserve ~A when ~A is reserved~%"
+           obj
+           (-> *art-control* reserve-buffer)
+           )
+          )
+         (else
+          (set! (-> obj status) 'reserved)
+          (set! (-> *art-control* reserve-buffer) obj)
+          )
+         )
+        )
+       ((and
+         (!= (-> *level* loading-level) (-> *level* level-default))
+         (< 81920.0 (-> obj load-file-priority))
+         )
+        )
+       ((str-load
+         (-> obj load-file)
+         (-> obj load-file-part)
+         (logand -64 (&+ (-> obj heap current) 63))
+         #x3fc00
+         )
+        (set! (-> obj status) 'loading)
+        )
+       )
+      )
+     (('loading)
+      (case (str-load-status (&-> obj len)) 
+       (('error)
+         (set! (-> obj status) 'error)
+         )
+       (('busy)
+        )
+       (else
+        (set! (-> obj buf) (logand -64 (&+ (-> obj heap current) 63)))
+        (set! (-> obj status) 'loaded)
+        (goto cfg-18)
+        )
+       )
+      )
+     (('loaded)
+      (let ((a0-37 (-> obj buf)))
+       (set!
+        (-> obj art-group)
+        (the-as
+         art-group
+         (link a0-37 (-> obj load-file data) (-> obj len) (-> obj heap) 0)
+         )
+        )
+       )
+      (let ((s4-0 (-> obj art-group))
+            (s3-0 (-> obj load-file))
+            )
+       (cond
+        ((not s4-0)
+         (format
+          0
+          "ERROR: art-group ~A part ~D is not a valid file.~%"
+          s3-0
+          (-> obj load-file-part)
+          )
+         (set! (-> obj status) 'error)
+         )
+        ((not (type-type? (-> s4-0 type) art-group))
+         (format
+          0
+          "ERROR: art-group ~A part ~D is not a art-group.~%"
+          s3-0
+          (-> obj load-file-part)
+          )
+         (set! (-> obj status) 'error)
+         )
+        ((not
+          (file-info-correct-version? (-> s4-0 info) (file-kind art-group) 0)
+          )
+         (set! (-> obj status) 'error)
+         )
+        (else
+         (dummy-9 s4-0)
+         (set! (-> obj status) 'locked)
+         )
+        )
+       )
+      )
+     (('locked)
+      (when (and (not (-> obj locked?)) (begin
+                                         (set! v1-54 (-> obj load-file-owner))
+                                         (nonzero? (l32-false-check v1-54))
+                                         )
+             (let ((a0-46 (-> v1-54 process 0)))
+              (if (= (-> v1-54 pid) (-> a0-46 pid))
+               a0-46
+               )
+              )
+             )
+       (link-file obj (-> obj art-group))
+       (set! (-> obj other locked?) #t)
+       (set! (-> obj status) 'active)
+       (goto cfg-18)
+       )
+      )
+     )
+    )
+   (else
+    (case (-> obj status) 
+     (('initialize)
+       )
+     (('reserved)
+      (cond
+       ((= (-> *art-control* reserve-buffer) obj)
+        (set! (-> *art-control* reserve-buffer) #f)
+        (set! (-> obj status) 'inactive)
+        )
+       (else
+        (format
+         0
+         "ERROR: trying tro free ~A when ~A is reserved~%"
+         obj
+         (-> *art-control* reserve-buffer)
+         )
+        )
+       )
+      )
+     (('active)
+      (unlink-file obj (-> obj art-group))
+      (let ((v1-70 (-> obj heap)))
+       (set! (-> v1-70 current) (-> v1-70 base))
+       )
+      (set! (-> obj art-group) #f)
+      (set! (-> obj status) 'inactive)
+      (when (-> obj other locked?)
+       (unlock! (-> obj other))
+       (update (-> obj other))
+       )
+      )
+     (else
+      (let ((v1-79 (-> obj heap)))
+       (set! (-> v1-79 current) (-> v1-79 base))
+       )
+      (set! (-> obj art-group) #f)
+      (set! (-> obj status) 'inactive)
+      )
+     )
+    )
+   )
+  0
+  )
+
+;; definition for symbol *preload-spool-anims*, type symbol
+(define *preload-spool-anims* #t)
+
+;; definition for method 12 of type external-art-control
+(defmethod
+  file-status
+  external-art-control
+  ((obj external-art-control) (arg0 string) (arg1 int))
+  (dotimes (s3-0 2)
+   (let ((v1-3 (file-status (-> obj buffer s3-0) arg0 arg1)))
+    (if v1-3
+     (return v1-3)
+     )
+    )
+   )
+  #f
+  )
+
+;; definition for method 9 of type external-art-control
+(defmethod update external-art-control ((obj external-art-control) (arg0 symbol))
+  (if (nonzero? (-> obj reserve-buffer-count))
+   (spool-push
+    obj
+    "reserved"
+    0
+    (the-as process-drawable *dproc*)
+    (if (-> obj reserve-buffer)
+     -110.0
+     -0.5
+     )
+    )
+   )
+  (dotimes (v1-5 2)
+   (set! (-> obj buffer v1-5 frame-lock) #f)
+   )
+  (dotimes (v1-8 3)
+   (set! (-> obj rec v1-8 buf2) #f)
+   )
+  (dotimes (s4-0 2)
+   (let ((s3-0 (-> obj rec s4-0)))
+    (when (-> s3-0 name)
+     (dotimes (s2-0 2)
+      (when
+       (and
+        (file-status (-> obj buffer s2-0) (-> s3-0 name) (-> s3-0 parts))
+        (not (-> obj buffer s2-0 frame-lock))
+        )
+       (set! (-> obj buffer s2-0 frame-lock) #t)
+       (set! (-> s3-0 buf2) (-> obj buffer s2-0))
+       (set! (-> obj buffer s2-0 pending-load-file-owner) (-> s3-0 owner))
+       (set! (-> obj buffer s2-0 load-file-owner) (-> s3-0 owner))
+       (set! (-> obj buffer s2-0 pending-load-file-priority) (-> s3-0 priority))
+       (set! (-> obj buffer s2-0 load-file-priority) (-> s3-0 priority))
+       (goto cfg-24)
+       )
+      )
+     )
+    )
+   (label cfg-24)
+   )
+  (dotimes (s4-1 2)
+   (let ((s3-1 (-> obj rec s4-1)))
+    (when (and (-> s3-1 name) (not (-> s3-1 buf2)))
+     (if (and (not *preload-spool-anims*) (>= (-> s3-1 priority) 0.0))
+      (goto cfg-46)
+      )
+     (dotimes (s2-1 2)
+      (when (not (-> obj buffer s2-1 frame-lock))
+       (set! (-> obj buffer s2-1 frame-lock) #t)
+       (want-file
+        (-> obj buffer s2-1)
+        (-> s3-1 name)
+        (-> s3-1 parts)
+        (-> s3-1 owner)
+        (-> s3-1 priority)
+        )
+       (set! (-> s3-1 buf2) (-> obj buffer s2-1))
+       (goto cfg-46)
+       )
+      )
+     )
+    )
+   (label cfg-46)
+   )
+  (when (not (-> obj reserve-buffer))
+   (let ((s4-2 (-> obj rec 0 buf2)))
+    (if
+     (and
+      s4-2
+      (-> s4-2 locked?)
+      (not (string= (-> s4-2 pending-load-file) "reserved"))
+      (not (string= (-> s4-2 other pending-load-file) "reserved"))
+      )
+     (want-file
+      (-> s4-2 other)
+      (the-as string #f)
+      -1
+      (the-as handle #f)
+      100000000.0
+      )
+     )
+    )
+   )
+  (dotimes (s4-3 2)
+   (update (-> obj buffer s4-3))
+   )
+  (let ((s4-4 (the-as spool-anim #f)))
+   (countdown (s3-2 3)
+    (if
+     (and
+      (-> obj rec s3-2 name)
+      (not (name= (-> obj rec s3-2 name) (-> obj active-stream)))
+      )
+     (set! s4-4 (the-as spool-anim (-> obj rec)))
+     )
+    )
+   (if
+    (and
+     (-> obj preload-stream name)
+     (or (not s4-4) (< (-> obj preload-stream priority) (-> s4-4 priority)))
+     )
+    (set! s4-4 (-> obj preload-stream))
+    )
+   (cond
+    (s4-4
+     (mem-copy! (&-> (-> obj last-preload-stream) type) (&-> s4-4 type) 44)
+     (str-play-queue (-> s4-4 name))
+     )
+    (else
+     (set! (-> obj last-preload-stream name) #f)
+     (set! (-> obj last-preload-stream owner) (the-as handle #f))
+     )
+    )
+   )
+  (when (and arg0 *display-art-control*)
+   (dotimes (s5-1 3)
+    (let ((t9-10 format)
+          (a0-29 *stdcon*)
+          (a1-9 "rec ~d ~S ~D ~f ~A~%")
+          (a2-5 s5-1)
+          (a3-3 (-> obj rec s5-1 name))
+          (t0-3 (-> obj rec s5-1 parts))
+          (t1-0 (-> obj rec s5-1 priority))
+          (v1-123 (handle->process (-> obj rec s5-1 owner)))
+          )
+     (t9-10 a0-29 a1-9 a2-5 a3-3 t0-3 t1-0 (if v1-123
+                                            (-> v1-123 name)
+                                            )
+      )
+     )
+    )
+   (dotimes (s5-2 2)
+    (let ((t9-11 format)
+          (a0-30 *stdcon*)
+          (a1-10 "buf ~d ~C ~S ~D ~A ~A~%")
+          (a2-6 s5-2)
+          (a3-4 (if (-> obj buffer s5-2 locked?)
+                 108
+                 32
+                 )
+           )
+          (t0-4 (-> obj buffer s5-2 pending-load-file))
+          (t1-1 (-> obj buffer s5-2 pending-load-file-part))
+          (t2-5 (-> obj buffer s5-2 status))
+          (v1-144
+           (handle->process (-> obj buffer s5-2 pending-load-file-owner))
+           )
+          )
+     (t9-11 a0-30 a1-10 a2-6 a3-4 t0-4 t1-1 t2-5 (if v1-144
+                                                  (-> v1-144 name)
+                                                  )
+      )
+     )
+    )
+   (format *stdcon* " a: ~S~%" (-> obj active-stream))
+   (let ((t9-13 format)
+         (a0-32 *stdcon*)
+         (a1-12 " p: ~S  ~A~%")
+         (a2-8 (-> obj preload-stream name))
+         (v1-149 (handle->process (-> obj preload-stream owner)))
+         )
+    (t9-13 a0-32 a1-12 a2-8 (if v1-149
+                             (-> v1-149 name)
+                             )
+     )
+    )
+   (let ((t9-14 format)
+         (a0-33 *stdcon*)
+         (a1-13 " q: ~S  ~A~%")
+         (a2-9 (-> obj last-preload-stream name))
+         (v1-152 (handle->process (-> obj last-preload-stream owner)))
+         )
+    (t9-14 a0-33 a1-13 a2-9 (if v1-152
+                             (-> v1-152 name)
+                             )
+     )
+    )
+   )
+  0
+  )
+
+;; definition for method 15 of type external-art-control
+(defmethod none-reserved? external-art-control ((obj external-art-control))
+  (zero? (-> obj reserve-buffer-count))
+  )
+
+;; definition for method 13 of type external-art-control
+(defmethod reserve-alloc external-art-control ((obj external-art-control))
+  (set! (-> obj reserve-buffer-count) 1)
+  (if (-> obj reserve-buffer)
+   (-> obj reserve-buffer heap)
+   )
+  )
+
+;; definition for method 14 of type external-art-control
+(defmethod
+  reserve-free
+  external-art-control
+  ((obj external-art-control) (arg0 kheap))
+  (cond
+   ((zero? (-> obj reserve-buffer-count))
+    (format
+     0
+     "ERROR: illegal attempt to free a buffer #x~X which had not been reserved (none reserved).~%"
+     arg0
+     )
+    )
+   ((not (-> obj reserve-buffer))
+    (set! (-> obj reserve-buffer-count) 0)
+    0
+    )
+   ((= (-> obj reserve-buffer heap) arg0)
+    (want-file
+     (-> obj reserve-buffer)
+     (the-as string #f)
+     -1
+     (the-as handle #f)
+     100000000.0
+     )
+    (update (-> obj reserve-buffer))
+    (set! (-> obj reserve-buffer-count) 0)
+    0
+    )
+   (else
+    (format
+     0
+     "ERROR: illegal attempt to free a buffer #x~X which had not been reserved (buffer unknown).~%"
+     arg0
+     )
+    )
+   )
+  0
+  )
+
+;; definition for method 10 of type external-art-control
+(defmethod clear-rec external-art-control ((obj external-art-control))
+  (cond
+   ((!= *master-mode* 'game)
+    (dotimes (s5-0 3)
+     (when (name= (-> obj rec s5-0 name) "reserved")
+      (let ((v1-5 s5-0))
+       (cond
+        ((zero? v1-5)
+         (mem-copy!
+          (&+ (the-as pointer (-> obj rec)) -4)
+          (&-> (-> obj rec 1) type)
+          44
+          )
+         (mem-copy! (&-> (-> obj rec 1) type) (&-> (-> obj rec 2) type) 44)
+         )
+        ((= v1-5 1)
+         (mem-copy! (&-> (-> obj rec 1) type) (&-> (-> obj rec 2) type) 44)
+         )
+        )
+       )
+      (set! (-> obj rec 2 type) spool-anim)
+      (set! (-> obj rec 2 name) #f)
+      (set! (-> obj rec 2 priority) 100000000.0)
+      (set! (-> obj rec 2 owner) (the-as handle #f))
+      )
+     )
+    )
+   (else
+    (dotimes (v1-19 3)
+     (set! (-> obj rec v1-19 type) spool-anim)
+     (set! (-> obj rec v1-19 name) #f)
+     (set! (-> obj rec v1-19 priority) 100000000.0)
+     (set! (-> obj rec v1-19 owner) (the-as handle #f))
+     )
+    (set! (-> obj preload-stream type) spool-anim)
+    (set! (-> obj preload-stream name) #f)
+    (set! (-> obj preload-stream priority) 100000000.0)
+    (set! (-> obj preload-stream owner) (the-as handle #f))
+    )
+   )
+  0
+  )
+
+;; definition for method 16 of type external-art-control
+(defmethod
+  try-preload-stream
+  external-art-control
+  ((obj external-art-control)
+   (arg0 string)
+   (arg1 int)
+   (arg2 process-drawable)
+   (arg3 float)
+   )
+  (when (and (= arg3 -99.0) arg2)
+   (let ((a0-2 (target-pos 0)))
+    (set! arg3 (vector-vector-distance a0-2 (-> arg2 root trans)))
+    )
+   )
+  (when
+   (not
+    (and
+     (-> obj preload-stream name)
+     (>= arg3 (-> obj preload-stream priority))
+     )
+    )
+   (set! (-> obj preload-stream name) arg0)
+   (set! (-> obj preload-stream parts) arg1)
+   (set! (-> obj preload-stream priority) arg3)
+   (let ((v1-8 (if arg2
+                (-> arg2 ppointer)
+                )
+          )
+         )
+    (set!
+     (-> obj preload-stream owner)
+     (new 'static 'handle
+      :process v1-8
+      :pid (-> (the-as process (-> v1-8 0)) pid)
+      )
+     )
+    )
+   )
+  0
+  )
+
+;; definition for method 11 of type external-art-control
+(defmethod
+  spool-push
+  external-art-control
+  ((obj external-art-control)
+   (arg0 string)
+   (arg1 int)
+   (arg2 process-drawable)
+   (arg3 float)
+   )
+  (when (and (= arg3 -99.0) arg2)
+   (let ((a0-2 (target-pos 0)))
+    (set! arg3 (vector-vector-distance a0-2 (-> arg2 root trans)))
+    )
+   )
+  (cond
+   ((and (= arg1 (-> obj rec 0 parts)) (name= arg0 (-> obj rec 0 name)))
+    (if (>= arg3 (-> obj rec 0 priority))
+     (return (the-as int #f))
+     )
+    (mem-copy! (&-> (-> obj rec) 0 type) (&-> (-> obj rec 1) type) 44)
+    (mem-copy! (&-> (-> obj rec 1) type) (&-> (-> obj rec 2) type) 44)
+    (set! (-> obj rec 2 name) #f)
+    (set! (-> obj rec 2 owner) (the-as handle #f))
+    )
+   ((and (= arg1 (-> obj rec 1 parts)) (name= arg0 (-> obj rec 1 name)))
+    (if (>= arg3 (-> obj rec 1 priority))
+     (return (the-as int #f))
+     )
+    (mem-copy! (&-> (-> obj rec 1) type) (&-> (-> obj rec 2) type) 44)
+    (set! (-> obj rec 2 name) #f)
+    (set! (-> obj rec 2 owner) (the-as handle #f))
+    )
+   ((and (= arg1 (-> obj rec 2 parts)) (name= arg0 (-> obj rec 2 name)))
+    (if (>= arg3 (-> obj rec 2 priority))
+     (return (the-as int #f))
+     )
+    (set! (-> obj rec 2 name) #f)
+    (set! (-> obj rec 2 owner) (the-as handle #f))
+    )
+   )
+  (cond
+   ((< arg3 (-> obj rec 0 priority))
+    (mem-copy! (&-> (-> obj rec 2) type) (&-> (-> obj rec 1) type) 44)
+    (mem-copy! (&-> (-> obj rec 1) type) (&-> (-> obj rec) 0 type) 44)
+    (set! (-> obj rec 0 name) arg0)
+    (set! (-> obj rec 0 parts) arg1)
+    (set! (-> obj rec 0 priority) arg3)
+    (let ((v1-34 (if arg2
+                  (-> arg2 ppointer)
+                  )
+           )
+          )
+     (set!
+      (-> obj rec 0 owner)
+      (new 'static 'handle
+       :process v1-34
+       :pid (-> (the-as process (-> v1-34 0)) pid)
+       )
+      )
+     )
+    )
+   ((< arg3 (-> obj rec 1 priority))
+    (mem-copy! (&-> (-> obj rec 2) type) (&-> (-> obj rec 1) type) 44)
+    (set! (-> obj rec 1 name) arg0)
+    (set! (-> obj rec 1 parts) arg1)
+    (set! (-> obj rec 1 priority) arg3)
+    (let* ((a0-18 arg2)
+           (v1-40 (if a0-18
+                   (-> a0-18 ppointer)
+                   )
+            )
+           )
+     (set!
+      (-> obj rec 1 owner)
+      (new 'static 'handle
+       :process v1-40
+       :pid (-> (the-as process (-> v1-40 0)) pid)
+       )
+      )
+     )
+    )
+   ((< arg3 (-> obj rec 2 priority))
+    (set! (-> obj rec 2 name) arg0)
+    (set! (-> obj rec 2 parts) arg1)
+    (set! (-> obj rec 2 priority) arg3)
+    (let* ((a0-22 arg2)
+           (v1-44 (if a0-22
+                   (-> a0-22 ppointer)
+                   )
+            )
+           )
+     (set!
+      (-> obj rec 2 owner)
+      (new 'static 'handle
+       :process v1-44
+       :pid (-> (the-as process (-> v1-44 0)) pid)
+       )
+      )
+     )
+    )
+   )
+  0
+  )
+
+;; definition for function ja-play-spooled-anim
+;; WARN: Stack slot offset 24 signed mismatch
+;; WARN: Stack slot offset 24 signed mismatch
+;; WARN: Stack slot offset 24 signed mismatch
+;; WARN: Stack slot offset 24 signed mismatch
+;; WARN: Stack slot offset 24 signed mismatch
+(defbehavior
+  ja-play-spooled-anim process-drawable
+  ((arg0 spool-anim)
+   (arg1 art-joint-anim)
+   (arg2 art-joint-anim)
+   (arg3 (function process-drawable symbol))
+   )
+  (local-vars
+   (sv-16 int)
+   (sv-24 float)
+   (sv-28 uint)
+   (sv-32 int)
+   (sv-40 int)
+   (sv-48 int)
+   (sv-56 int)
+   (sv-64 sound-id)
+   (sv-72 int)
+   )
+  (set! sv-16 0)
+  (set! sv-24 -17.0)
+  (set! sv-28 (-> self skel status))
+  (set! sv-32 -2)
+  (set! sv-40 0)
+  (set! sv-48 0)
+  (set! sv-56 0)
+  (set! sv-64 (new-sound-id))
+  (dummy-17 *load-state* (-> arg0 command-list))
+  (let* ((a0-2 *setting-control*)
+         (t9-2 (method-of-object a0-2 set-setting!))
+         (a1-2 self)
+         (a2-1 'spooling)
+         (v1-6 self)
+         )
+   (t9-2 a0-2 a1-2 a2-1 (the-as process (if v1-6
+                                         (-> v1-6 ppointer)
+                                         )
+                         )
+    0.0 0
+    )
+   )
+  (set! (-> self skel status) (logior (-> self skel status) 7))
+  (kill-current-level-hint '() '() 'die)
+  (level-hint-surpress!)
+  (copy-settings-from-target! *setting-control*)
+  (when
+   (or (handle->process (-> *art-control* spool-lock)) (!= *master-mode* 'game))
+   (cond
+    (arg1
+     (when (!= (if (> (-> self skel active-channels) 0)
+                (-> self skel root-channel 0 frame-group)
+                )
+            arg1
+            )
+      (ja-channel-push! 1 15)
+      (let ((s2-0 (-> self skel root-channel 0)))
+       (joint-control-channel-group-eval! s2-0 arg1 num-func-identity)
+       (set! (-> s2-0 frame-num) 0.0)
+       )
+      )
+     )
+    (else
+     (ja-channel-set! 0)
+     )
+    )
+   (while
+    (or
+     (handle->process (-> *art-control* spool-lock))
+     (!= *master-mode* 'game)
+     )
+    (format #t "WARNING: ---------------------> loader stall on lock~%")
+    (if (arg3 self)
+     (goto cfg-88)
+     )
+    (let* ((a0-16 *art-control*)
+           (t9-11 (method-of-object a0-16 spool-push))
+           (a1-8 (-> arg0 name))
+           (a2-4 sv-16)
+           (t0-1 -9.0)
+           )
+     (t9-11 a0-16 a1-8 a2-4 self t0-1)
+     )
+    (suspend)
+    (when arg1
+     (let ((a0-17 (-> self skel root-channel 0)))
+      (set! (-> a0-17 param 0) 1.0)
+      (joint-control-channel-group-eval!
+       a0-17
+       (the-as art-joint-anim #f)
+       num-func-loop!
+       )
+      )
+     )
+    )
+   )
+  (let ((v1-46 (if self
+                (-> self ppointer)
+                )
+         )
+        )
+   (set!
+    (-> *art-control* spool-lock)
+    (new 'static 'handle
+     :process v1-46
+     :pid (-> (the-as process (-> v1-46 0)) pid)
+     )
+    )
+   )
+  (set! sv-48 (the-as int (-> *display* base-frame-counter)))
+  (while (< sv-16 (-> arg0 parts))
+   (let* ((a0-27 *art-control*)
+          (t9-13 (method-of-object a0-27 spool-push))
+          (a1-11 (-> arg0 name))
+          (a2-6 sv-16)
+          (t0-2 -20.0)
+          )
+    (t9-13 a0-27 a1-11 a2-6 self t0-2)
+    )
+   (update *art-control* #f)
+   (let* ((a0-29 *art-control*)
+          (t9-15 (method-of-object a0-29 spool-push))
+          (a1-13 (-> arg0 name))
+          (a2-7 sv-16)
+          (t0-3 -20.0)
+          )
+    (t9-15 a0-29 a1-13 a2-7 self t0-3)
+    )
+   (when (!= (file-status *art-control* (-> arg0 name) sv-16) 'active)
+    (cond
+     (arg1
+      (when (!= (if (> (-> self skel active-channels) 0)
+                 (-> self skel root-channel 0 frame-group)
+                 )
+             arg1
+             )
+       (ja-channel-set! 1)
+       (let ((s2-2 (-> self skel root-channel 0)))
+        (joint-control-channel-group-eval! s2-2 arg1 num-func-identity)
+        (set! (-> s2-2 frame-num) 0.0)
+        )
+       )
+      )
+     (else
+      (ja-channel-set! 0)
+      )
+     )
+    (while (!= (file-status *art-control* (-> arg0 name) sv-16) 'active)
+     (if (arg3 self)
+      (goto cfg-88)
+      )
+     (let* ((a0-35 *art-control*)
+            (t9-21 (method-of-object a0-35 spool-push))
+            (a1-16 (-> arg0 name))
+            (a2-10 sv-16)
+            (t0-4 -20.0)
+            )
+      (t9-21 a0-35 a1-16 a2-10 self t0-4)
+      )
+     (format
+      #t
+      "WARNING: ---------------------> loader stall on art ~S ~D~%"
+      (-> arg0 name)
+      sv-16
+      )
+     (suspend)
+     (when arg1
+      (let ((a0-37 (-> self skel root-channel 0)))
+       (set! (-> a0-37 param 0) 1.0)
+       (joint-control-channel-group-eval!
+        a0-37
+        (the-as art-joint-anim #f)
+        num-func-loop!
+        )
+       )
+      )
+     )
+    )
+   (let* ((a0-39 *art-control*)
+          (t9-25 (method-of-object a0-39 spool-push))
+          (a1-20 (-> arg0 name))
+          (a2-14 sv-16)
+          (t0-5 -20.0)
+          )
+    (t9-25 a0-39 a1-20 a2-14 self t0-5)
+    )
+   (let
+    ((s2-4
+      (the-as
+       art-joint-anim
+       (dummy-10 (-> self draw art-group) (-> arg0 name) art-joint-anim)
+       )
+      )
+     )
+    (cond
+     (s2-4
+      (ja-channel-set! 1)
+      (let ((a0-42 (-> self skel root-channel 0)))
+       (set! (-> a0-42 frame-group) s2-4)
+       (set! (-> a0-42 param 0) (the float (+ (-> s2-4 data 0 length) -1)))
+       (set! (-> a0-42 param 1) 1.0)
+       (set! (-> a0-42 frame-num) 0.0)
+       (joint-control-channel-group! a0-42 s2-4 num-func-seek!)
+       )
+      (when (zero? sv-16)
+       (str-play-async (-> arg0 name) (the-as pointer sv-64))
+       (set! (-> *art-control* active-stream) (-> arg0 name))
+       )
+      (let* ((f30-0 (* 0.05859375 (-> s2-4 speed)))
+             (f28-0
+              (+ sv-24 (/ (the float (+ (-> s2-4 data 0 length) -1)) f30-0))
+              )
+             )
+       (set! sv-72 (current-str-pos (the-as int sv-64)))
+       (set! sv-40 (the-as int (-> *display* base-frame-counter)))
+       (until (begin
+               (let* ((a0-55 *art-control*)
+                      (t9-32 (method-of-object a0-55 spool-push))
+                      (a1-24 (-> arg0 name))
+                      (a2-17 sv-16)
+                      (t0-6 -20.0)
+                      )
+                (t9-32 a0-55 a1-24 a2-17 self t0-6)
+                )
+               (cond
+                ((< (+ sv-16 1) (-> arg0 parts))
+                 (let* ((a0-57 *art-control*)
+                        (t9-33 (method-of-object a0-57 spool-push))
+                        (a1-25 (-> arg0 name))
+                        (a2-18 (+ sv-16 1))
+                        (t0-7 -10.0)
+                        )
+                  (t9-33 a0-57 a1-25 a2-18 self t0-7)
+                  )
+                 )
+                (else
+                 (set!
+                  (-> self skel status)
+                  (logand -5 (the-as int (-> self skel status)))
+                  )
+                 )
+                )
+               (dummy-16 *load-state* (ja-aframe-num 0))
+               (cond
+                ((and (< sv-32 sv-72) (= (current-str-id) sv-64))
+                 (set!
+                  sv-56
+                  (+
+                   sv-56
+                   (the-as
+                    int
+                    (-
+                     (-> *display* base-frame-counter)
+                     (-> *display* old-base-frame-counter)
+                     )
+                    )
+                   )
+                  )
+                 (set! sv-40 (the-as int (-> *display* base-frame-counter)))
+                 )
+                (else
+                 0
+                 )
+                )
+               (set! sv-32 sv-72)
+               (set! sv-48 (the-as int (-> *display* base-frame-counter)))
+               (suspend)
+               (let
+                ((f0-14
+                  (*
+                   (- (the float (current-str-pos (the-as int sv-64))) sv-24)
+                   f30-0
+                   )
+                  )
+                 (a0-69 (-> self skel root-channel 0))
+                 )
+                (set!
+                 (-> a0-69 param 0)
+                 (the float (+ (-> a0-69 frame-group data 0 length) -1))
+                 )
+                (set! (-> a0-69 param 1) 1.0)
+                (set! (-> a0-69 frame-num) f0-14)
+                (joint-control-channel-group!
+                 a0-69
+                 (the-as art-joint-anim #f)
+                 num-func-seek!
+                 )
+                )
+               (let ((v0-39 (current-str-pos (the-as int sv-64))))
+                (set! sv-72 v0-39)
+                (>= (the float v0-39) f28-0)
+                )
+               )
+        (if (= (-> self skel root-channel 0) (-> self skel channel))
+         (set! (-> self skel status) (logior (-> self skel status) 32))
+         )
+        (if
+         (or
+          (arg3 self)
+          (and
+           (<= sv-72 0)
+           (>= (the-as int (- (-> *display* base-frame-counter) sv-40)) 1200)
+           )
+          (and (< 300 sv-56) (<= sv-72 0))
+          )
+         (goto cfg-88)
+         )
+        )
+       (set! sv-24 f28-0)
+       )
+      (set!
+       (-> self skel status)
+       (logand -33 (the-as int (-> self skel status)))
+       )
+      )
+     (else
+      (format
+       0
+       "ERROR: <asg> ~A in spool anim loop for ~A ~D, but not loaded.~"
+       self
+       (-> arg0 name)
+       sv-16
+       )
+      (goto cfg-88)
+      )
+     )
+    )
+   (set! sv-16 (+ sv-16 1))
+   )
+  (set! sv-16 (+ sv-16 -1))
+  (label cfg-88)
+  (ja-abort-spooled-anim arg0 arg2 sv-16)
+  0
+  )
+
+;; definition for function ja-abort-spooled-anim
+(defbehavior
+  ja-abort-spooled-anim process-drawable
+  ((arg0 spool-anim) (arg1 art-joint-anim) (arg2 int))
+  (dummy-18 *load-state*)
+  (str-play-stop (-> arg0 name))
+  (set! (-> *art-control* active-stream) #f)
+  (set! (-> self skel status) (logand -7 (the-as int (-> self skel status))))
+  (if (zero? (logand (-> self skel status) 1))
+   (set! (-> self skel status) (logand -2 (the-as int (-> self skel status))))
+   )
+  (clear-pending-settings-from-process *setting-control* self 'spooling)
+  (cond
+   ((and arg1 (>= arg2 0))
+    (ja-channel-push! 1 30)
+    (set! (-> self skel root-channel 0 frame-group) arg1)
+    (while (!= (-> self skel root-channel 0) (-> self skel channel))
+     (let* ((a0-11 *art-control*)
+            (t9-4 (method-of-object a0-11 spool-push))
+            (a1-3 (-> arg0 name))
+            (a2-2 arg2)
+            (t0-0 -20.0)
+            )
+      (t9-4 a0-11 a1-3 a2-2 self t0-0)
+      )
+     (suspend)
+     (let ((a0-12 (-> self skel root-channel 0)))
+      (set!
+       (-> a0-12 param 0)
+       (the float (+ (-> a0-12 frame-group data 0 length) -1))
+       )
+      (set! (-> a0-12 param 1) 1.0)
+      (joint-control-channel-group-eval!
+       a0-12
+       (the-as art-joint-anim #f)
+       num-func-seek!
+       )
+      )
+     )
+    )
+   (else
+    (ja-channel-set! 0)
+    )
+   )
+  (set! (-> *art-control* spool-lock) (the-as handle #f))
+  0
+  )
+
+;; failed to figure out what this is:
+(if (zero? *art-control*)
+  (set! *art-control* (new 'global 'external-art-control))
+  )
+
+
+
+

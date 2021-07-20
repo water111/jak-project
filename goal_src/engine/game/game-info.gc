@@ -708,363 +708,125 @@
   )
 
 (defun-debug game-task->string ((arg0 game-task))
-  (let ((v1-0 arg0))
-    (cond
-      ((= v1-0 (game-task max))
-       "max"
-       )
-      ((= v1-0 (game-task assistant-village3))
-       "assistant-village3"
-       )
-      ((= v1-0 (game-task leaving-misty))
-       "leaving-misty"
-       )
-      ((= v1-0 (game-task plunger-lurker-hit))
-       "plunger-lurker-hit"
-       )
-      ((= v1-0 (game-task finalboss-movies))
-       "finalboss-movies"
-       )
-      ((= v1-0 (game-task village4-button))
-       "village4-button"
-       )
-      ((= v1-0 (game-task ogre-secret))
-       "ogre-secret"
-       )
-      ((= v1-0 (game-task intro))
-       "intro"
-       )
-      ((= v1-0 (game-task lavatube-start))
-       "lavatube-start"
-       )
-      ((= v1-0 (game-task lavatube-balls))
-       "lavatube-balls"
-       )
-      ((= v1-0 (game-task red-eggtop))
-       "red-eggtop"
-       )
-      ((= v1-0 (game-task village3-button))
-       "village3-button"
-       )
-      ((= v1-0 (game-task swamp-arm))
-       "swamp-arm"
-       )
-      ((= v1-0 (game-task village2-levitator))
-       "village2-levitator"
-       )
-      ((= v1-0 (game-task firecanyon-assistant))
-       "firecanyon-assistant"
-       )
-      ((= v1-0 (game-task village3-oracle-money2))
-       "village3-oracle-money2"
-       )
-      ((= v1-0 (game-task village3-oracle-money1))
-       "village3-oracle-money1"
-       )
-      ((= v1-0 (game-task village3-miner-money4))
-       "village3-miner-money4"
-       )
-      ((= v1-0 (game-task village3-miner-money3))
-       "village3-miner-money3"
-       )
-      ((= v1-0 (game-task village3-miner-money2))
-       "village3-miner-money2"
-       )
-      ((= v1-0 (game-task village3-miner-money1))
-       "village3-miner-money1"
-       )
-      ((= v1-0 (game-task training-buzzer))
-       "training-buzzer"
-       )
-      ((= v1-0 (game-task training-climb))
-       "training-climb"
-       )
-      ((= v1-0 (game-task training-door))
-       "training-door"
-       )
-      ((= v1-0 (game-task training-gimmie))
-       "training-gimmie"
-       )
-      ((= v1-0 (game-task citadel-buzzer))
-       "citadel-buzzer"
-       )
-      ((= v1-0 (game-task lavatube-buzzer))
-       "lavatube-buzzer"
-       )
-      ((= v1-0 (game-task lavatube-end))
-       "lavatube-end"
-       )
-      ((= v1-0 (game-task ogre-buzzer))
-       "ogre-buzzer"
-       )
-      ((= v1-0 (game-task ogre-end))
-       "ogre-end"
-       )
-      ((= v1-0 (game-task ogre-boss))
-       "ogre-boss"
-       )
-      ((= v1-0 (game-task cave-buzzer))
-       "cave-buzzer"
-       )
-      ((= v1-0 (game-task cave-platforms))
-       "cave-platforms"
-       )
-      ((= v1-0 (game-task cave-spider-tunnel))
-       "cave-spider-tunnel"
-       )
-      ((= v1-0 (game-task cave-swing-poles))
-       "cave-swing-poles"
-       )
-      ((= v1-0 (game-task cave-robot-climb))
-       "cave-robot-climb"
-       )
-      ((= v1-0 (game-task cave-dark-climb))
-       "cave-dark-climb"
-       )
-      ((= v1-0 (game-task cave-dark-crystals))
-       "cave-dark-crystals"
-       )
-      ((= v1-0 (game-task cave-gnawers))
-       "cave-gnawers"
-       )
-      ((= v1-0 (game-task village3-buzzer))
-       "village3-buzzer"
-       )
-      ((= v1-0 (game-task village2-buzzer))
-       "village2-buzzer"
-       )
-      ((= v1-0 (game-task village1-buzzer))
-       "village1-buzzer"
-       )
-      ((= v1-0 (game-task village3-extra1))
-       "village3-extra1"
-       )
-      ((= v1-0 (game-task citadel-sage-yellow))
-       "citadel-sage-yellow"
-       )
-      ((= v1-0 (game-task citadel-sage-red))
-       "citadel-sage-red"
-       )
-      ((= v1-0 (game-task citadel-sage-blue))
-       "citadel-sage-blue"
-       )
-      ((= v1-0 (game-task citadel-sage-green))
-       "citadel-sage-green"
-       )
-      ((= v1-0 (game-task firecanyon-end))
-       "firecanyon-end"
-       )
-      ((= v1-0 (game-task firecanyon-buzzer))
-       "firecanyon-buzzer"
-       )
-      ((= v1-0 (game-task snow-cage))
-       "snow-cage"
-       )
-      ((= v1-0 (game-task snow-bumpers))
-       "snow-bumpers"
-       )
-      ((= v1-0 (game-task snow-buzzer))
-       "snow-buzzer"
-       )
-      ((= v1-0 (game-task snow-bunnies))
-       "snow-bunnies"
-       )
-      ((= v1-0 (game-task snow-ball))
-       "snow-ball"
-       )
-      ((= v1-0 (game-task snow-fort))
-       "snow-fort"
-       )
-      ((= v1-0 (game-task snow-ram))
-       "snow-ram"
-       )
-      ((= v1-0 (game-task snow-eggtop))
-       "snow-eggtop"
-       )
-      ((= v1-0 (game-task rolling-ring-chase-2))
-       "rolling-ring-chase-2"
-       )
-      ((= v1-0 (game-task rolling-ring-chase-1))
-       "rolling-ring-chase-1"
-       )
-      ((= v1-0 (game-task rolling-buzzer))
-       "rolling-buzzer"
-       )
-      ((= v1-0 (game-task rolling-lake))
-       "rolling-lake"
-       )
-      ((= v1-0 (game-task rolling-plants))
-       "rolling-plants"
-       )
-      ((= v1-0 (game-task rolling-moles))
-       "rolling-moles"
-       )
-      ((= v1-0 (game-task rolling-robbers))
-       "rolling-robbers"
-       )
-      ((= v1-0 (game-task rolling-race))
-       "rolling-race"
-       )
-      ((= v1-0 (game-task sunken-spinning-room))
-       "sunken-spinning-room"
-       )
-      ((= v1-0 (game-task sunken-top-of-helix))
-       "sunken-top-of-helix"
-       )
-      ((= v1-0 (game-task sunken-buzzer))
-       "sunken-buzzer"
-       )
-      ((= v1-0 (game-task sunken-sharks))
-       "sunken-sharks"
-       )
-      ((= v1-0 (game-task sunken-room))
-       "sunken-room"
-       )
-      ((= v1-0 (game-task sunken-slide))
-       "sunken-slide"
-       )
-      ((= v1-0 (game-task sunken-pipe))
-       "sunken-pipe"
-       )
-      ((= v1-0 (game-task sunken-platforms))
-       "sunken-platforms"
-       )
-      ((= v1-0 (game-task swamp-buzzer))
-       "swamp-buzzer"
-       )
-      ((= v1-0 (game-task swamp-tether-4))
-       "swamp-tether-4"
-       )
-      ((= v1-0 (game-task swamp-tether-3))
-       "swamp-tether-3"
-       )
-      ((= v1-0 (game-task swamp-tether-2))
-       "swamp-tether-2"
-       )
-      ((= v1-0 (game-task swamp-tether-1))
-       "swamp-tether-1"
-       )
-      ((= v1-0 (game-task swamp-battle))
-       "swamp-battle"
-       )
-      ((= v1-0 (game-task swamp-flutflut))
-       "swamp-flutflut"
-       )
-      ((= v1-0 (game-task swamp-billy))
-       "swamp-billy"
-       )
-      ((= v1-0 (game-task village2-oracle-money2))
-       "village2-oracle-money2"
-       )
-      ((= v1-0 (game-task village2-oracle-money1))
-       "village2-oracle-money1"
-       )
-      ((= v1-0 (game-task village2-warrior-money))
-       "village2-warrior-money"
-       )
-      ((= v1-0 (game-task village2-geologist-money))
-       "village2-geologist-money"
-       )
-      ((= v1-0 (game-task village2-gambler-money))
-       "village2-gambler-money"
-       )
-      ((= v1-0 (game-task misty-eco-challenge))
-       "misty-eco-challenge"
-       )
-      ((= v1-0 (game-task misty-bike-jump))
-       "misty-bike-jump"
-       )
-      ((= v1-0 (game-task misty-buzzer))
-       "misty-buzzer"
-       )
-      ((= v1-0 (game-task misty-bike))
-       "misty-bike"
-       )
-      ((= v1-0 (game-task misty-cannon))
-       "misty-cannon"
-       )
-      ((= v1-0 (game-task misty-warehouse))
-       "misty-warehouse"
-       )
-      ((= v1-0 (game-task misty-boat))
-       "misty-boat"
-       )
-      ((= v1-0 (game-task misty-muse))
-       "misty-muse"
-       )
-      ((= v1-0 (game-task beach-sentinel))
-       "beach-sentinel"
-       )
-      ((= v1-0 (game-task beach-gimmie))
-       "beach-gimmie"
-       )
-      ((= v1-0 (game-task beach-buzzer))
-       "beach-buzzer"
-       )
-      ((= v1-0 (game-task beach-cannon))
-       "beach-cannon"
-       )
-      ((= v1-0 (game-task beach-seagull))
-       "beach-seagull"
-       )
-      ((= v1-0 (game-task beach-flutflut))
-       "beach-flutflut"
-       )
-      ((= v1-0 (game-task beach-pelican))
-       "beach-pelican"
-       )
-      ((= v1-0 (game-task beach-ecorocks))
-       "beach-ecorocks"
-       )
-      ((= v1-0 (game-task village1-oracle-money2))
-       "village1-oracle-money2"
-       )
-      ((= v1-0 (game-task village1-oracle-money1))
-       "village1-oracle-money1"
-       )
-      ((= v1-0 (game-task village1-uncle-money))
-       "village1-uncle-money"
-       )
-      ((= v1-0 (game-task village1-mayor-money))
-       "village1-mayor-money"
-       )
-      ((= v1-0 (game-task village1-yakow))
-       "village1-yakow"
-       )
-      ((= v1-0 (game-task jungle-temple-door))
-       "jungle-temple-door"
-       )
-      ((= v1-0 (game-task jungle-canyon-end))
-       "jungle-canyon-end"
-       )
-      ((= v1-0 (game-task jungle-buzzer))
-       "jungle-buzzer"
-       )
-      ((= v1-0 (game-task jungle-plant))
-       "jungle-plant"
-       )
-      ((= v1-0 (game-task jungle-fishgame))
-       "jungle-fishgame"
-       )
-      ((= v1-0 (game-task jungle-tower))
-       "jungle-tower"
-       )
-      ((= v1-0 (game-task jungle-lurkerm))
-       "jungle-lurkerm"
-       )
-      ((= v1-0 (game-task jungle-eggtop))
-       "jungle-eggtop"
-       )
-      ((= v1-0 (game-task complete))
-       "complete"
-       )
-      ((= v1-0 (game-task none))
-       "none"
-       )
-      (else
-       "*unknown*"
-       )
-      )
+  (case arg0
+    (((game-task max)) "max")
+    (((game-task assistant-village3)) "assistant-village3")
+    (((game-task leaving-misty)) "leaving-misty")
+    (((game-task plunger-lurker-hit)) "plunger-lurker-hit")
+    (((game-task finalboss-movies)) "finalboss-movies")
+    (((game-task village4-button)) "village4-button")
+    (((game-task ogre-secret)) "ogre-secret")
+    (((game-task intro)) "intro")
+    (((game-task lavatube-start)) "lavatube-start")
+    (((game-task lavatube-balls)) "lavatube-balls")
+    (((game-task red-eggtop)) "red-eggtop")
+    (((game-task village3-button)) "village3-button")
+    (((game-task swamp-arm)) "swamp-arm")
+    (((game-task village2-levitator)) "village2-levitator")
+    (((game-task firecanyon-assistant)) "firecanyon-assistant")
+    (((game-task village3-oracle-money2)) "village3-oracle-money2")
+    (((game-task village3-oracle-money1)) "village3-oracle-money1")
+    (((game-task village3-miner-money4)) "village3-miner-money4")
+    (((game-task village3-miner-money3)) "village3-miner-money3")
+    (((game-task village3-miner-money2)) "village3-miner-money2")
+    (((game-task village3-miner-money1)) "village3-miner-money1")
+    (((game-task training-buzzer)) "training-buzzer")
+    (((game-task training-climb)) "training-climb")
+    (((game-task training-door)) "training-door")
+    (((game-task training-gimmie)) "training-gimmie")
+    (((game-task citadel-buzzer)) "citadel-buzzer")
+    (((game-task lavatube-buzzer)) "lavatube-buzzer")
+    (((game-task lavatube-end)) "lavatube-end")
+    (((game-task ogre-buzzer)) "ogre-buzzer")
+    (((game-task ogre-end)) "ogre-end")
+    (((game-task ogre-boss)) "ogre-boss")
+    (((game-task cave-buzzer)) "cave-buzzer")
+    (((game-task cave-platforms)) "cave-platforms")
+    (((game-task cave-spider-tunnel)) "cave-spider-tunnel")
+    (((game-task cave-swing-poles)) "cave-swing-poles")
+    (((game-task cave-robot-climb)) "cave-robot-climb")
+    (((game-task cave-dark-climb)) "cave-dark-climb")
+    (((game-task cave-dark-crystals)) "cave-dark-crystals")
+    (((game-task cave-gnawers)) "cave-gnawers")
+    (((game-task village3-buzzer)) "village3-buzzer")
+    (((game-task village2-buzzer)) "village2-buzzer")
+    (((game-task village1-buzzer)) "village1-buzzer")
+    (((game-task village3-extra1)) "village3-extra1")
+    (((game-task citadel-sage-yellow)) "citadel-sage-yellow")
+    (((game-task citadel-sage-red)) "citadel-sage-red")
+    (((game-task citadel-sage-blue)) "citadel-sage-blue")
+    (((game-task citadel-sage-green)) "citadel-sage-green")
+    (((game-task firecanyon-end)) "firecanyon-end")
+    (((game-task firecanyon-buzzer)) "firecanyon-buzzer")
+    (((game-task snow-cage)) "snow-cage")
+    (((game-task snow-bumpers)) "snow-bumpers")
+    (((game-task snow-buzzer)) "snow-buzzer")
+    (((game-task snow-bunnies)) "snow-bunnies")
+    (((game-task snow-ball)) "snow-ball")
+    (((game-task snow-fort)) "snow-fort")
+    (((game-task snow-ram)) "snow-ram")
+    (((game-task snow-eggtop)) "snow-eggtop")
+    (((game-task rolling-ring-chase-2)) "rolling-ring-chase-2")
+    (((game-task rolling-ring-chase-1)) "rolling-ring-chase-1")
+    (((game-task rolling-buzzer)) "rolling-buzzer")
+    (((game-task rolling-lake)) "rolling-lake")
+    (((game-task rolling-plants)) "rolling-plants")
+    (((game-task rolling-moles)) "rolling-moles")
+    (((game-task rolling-robbers)) "rolling-robbers")
+    (((game-task rolling-race)) "rolling-race")
+    (((game-task sunken-spinning-room)) "sunken-spinning-room")
+    (((game-task sunken-top-of-helix)) "sunken-top-of-helix")
+    (((game-task sunken-buzzer)) "sunken-buzzer")
+    (((game-task sunken-sharks)) "sunken-sharks")
+    (((game-task sunken-room)) "sunken-room")
+    (((game-task sunken-slide)) "sunken-slide")
+    (((game-task sunken-pipe)) "sunken-pipe")
+    (((game-task sunken-platforms)) "sunken-platforms")
+    (((game-task swamp-buzzer)) "swamp-buzzer")
+    (((game-task swamp-tether-4)) "swamp-tether-4")
+    (((game-task swamp-tether-3)) "swamp-tether-3")
+    (((game-task swamp-tether-2)) "swamp-tether-2")
+    (((game-task swamp-tether-1)) "swamp-tether-1")
+    (((game-task swamp-battle)) "swamp-battle")
+    (((game-task swamp-flutflut)) "swamp-flutflut")
+    (((game-task swamp-billy)) "swamp-billy")
+    (((game-task village2-oracle-money2)) "village2-oracle-money2")
+    (((game-task village2-oracle-money1)) "village2-oracle-money1")
+    (((game-task village2-warrior-money)) "village2-warrior-money")
+    (((game-task village2-geologist-money)) "village2-geologist-money")
+    (((game-task village2-gambler-money)) "village2-gambler-money")
+    (((game-task misty-eco-challenge)) "misty-eco-challenge")
+    (((game-task misty-bike-jump)) "misty-bike-jump")
+    (((game-task misty-buzzer)) "misty-buzzer")
+    (((game-task misty-bike)) "misty-bike")
+    (((game-task misty-cannon)) "misty-cannon")
+    (((game-task misty-warehouse)) "misty-warehouse")
+    (((game-task misty-boat)) "misty-boat")
+    (((game-task misty-muse)) "misty-muse")
+    (((game-task beach-sentinel)) "beach-sentinel")
+    (((game-task beach-gimmie)) "beach-gimmie")
+    (((game-task beach-buzzer)) "beach-buzzer")
+    (((game-task beach-cannon)) "beach-cannon")
+    (((game-task beach-seagull)) "beach-seagull")
+    (((game-task beach-flutflut)) "beach-flutflut")
+    (((game-task beach-pelican)) "beach-pelican")
+    (((game-task beach-ecorocks)) "beach-ecorocks")
+    (((game-task village1-oracle-money2)) "village1-oracle-money2")
+    (((game-task village1-oracle-money1)) "village1-oracle-money1")
+    (((game-task village1-uncle-money)) "village1-uncle-money")
+    (((game-task village1-mayor-money)) "village1-mayor-money")
+    (((game-task village1-yakow)) "village1-yakow")
+    (((game-task jungle-temple-door)) "jungle-temple-door")
+    (((game-task jungle-canyon-end)) "jungle-canyon-end")
+    (((game-task jungle-buzzer)) "jungle-buzzer")
+    (((game-task jungle-plant)) "jungle-plant")
+    (((game-task jungle-fishgame)) "jungle-fishgame")
+    (((game-task jungle-tower)) "jungle-tower")
+    (((game-task jungle-lurkerm)) "jungle-lurkerm")
+    (((game-task jungle-eggtop)) "jungle-eggtop")
+    (((game-task complete)) "complete")
+    (((game-task none)) "none")
+    (else "*unknown*")
     )
   )
 

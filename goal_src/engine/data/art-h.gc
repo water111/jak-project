@@ -179,8 +179,8 @@
   :size-assert         #x20
   :flag-assert         #xf00000020
   (:methods
-    (dummy-13 (_type_) int 13)
-    (dummy-14 (_type_) int 14)
+    (link-art! (_type_) art-group 13)
+    (unlink-art! (_type_) int 14)
     )
   )
 

@@ -301,7 +301,8 @@
   )
 
 (defmacro dotimes (var &rest body)
-  "Loop like for (int i = 0; i < end; i++)"
+  "Loop like for (int i = 0; i < end; i++)
+   var is a list made up of a variable to bind the amount to (second item), and the remaining forms are evaluated after the loop is finished."
   `(let (( ,(first var) 0))
      (while (< ,(first var) ,(second var))
             ,@body
@@ -488,12 +489,28 @@
   `(set! ,place (logxor ,place ,amount))
   )
 
-(defmacro lognor! (place amount)
-  `(set! ,place (lognor ,place ,amount))
-  )
-
 (defmacro logand! (place amount)
   `(set! ,place (logand ,place ,amount))
+  )
+
+(defmacro logclear (a b)
+  "Returns the result of setting the bits in b to zero in a"
+  `(logand (lognot ,b) ,a)
+  )
+
+(defmacro logclear! (a b)
+  "Sets the bits in b to zero in a, in place"
+  `(set! ,a (logand (lognot ,b) ,a))
+  )
+
+(defmacro logtest? (a b)
+  "does a have any of the bits in b?"
+  `(nonzero? (logand ,a ,b))
+  )
+
+(defmacro logtesta? (a b)
+  "does a have ALL of the bits in b?"
+  `(= (logand ,a ,b) ,b)
   )
 
 (defmacro deref (t addr &rest fields)

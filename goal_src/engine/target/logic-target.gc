@@ -10,6 +10,8 @@
 (defun init-target ((cont continue-point))
   
   "NOTHING11!!!!"
+  (looping-code)
+  
   (the object 0)
   )
 

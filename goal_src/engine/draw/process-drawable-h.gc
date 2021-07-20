@@ -42,12 +42,12 @@
 ;; The following functions can be applied to a joint-control-channel to change the frame number.
 ;; They return the resulting frame number as well.
 
-(defun num-func-none ((arg0 joint-control-channel))
+(defun num-func-none ((arg0 joint-control-channel) (arg2 float) (arg2 float))
   "Don't change anything."
   (-> arg0 frame-num)
   )
 
-(defun num-func-+! ((arg0 joint-control-channel) (arg1 float))
+(defun num-func-+! ((arg0 joint-control-channel) (arg1 float) (arg2 float))
   "Increment the frame number, taking into account the animation speed and current game rate."
   (let ((f0-1
          (+ (-> arg0 frame-num)
@@ -60,7 +60,7 @@
     )
   )
 
-(defun num-func--! ((arg0 joint-control-channel) (arg1 float))
+(defun num-func--! ((arg0 joint-control-channel) (arg1 float) (arg2 float))
   "Decrement the frame number, taking into account the animation speed and current game rate."
   (let ((f0-1
          (- (-> arg0 frame-num)
@@ -73,7 +73,7 @@
     )
   )
 
-(defun num-func-loop! ((chan joint-control-channel) (inc float))
+(defun num-func-loop! ((chan joint-control-channel) (inc float) (arg2 float))
   "Like num-func-+!, but will wrap to 0 after going past the end."
 
   ;; get the duration from the joint-animation-compressed.
@@ -107,7 +107,7 @@
     )
   )
 
-(defun num-func-blend-in! ((arg0 joint-control-channel) (arg1 float))
+(defun num-func-blend-in! ((arg0 joint-control-channel) (arg1 float) (arg2 float))
   "Seek frame-interp toward 1. Once its there, do a joint-control-reset."
   (let* ((v0-0 (seek (-> arg0 frame-interp) 1.0 (* arg1 (-> *display* time-adjust-ratio))))
          (f30-0 (the-as float v0-0))
@@ -121,7 +121,7 @@
     )
   )
 
-(defun num-func-chan ((arg0 joint-control-channel) (arg1 float))
+(defun num-func-chan ((arg0 joint-control-channel) (arg1 float) (arg2 float))
   "Copies the frame number from the channel arg1."
   ;; this is a super hack.
   ;; we know that we're in an inline-array of joint-control-channels
@@ -143,7 +143,7 @@
     )
   )
 
-(defun num-func-identity ((arg0 joint-control-channel))
+(defun num-func-identity ((arg0 joint-control-channel) (arg1 float) (arg2 float))
   "seems to be the same thing as none."
   (-> arg0 frame-num)
   )

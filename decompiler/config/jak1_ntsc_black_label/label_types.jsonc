@@ -609,7 +609,11 @@
     ["L255", "float", true]
   ],
 
-  "load-boundary": [["L327", "(inline-array lbvtx)", true, 3]],
+  "load-boundary": [
+    ["L327", "(inline-array lbvtx)", true, 3],
+    ["L336", "float", true],
+    ["L337", "float", true]
+  ],
 
   "shrub-work": [["L3", "instance-shrub-work", true]],
 
@@ -1196,6 +1200,16 @@
     ["L49", "float", true],
     ["L78", "rgba", true],
     ["L79", "rgba", true]
+  ],
+  
+  "loader": [
+    ["L279", "float", true],
+    ["L283", "float", true],
+    ["L285", "float", true],
+    ["L286", "float", true],
+    ["L280", "float", true],
+    ["L281", "float", true],
+    ["L278", "float", true]
   ],
 
   // please do not add things after this entry! git is dumb.

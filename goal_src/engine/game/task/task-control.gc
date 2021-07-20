@@ -1,39 +1,22 @@
 ;;-*-Lisp-*-
 (in-package goal)
 
-;; definition (debug) for function task-status->string
+;; name: task-control.gc
+;; name in dgo: task-control
+;; dgos: GAME, ENGINE
+
 (defun-debug task-status->string ((arg0 task-status))
-  (let ((v1-0 arg0))
-   (cond
-    ((= v1-0 7)
-     "need-resolution"
-     )
-    ((= v1-0 6)
-     "need-reward-speech"
-     )
-    ((= v1-0 5)
-     "need-reminder"
-     )
-    ((= v1-0 4)
-     "need-reminder-a"
-     )
-    ((= v1-0 3)
-     "need-introduction"
-     )
-    ((= v1-0 2)
-     "need-hint"
-     )
-    ((= v1-0 1)
-     "unknown"
-     )
-    ((zero? v1-0)
-     "invalid"
-     )
-    (else
-     "*unknown*"
-     )
+  (case arg0
+    (((task-status need-resolution)) "need-resolution")
+    (((task-status need-reward-speech)) "need-reward-speech")
+    (((task-status need-reminder)) "need-reminder")
+    (((task-status need-reminder-a)) "need-reminder-a")
+    (((task-status need-introduction)) "need-introduction")
+    (((task-status need-hint)) "need-hint")
+    (((task-status unknown)) "unknown")
+    (((task-status invalid)) "invalid")
+    (else "*unknown*")
     )
-   )
   )
 
 (defmethod get-game-task task-cstage ((obj task-cstage))
@@ -48,41 +31,43 @@
 
 (defmethod closed? task-cstage ((obj task-cstage))
   "Is the closed flag set?"
-  (nonzero? (logand (-> obj flags) (task-flags closed)))
+  (declare (inline))
+
+  (logtest? (-> obj flags) (task-flags closed))
   )
 
 (defmethod closed-by-default? task-cstage ((obj task-cstage))
   "Is the closed-by-default flag set?"
-  (nonzero? (logand (-> obj flags) (task-flags closed-by-default)))
+  (declare (inline))
+
+  (logtest? (-> obj flags) (task-flags closed-by-default))
   )
 
 (defmethod task-available? task-cstage ((obj task-cstage) (arg0 task-control))
   "Is this task available to be the current task?"
-  (let ((a0-1 obj))
-    (cond
-      ((nonzero? (logand (-> a0-1 flags) (task-flags closed)))
-       ;; closed flag is set, we're already closed.
-       #f
-       )
-      ((>= (the-as int (-> (get-entity-task-perm *game-info* (-> obj game-task)) user-uint8 0))
-           (the-as int (-> obj status))
-           )
-       ;; the permanent entity for this task has stored that we have progresssed past
-       ;; our status. Remember that we are closed, and return #f.
-       (set! (-> obj flags) (logior (-> obj flags) (task-flags closed)))
-       #f
-       )
-      ((task-complete? *game-info* (-> obj game-task))
-       ;; the game-info thinks that we have completed this task already.
-       ;; remember we are closed and return #f
-       (set! (-> obj flags) (logior (-> obj flags) (task-flags closed)))
-       #f
-       )
-      (else
-       ;; we aren't closed. Check the condition.
-       ((-> obj condition) arg0)
-       )
-      )
+  (cond
+    ((closed? obj)
+     ;; we're already closed.
+     #f
+     )
+    ((>= (the-as int (-> (get-entity-task-perm *game-info* (-> obj game-task)) user-uint8 0))
+         (the-as int (-> obj status))
+         )
+     ;; the permanent entity for this task has stored that we have progresssed past
+     ;; our status. Remember that we are closed, and return #f.
+     (logior! (-> obj flags) (task-flags closed))
+     #f
+     )
+    ((task-complete? *game-info* (-> obj game-task))
+     ;; the game-info thinks that we have completed this task already.
+     ;; remember we are closed and return #f
+     (logior! (-> obj flags) (task-flags closed))
+     #f
+     )
+    (else
+     ;; we aren't closed. Check the condition.
+     ((-> obj condition) arg0)
+     )
     )
   )
 
@@ -94,16 +79,14 @@
       )
 
   ;; flag as closed
-  (set! (-> obj flags) (logior (-> obj flags) (task-flags closed)))
+  (logior! (-> obj flags) (task-flags closed))
   ;; do we have an entity to update?
-  (when (nonzero? (logand (-> obj flags) (task-flags has-entity)))
+  (when (logtest? (-> obj flags) (task-flags has-entity))
 
     ;; look up the permanent storage for the entity associated with our task
     (let ((v1-9 (get-entity-task-perm *game-info* (-> obj game-task))))
       ;; we set a bit to indicate that we are storing a non-default status
-      (set! (-> v1-9 status)
-            (logior (-> v1-9 status) (entity-perm-status user-set-from-cstage))
-            )
+      (logior! (-> v1-9 status) (entity-perm-status user-set-from-cstage))
       ;; and store the actual status (only increment)
       (if (< (-> v1-9 user-uint8 0) (the-as uint (-> obj status)))
           (set! (-> v1-9 user-int8 0) (the-as int (-> obj status)))
@@ -115,7 +98,7 @@
 
 (defmethod open-task! task-cstage ((obj task-cstage))
   "Clear the closed flag."
-  (set! (-> obj flags) (logand (lognot (task-flags closed)) (-> obj flags)))
+  (logclear! (-> obj flags) (task-flags closed))
   0
   )
 
@@ -143,7 +126,6 @@
      ;; look up the current cstage's task
      (the-as int (-> obj stage (-> obj current-stage) game-task))
      )
-               
     )
   )
 
@@ -183,7 +165,6 @@
   (none)
   )
 
-;; definition for method 12 of type task-control
 (defmethod close-status! task-control ((obj task-control) (arg0 task-status))
   "Close the cstage that:
     - is associated with the task for the current cstage
@@ -234,8 +215,9 @@
   0
   )
 
-(defmethod reset! task-control ((obj task-control) (arg0 symbol) (arg1 symbol))
-  "Reset a task control. arg1 to warn on null, arg1 'game for a game reset"
+(defmethod reset! task-control ((obj task-control) (reset-mode symbol) (arg1 symbol))
+  "Reset a task control. arg1 to warn on null, reset-mode 'game for a game reset"
+
   (when (= obj *null-task-control*)
     (if arg1
         (format 0 "ERROR<GMJ>: reset! received self of *null-task-control*~%~%")
@@ -244,24 +226,15 @@
     )
   (dotimes (s4-0 (-> obj stage length))
     ;; do we open the task?
-    (if (or (= arg0 'game) ;; if we're resetting the whole game, yes
-            (let ((a0-4 (-> obj stage s4-0)))
-              (not (nonzero? (logand
-                              (-> a0-4 flags)
-                              (task-flags closed-by-default) ;; todo this flag?
-                              )
-                             )
-                   )
-              )
+    (if (or (= reset-mode 'game) ;; open every task on game reset
+            (not (closed-by-default? (-> obj stage s4-0))) ;; todo this flag?
             )
         (open-task! (-> obj stage s4-0))
         )
 
     ;; call close-task! to send closed stuff to entities
-    (let ((a0-10 (-> obj stage s4-0)))
-      (if (nonzero? (logand (-> a0-10 flags) (task-flags closed)))
-          (close-task! (-> obj stage s4-0))
-          )
+    (if (closed? (-> obj stage s4-0))
+      (close-task! (-> obj stage s4-0))
       )
     )
   (the-as int #f)
@@ -270,6 +243,7 @@
 
 (defmethod closed? task-control ((obj task-control) (arg0 game-task) (arg1 task-status))
   "Is the given task/status cstage closed?"
+
   (when (= obj *null-task-control*)
     (format 0 "ERROR<GMJ>: closed? received self of *null-task-control*~%~%")
     (return #f)
@@ -279,10 +253,7 @@
     (when (and (= arg0 (-> obj stage v1-3 game-task))
                (= arg1 (-> obj stage v1-3 status))
                )
-      (let ((a0-3 (-> obj stage v1-3)))
-        ;; is the closed set?
-        (return (nonzero? (logand (-> a0-3 flags) (task-flags closed))))
-        )
+      (return (closed? (-> obj stage v1-3)))
       )
     )
   (format 0 "ERROR<GMJ>: closed? received non-existent task-cstage(~S ~S)--returning #t.~%"
@@ -325,9 +296,7 @@
     )
   (let ((v1-4 (get-entity-task-perm *game-info* (-> obj stage 0 game-task))))
     ;; remember that we have a change.
-    (set! (-> v1-4 status)
-          (logior (-> v1-4 status) (entity-perm-status user-set-from-cstage))
-          )
+    (logior! (-> v1-4 status) (entity-perm-status user-set-from-cstage))
     (set! (-> v1-4 user-int8 (+ arg1 1)) arg0)
     )
   0
@@ -338,7 +307,8 @@
 ;; Task Control Definitions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; definition for symbol *assistant-tasks*, type task-control
+
+;; tasks for assistant (note: keira)
 (define *assistant-tasks*
     (new 'static 'task-control
          :current-stage -1
@@ -348,48 +318,25 @@
               (new 'static 'task-cstage
                    :game-task (game-task jungle-eggtop)
                    :status (task-status need-hint)
-                   :flags
-                   (task-flags has-entity closed-by-default)
+                   :flags (task-flags has-entity closed-by-default)
                    :condition (lambda ((arg0 task-control)) #t)
                    )
               (new 'static 'task-cstage
                    :game-task (game-task jungle-eggtop)
                    :status (task-status need-introduction)
-                   :flags
-                   (task-flags has-entity closed-by-default)
+                   :flags (task-flags has-entity closed-by-default)
                    :condition (lambda ((arg0 task-control)) #t)
                    )
               (new 'static 'task-cstage
                    :game-task (game-task misty-bike)
                    :status (task-status need-hint)
-                   :flags
-                   (task-flags has-entity closed-by-default)
+                   :flags (task-flags has-entity closed-by-default)
                    :condition
-                   (lambda
-                       ((arg0 task-control))
-                     (with-pp
-                       (or
-                        (closed? arg0 (game-task jungle-eggtop) (task-status need-reminder))
-                        (and
-                         (closed?
-                          arg0
-                          (game-task jungle-eggtop)
-                          (task-status need-introduction)
-                          )
-                         (let ((a1-2 (new 'stack-no-clear 'event-message-block)))
-                           (set! (-> a1-2 from) pp)
-                           (set! (-> a1-2 num-params) 2)
-                           (set! (-> a1-2 message) 'query)
-                           (set! (-> a1-2 param 0) (the-as uint 'pickup))
-                           (set! (-> a1-2 param 1) (the-as uint 6))
-                           (>=
-                            (the int (send-event-function *target* a1-2))
-                            (+ (get-reminder arg0 1) 3)
-                            )
-                           )
-                         )
-                        )
-                       )
+                   (lambda ((arg0 task-control))
+                       (or (closed? arg0 (game-task jungle-eggtop) (task-status need-reminder))
+                           (and (closed? arg0 (game-task jungle-eggtop) (task-status need-introduction))
+                                (>= (the int (send-event *target* 'query 'pickup 6)) (+ (get-reminder arg0 1) 3)))
+                                )
                      )
                    )
               (new 'static 'task-cstage
@@ -398,31 +345,11 @@
                    :flags
                    (task-flags has-entity closed-by-default)
                    :condition
-                   (lambda
-                       ((arg0 task-control))
-                     (with-pp
-                       (or
-                        (closed? arg0 (game-task jungle-eggtop) (task-status need-reminder))
-                        (and
-                         (closed?
-                          arg0
-                          (game-task jungle-eggtop)
-                          (task-status need-introduction)
-                          )
-                         (let ((a1-2 (new 'stack-no-clear 'event-message-block)))
-                           (set! (-> a1-2 from) pp)
-                           (set! (-> a1-2 num-params) 2)
-                           (set! (-> a1-2 message) 'query)
-                           (set! (-> a1-2 param 0) (the-as uint 'pickup))
-                           (set! (-> a1-2 param 1) (the-as uint 6))
-                           (>=
-                            (the int (send-event-function *target* a1-2))
-                            (+ (get-reminder arg0 1) 3)
-                            )
-                           )
-                         )
-                        )
-                       )
+                   (lambda ((arg0 task-control))
+                       (or (closed? arg0 (game-task jungle-eggtop) (task-status need-reminder))
+                           (and (closed? arg0 (game-task jungle-eggtop) (task-status need-introduction))
+                                (>= (the int (send-event *target* 'query 'pickup 6)) (+ (get-reminder arg0 1) 3)))
+                                )
                      )
                    )
               (new 'static 'task-cstage
@@ -452,12 +379,8 @@
                    :status (task-status unknown)
                    :flags (task-flags has-entity)
                    :condition
-                   (lambda
-                       ((arg0 task-control))
-                     (task-closed?
-                      (game-task village4-button)
-                      (task-status need-reward-speech)
-                      )
+                   (lambda ((arg0 task-control))
+                     (task-closed? (game-task village4-button) (task-status need-reward-speech))
                      )
                    )
               (new 'static 'task-cstage
@@ -481,9 +404,8 @@
          )
   )
 
-;; definition for symbol *assistant-village2-tasks*, type task-control
-(define
-  *assistant-village2-tasks*
+;; tasks for assistant, village2 variant
+(define *assistant-village2-tasks*
   (new 'static 'task-control
    :current-stage -1
    :stage
@@ -522,18 +444,7 @@
      :status (task-status need-reward-speech)
      :flags (task-flags has-entity)
      :condition
-     (lambda
-      ((arg0 task-control))
-      (with-pp (let ((a1-0 (new 'stack-no-clear 'event-message-block)))
-                (set! (-> a1-0 from) pp)
-                (set! (-> a1-0 num-params) 2)
-                (set! (-> a1-0 message) 'query)
-                (set! (-> a1-0 param 0) (the-as uint 'pickup))
-                (set! (-> a1-0 param 1) (the-as uint 6))
-                (>= (the int (send-event-function *target* a1-0)) 45)
-                )
-       )
-      )
+     (lambda ((arg0 task-control)) (>= (the int (send-event *target* 'query 'pickup 2)) 45))
      )
     (new 'static 'task-cstage
      :game-task (game-task sunken-room)
@@ -3392,39 +3303,23 @@
       (new 'static 'task-cstage
        :game-task (game-task village2-warrior-money)
        :status (task-status need-hint)
-       :flags
-       (task-flags has-entity closed-by-default)
+       :flags (task-flags has-entity closed-by-default)
        :condition
-       (lambda
-        ((arg0 task-control))
-        (and
-         (not (task-closed? (game-task ogre-boss) (task-status need-reminder)))
-         (not
-          (task-closed?
-           (game-task village2-levitator)
-           (task-status need-reward-speech)
-           )
-          )
-         )
+       (lambda ((arg0 task-control))
+        (and (not (task-closed? (game-task ogre-boss) (task-status need-reminder)))
+             (not (task-closed? (game-task village2-levitator) (task-status need-reward-speech)))
+             )
         )
        )
       (new 'static 'task-cstage
        :game-task (game-task village2-warrior-money)
        :status (task-status need-introduction)
-       :flags
-       (task-flags has-entity closed-by-default)
+       :flags (task-flags has-entity closed-by-default)
        :condition
-       (lambda
-        ((arg0 task-control))
-        (and
-         (not (task-closed? (game-task ogre-boss) (task-status need-reminder)))
-         (not
-          (task-closed?
-           (game-task village2-levitator)
-           (task-status need-reward-speech)
-           )
-          )
-         )
+       (lambda ((arg0 task-control))
+        (and (not (task-closed? (game-task ogre-boss) (task-status need-reminder)))
+             (not (task-closed? (game-task village2-levitator) (task-status need-reward-speech)))
+             )
         )
        )
       (new 'static 'task-cstage
@@ -3432,31 +3327,8 @@
        :status (task-status need-reward-speech)
        :flags (task-flags has-entity)
        :condition
-       (lambda
-        ((arg0 task-control))
-        (with-pp
-         (the-as
-          symbol
-          (and *target* (let ((a1-0 (new 'stack-no-clear 'event-message-block)))
-                         (set! (-> a1-0 from) pp)
-                         (set! (-> a1-0 num-params) 2)
-                         (set! (-> a1-0 message) 'query)
-                         (set! (-> a1-0 param 0) (the-as uint 'pickup))
-                         (set! (-> a1-0 param 1) (the-as uint 5))
-                         (>=
-                          ((the-as
-                            (function process event-message-block float)
-                            send-event-function
-                            )
-                           *target*
-                           a1-0
-                           )
-                          (-> *GAME-bank* money-task-inc)
-                          )
-                         )
-           )
-          )
-         )
+       (lambda ((arg0 task-control))
+        (>= (the-as float (send-event *target* 'query 'pickup 5)) (-> *GAME-bank* money-task-inc))
         )
        )
       (new 'static 'task-cstage
@@ -5234,17 +5106,8 @@
        :status (task-status need-reward-speech)
        :flags (task-flags has-entity)
        :condition
-       (lambda
-        ((arg0 task-control))
-        (with-pp (let ((a1-0 (new 'stack-no-clear 'event-message-block)))
-                  (set! (-> a1-0 from) pp)
-                  (set! (-> a1-0 num-params) 2)
-                  (set! (-> a1-0 message) 'query)
-                  (set! (-> a1-0 param 0) (the-as uint 'pickup))
-                  (set! (-> a1-0 param 1) (the-as uint 6))
-                  (>= (the int (send-event-function *target* a1-0)) 72)
-                  )
-         )
+       (lambda ((arg0 task-control))
+        (>= (the int (send-event *target* 'query 'pickup 6)) 72)
         )
        )
       (new 'static 'task-cstage
@@ -5413,12 +5276,8 @@
        :status (task-status unknown)
        :flags (task-flags has-entity)
        :condition
-       (lambda
-        ((arg0 task-control))
-        (task-closed?
-         (game-task village4-button)
-         (task-status need-reward-speech)
-         )
+       (lambda ((arg0 task-control))
+        (task-closed? (game-task village4-button) (task-status need-reward-speech))
         )
        )
       (new 'static 'task-cstage
@@ -5533,17 +5392,14 @@
   0
   )
 
-;; definition for function task-closed?
 (defun task-closed? ((arg0 game-task) (arg1 task-status))
   (closed? (get-task-control arg0) arg0 arg1)
   )
 
-;; definition for function task-exists?
 (defun task-exists? ((arg0 game-task) (arg1 task-status))
   (exists? (get-task-control arg0) arg0 arg1)
   )
 
-;; definition for function task-known?
 (defun task-known? ((arg0 game-task))
   "Is there a cstage with a non-unknown status?"
   (let ((v1-0 (get-task-status arg0)))
@@ -5562,7 +5418,6 @@
    )
   )
 
-;; definition for function sages-kidnapped?
 (defun sages-kidnapped? ()
   (task-closed? (game-task village4-button) (task-status need-reward-speech))
   )
@@ -5593,7 +5448,6 @@
     )
   )
 
-;; failed to figure out what this is:
 (task-control-reset 'game)
 
 

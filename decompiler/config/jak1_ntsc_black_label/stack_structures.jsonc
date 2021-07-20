@@ -543,5 +543,10 @@
 
   "(method 10 align-control)": [[16, "vector"]],
 
+  "(method 15 load-state)": [
+    [16, "event-message-block"],
+    [96, "event-message-block"]
+  ],
+
   "placeholder-do-not-add-below!": []
 }

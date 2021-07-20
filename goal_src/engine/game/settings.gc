@@ -5,7 +5,7 @@
 ;; name in dgo: settings
 ;; dgos: GAME, ENGINE
 
-;; definition for method 9 of type setting-data
+
 (defmethod handle-pending-updates setting-data ((obj setting-data) (arg0 engine))
   "this goes through the list of pending setting changes in 
    the engine/connection list and updates the setting-data"
@@ -29,28 +29,13 @@
         (('process-mask)
          (case (-> conn param1) 
            (('set)
-            (set!
-             (-> obj process-mask)
-             (logior
-              (-> obj process-mask)
-              (the-as uint (the-as int (-> conn param3)))
-              )
-             )
+            (logior! (-> obj process-mask) (the-as uint (the-as int (-> conn param3))))
             )
            (('clear)
-            (set!
-             (-> obj process-mask)
-             (logand
-              (-> obj process-mask)
-              (the-as uint (the-as uint (lognot (the-as uint (-> conn param3)))))
-              )
-             )
+            (logclear! (-> obj process-mask) (the-as uint (-> conn param3)))
             )
            (('abs)
-            (set!
-             (-> obj process-mask)
-             (the-as process-mask (the-as int (-> conn param3)))
-             )
+            (set! (-> obj process-mask) (the-as process-mask (the-as int (-> conn param3))))
             )
            )
          )
@@ -211,16 +196,10 @@
         (('common-page)
          (case (-> conn param1) 
            (('set)
-            (set! (-> obj common-page)
-                  (logior (-> obj common-page) (the-as int (-> conn param3)))
-                  )
+            (logior! (-> obj common-page) (the-as int (-> conn param3)))
             )
            (('clear)
-            (set! (-> obj common-page)
-                  (logand (-> obj common-page)
-                          (the-as int (the-as uint (lognot (the-as uint (-> conn param3)))))
-                          )
-                  )
+            (logclear! (-> obj common-page) (the-as uint (-> conn param3)))
             )
            )
          )
@@ -232,35 +211,13 @@
   obj
   )
 
-;; definition for method 9 of type setting-control
-;; INFO: Return type mismatch int vs none.
-(defmethod
-  push-setting!
-  setting-control
-  ((obj setting-control)
-   (arg0 process)
-   (arg1 (function object object object object object))
-   (arg2 object)
-   (arg3 object)
-   (arg4 object)
-   )
+(defmethod push-setting! setting-control ((obj setting-control) (arg0 process) (arg1 (function object object object object object)) (arg2 object) (arg3 object) (arg4 object))
   (add-connection (-> obj engine) arg0 arg1 arg2 arg3 arg4)
   0
   (none)
   )
 
-;; definition for method 10 of type setting-control
-;; INFO: Return type mismatch int vs none.
-(defmethod
-  set-setting!
-  setting-control
-  ((obj setting-control)
-   (arg0 process)
-   (arg1 symbol)
-   (arg2 symbol)
-   (arg3 float)
-   (arg4 int)
-   )
+(defmethod set-setting! setting-control ((obj setting-control) (arg0 process) (arg1 symbol) (arg2 process) (arg3 float) (arg4 int))
   (clear-pending-settings-from-process obj arg0 arg1)
   (add-connection
    (-> obj engine)
@@ -274,12 +231,7 @@
   (none)
   )
 
-;; definition for method 11 of type setting-control
-;; INFO: Return type mismatch int vs none.
-(defmethod
-  clear-pending-settings-from-process
-  setting-control
-  ((obj setting-control) (arg0 process) (arg1 symbol))
+(defmethod clear-pending-settings-from-process setting-control ((obj setting-control) (arg0 process) (arg1 symbol))
   (when arg0
    (let ((s5-0 (-> obj engine))
          (s4-0 (-> arg0 connection-list next1))
@@ -303,7 +255,7 @@
   (none)
   )
 
-;; definition for method 12 of type setting-control
+
 (defmethod copy-settings-from-target! setting-control ((obj setting-control))
   (let ((gp-0 (-> obj current)))
    (let ((s5-0 (-> obj target)))
@@ -338,54 +290,26 @@
    )
   )
 
-;; definition for method 13 of type setting-control
+
 (defmethod update-per-frame-settings! setting-control ((obj setting-control))
   (copy-settings-from-target! obj)
   (let ((gp-0 (-> obj current)))
    (let ((s5-1 (-> obj target)))
     (when *sound-player-enable*
      (when (!= (-> gp-0 sfx-volume) (-> s5-1 sfx-volume))
-      (set!
-       (-> gp-0 sfx-volume)
-       (seek
-        (-> gp-0 sfx-volume)
-        (-> s5-1 sfx-volume)
-        (* 100.0 (-> *display* seconds-per-frame))
-        )
-       )
+      (seek! (-> gp-0 sfx-volume) (-> s5-1 sfx-volume) (* 100.0 (-> *display* seconds-per-frame)))
       (sound-set-volume (the-as uint 1) (-> gp-0 sfx-volume))
       )
      (when (!= (-> gp-0 music-volume) (-> s5-1 music-volume))
-      (set!
-       (-> gp-0 music-volume)
-       (seek
-        (-> gp-0 music-volume)
-        (-> s5-1 music-volume)
-        (* 100.0 (-> *display* seconds-per-frame))
-        )
-       )
+      (seek! (-> gp-0 music-volume) (-> s5-1 music-volume) (* 100.0 (-> *display* seconds-per-frame)))
       (sound-set-volume (the-as uint 2) (-> gp-0 music-volume))
       )
      (when (!= (-> gp-0 dialog-volume) (-> s5-1 dialog-volume))
-      (set!
-       (-> gp-0 dialog-volume)
-       (seek
-        (-> gp-0 dialog-volume)
-        (-> s5-1 dialog-volume)
-        (* 100.0 (-> *display* seconds-per-frame))
-        )
-       )
+      (seek! (-> gp-0 dialog-volume) (-> s5-1 dialog-volume) (* 100.0 (-> *display* seconds-per-frame)))
       (sound-set-volume (the-as uint 4) (-> gp-0 dialog-volume))
       )
      (when (!= (-> gp-0 ambient-volume) (-> s5-1 ambient-volume))
-      (set!
-       (-> gp-0 ambient-volume)
-       (seek
-        (-> gp-0 ambient-volume)
-        (-> s5-1 ambient-volume)
-        (* 100.0 (-> *display* seconds-per-frame))
-        )
-       )
+      (seek! (-> gp-0 ambient-volume) (-> s5-1 ambient-volume) (* 100.0 (-> *display* seconds-per-frame)))
       (sound-set-volume (the-as uint 16) (-> gp-0 ambient-volume))
       )
      )
@@ -393,16 +317,13 @@
      (set! (-> gp-0 language) (-> s5-1 language))
      (set-language (-> gp-0 language))
      )
-    (when
-     (and
-      (!= (-> s5-1 music) (-> gp-0 music))
-      (and
-       (< 0.0 (-> *setting-control* current music-volume))
-       (zero? (rpc-busy? 1))
-       *sound-bank-1*
-       *sound-bank-2*
-       )
-      )
+    (when (and (!= (-> s5-1 music) (-> gp-0 music))
+               (and (< 0.0 (-> *setting-control* current music-volume))
+                    (zero? (rpc-busy? 1))
+                    *sound-bank-1*
+                    *sound-bank-2*
+                    )
+               )
      (cond
       ((-> s5-1 music)
        (format 0 "Load music ~A~%" (-> s5-1 music))
@@ -415,13 +336,7 @@
       )
      (set! (-> gp-0 music) (-> s5-1 music))
      )
-    (set!
-     (-> s5-1 sound-flava)
-     (the-as
-      uint
-      (flava-lookup (-> gp-0 music) (the-as int (-> s5-1 sound-flava)))
-      )
-     )
+    (set! (-> s5-1 sound-flava) (the-as uint (flava-lookup (-> gp-0 music) (the-as int (-> s5-1 sound-flava)))))
     (set! (-> gp-0 sound-flava) (-> s5-1 sound-flava))
     (if *sound-player-enable*
      (sound-set-flava (-> gp-0 sound-flava))
@@ -449,14 +364,7 @@
     (set! (-> gp-0 bg-r) (-> s5-1 bg-r))
     (set! (-> gp-0 bg-g) (-> s5-1 bg-g))
     (set! (-> gp-0 bg-b) (-> s5-1 bg-b))
-    (set!
-     (-> gp-0 bg-a)
-     (seek
-      (-> gp-0 bg-a)
-      (-> s5-1 bg-a)
-      (* (-> s5-1 bg-a-speed) (-> *display* seconds-per-frame))
-      )
-     )
+    (seek! (-> gp-0 bg-a) (-> s5-1 bg-a) (* (-> s5-1 bg-a-speed) (-> *display* seconds-per-frame)))
     )
    (let ((v1-60 (-> *display* frames (-> *display* on-screen) display))
          (f0-39 (-> gp-0 bg-a))
@@ -488,7 +396,7 @@
    )
   )
 
-;; failed to figure out what this is:
+
 (when (zero? *setting-control*)
   (set! *setting-control* (new 'global 'setting-control 32))
   (let ((gp-0 (-> *setting-control* default))
@@ -498,38 +406,14 @@
     (set! (-> gp-0 ocean-off) #f)
     (set! (-> gp-0 allow-look-around) #t)
     (set! (-> gp-0 border-mode) #f)
-    (set!
-     (-> gp-0 sfx-volume)
-     (the float (* 5 (the int (+ 0.5 (* 15.0 f0-2)))))
-     )
-    (set!
-     (-> gp-0 music-volume)
-     (the float (* 5 (the int (+ 0.5 (* 13.0 f0-2)))))
-     )
-    (set!
-     (-> gp-0 dialog-volume)
-     (the float (* 5 (the int (+ 0.5 (* 20.0 f0-2)))))
-     )
-    (set!
-     (-> gp-0 ambient-volume)
-     (the float (* 5 (the int (+ 0.5 (* 15.0 f0-2)))))
-     )
-    (set!
-     (-> gp-0 sfx-volume-movie)
-     (the float (* 5 (the int (+ 0.5 (* 11.0 f0-2)))))
-     )
-    (set!
-     (-> gp-0 music-volume-movie)
-     (the float (* 5 (the int (+ 0.5 (* 13.0 f0-2)))))
-     )
-    (set!
-     (-> gp-0 ambient-volume-movie)
-     (the float (* 5 (the int (+ 0.5 (* 11.0 f0-2)))))
-     )
-    (set!
-     (-> gp-0 dialog-volume-hint)
-     (the float (* 5 (the int (+ 0.5 (* 16.0 f0-2)))))
-     )
+    (set! (-> gp-0 sfx-volume) (the float (* 5 (the int (+ 0.5 (* 15.0 f0-2))))))
+    (set! (-> gp-0 music-volume) (the float (* 5 (the int (+ 0.5 (* 13.0 f0-2))))))
+    (set! (-> gp-0 dialog-volume) (the float (* 5 (the int (+ 0.5 (* 20.0 f0-2))))))
+    (set! (-> gp-0 ambient-volume) (the float (* 5 (the int (+ 0.5 (* 15.0 f0-2))))))
+    (set! (-> gp-0 sfx-volume-movie) (the float (* 5 (the int (+ 0.5 (* 11.0 f0-2))))))
+    (set! (-> gp-0 music-volume-movie) (the float (* 5 (the int (+ 0.5 (* 13.0 f0-2))))))
+    (set! (-> gp-0 ambient-volume-movie) (the float (* 5 (the int (+ 0.5 (* 11.0 f0-2))))))
+    (set! (-> gp-0 dialog-volume-hint) (the float (* 5 (the int (+ 0.5 (* 16.0 f0-2))))))
     )
    (set! (-> gp-0 language) (the-as int (scf-get-language)))
    (set! (-> gp-0 process-mask) (process-mask execute sleep))

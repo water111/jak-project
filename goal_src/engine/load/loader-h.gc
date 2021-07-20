@@ -8,6 +8,13 @@
 ;; This is not well-understood yet, but it is definitely related to streaming animation loading,
 ;; and possibly art-group stuff.
 
+
+(defconstant SPOOL_PRIORITY_LOWEST 100000000.0)
+(defconstant SPOOL_PRIORITY_RECALC -99.0)
+(defconstant SPOOL_PRIORITY_HIGHEST -20.0)
+(defconstant SPOOL_PRIORITY_HIGH -10.0)
+
+
 ;; This type didn't have an inspect method, so these field names are made up.
 (declare-type art-group basic)
 (deftype load-dir (basic)
@@ -18,19 +25,20 @@
   :flag-assert #xb00000010
   (:methods
     (new (symbol type int basic) _type_ 0)
-    (dummy-9 () none 9)
-    (dummy-10 () none 10)
+    (dummy-9 (_type_ string symbol kheap int) art-group 9)
+    (dummy-10 (_type_ art-group) art-group 10)
     )
   )
 
 ;; specialization of load-dir where the data-array holds art-groups.
-(declare-type art-group basic)
 (deftype load-dir-art-group (load-dir)
   ((art-group-array (array art-group) :offset 12)
    )
   :flag-assert #xb00000010
   (:methods
     (new (symbol type int basic) _type_ 0)
+    (dummy-9 (_type_ string symbol kheap int) art-group 9)
+    (dummy-10 (_type_ art-group) art-group 10)
     )
   )
 
@@ -76,13 +84,13 @@
    (heap                       kheap  :inline :offset-assert 32)
    (pending-load-file          string         :offset-assert 48)
    (pending-load-file-part     int32          :offset-assert 52)
-   (pending-load-file-owner    uint64         :offset-assert 56)
+   (pending-load-file-owner    handle         :offset-assert 56)
    (pending-load-file-priority float          :offset-assert 64)
    (load-file                  string         :offset-assert 68)
    (load-file-part             int32          :offset-assert 72)
-   (load-file-owner            uint64         :offset-assert 80)
+   (load-file-owner            handle         :offset-assert 80)
    (load-file-priority         float          :offset-assert 88)
-   (buf                        uint32         :offset-assert 92)
+   (buf                        pointer        :offset-assert 92)
    (len                        int32          :offset-assert 96)
    (art-group                  art-group      :offset-assert 100)
    )
@@ -91,13 +99,13 @@
   :flag-assert         #x1000000068
   (:methods
     (new (symbol type int) _type_ 0)
-    (dummy-9 (_type_ symbol int symbol float) none 9)
-    (dummy-10 () none 10)
-    (dummy-11 () none 11)
-    (dummy-12 () none 12)
-    (dummy-13 () none 13)
-    (dummy-14 () none 14)
-    (dummy-15 () none 15)
+    (want-file (_type_ string int handle float) int 9)
+    (update (_type_) int 10)
+    (inactive? (_type_) symbol 11)
+    (file-status (_type_ string int) symbol 12)
+    (link-file (_type_ art-group) art-group 13)
+    (unlink-file (_type_ art-group) int 14)
+    (unlock! (_type_) symbol 15)
     )
   )
 
@@ -107,12 +115,12 @@
    (set! (-> obj index) idx)
    (set! (-> obj load-file) #f)
    (set! (-> obj load-file-part) -1)
-   (set! (-> obj load-file-owner) (the-as uint #f))
-   (set! (-> obj load-file-priority) 100000000.0)
+   (set! (-> obj load-file-owner) (the-as handle #f))
+   (set! (-> obj load-file-priority) SPOOL_PRIORITY_LOWEST)
    (set! (-> obj pending-load-file) #f)
    (set! (-> obj pending-load-file-part) -1)
-   (set! (-> obj pending-load-file-owner) (the-as uint #f))
-   (set! (-> obj pending-load-file-priority) 100000000.0)
+   (set! (-> obj pending-load-file-owner) (the-as handle #f))
+   (set! (-> obj pending-load-file-priority) SPOOL_PRIORITY_LOWEST)
    (set! (-> obj art-group) #f)
    (set! (-> obj status) 'initialize)
    (set! (-> obj locked?) #f)
@@ -123,11 +131,13 @@
 
 (deftype spool-anim (basic)
   ((name         string  :offset 16) ;; why?
-   (index        int32   :offset-assert 20)
+   (buf1         external-art-buffer  :offset 16) ;; custom
+   (buf2         external-art-buffer  :offset-assert 20) ;; custom (also what?)
+   (index        int32   :offset 20)
    (parts        int32   :offset-assert 24)
    (priority     float   :offset-assert 28)
-   (owner        uint64  :offset-assert 32)
-   (command-list basic   :offset-assert 40)
+   (owner        handle  :offset-assert 32)
+   (command-list pair    :offset-assert 40)
    )
   :pack-me
   :method-count-assert 9
@@ -137,11 +147,11 @@
 
 (deftype external-art-control (basic)
   ((buffer               external-art-buffer    2       :offset-assert 4)
-   (rec             spool-anim 3 :inline)
-   (spool-lock           uint64             :offset-assert 160)
-   (reserve-buffer       basic              :offset-assert 168)
+   (rec                  spool-anim 3 :inline :offset-assert 16)
+   (spool-lock           handle             :offset-assert 160)
+   (reserve-buffer       external-art-buffer  :offset-assert 168)
    (reserve-buffer-count int32              :offset-assert 172)
-   (active-stream        basic              :offset-assert 176)
+   (active-stream        string             :offset-assert 176)
    (preload-stream       spool-anim :inline :offset-assert 184)
    (last-preload-stream  spool-anim :inline :offset-assert 232)
    (end-pad uint32)
@@ -151,16 +161,17 @@
   :flag-assert         #x1100000118
   (:methods
     (new (symbol type) _type_ 0)
-    (dummy-9 (_type_ symbol) none 9)
-    (dummy-10 (_type_) none 10)
-    (dummy-11 () none 11)
-    (dummy-12 () none 12)
-    (dummy-13 () none 13)
-    (dummy-14 () none 14)
-    (dummy-15 () none 15)
-    (dummy-16 () none 16)
+    (update (_type_ symbol) int 9)
+    (clear-rec (_type_) int 10)
+    (spool-push (_type_ string int process float) int 11)
+    (file-status (_type_ string int) symbol 12)
+    (reserve-alloc (_type_) kheap 13)
+    (reserve-free (_type_ kheap) int 14)
+    (none-reserved? (_type_) symbol 15)
+    (try-preload-stream (_type_ string int process float) int 16)
     )
   )
+
 
 (defmethod new external-art-control ((allocation symbol) (type-to-make type))
   (let ((obj (object-new allocation type-to-make (the-as int (-> type-to-make size)))))
@@ -176,19 +187,25 @@
     ;; set up recs
     (dotimes (rec-idx 3)
       (set! (-> obj rec rec-idx name) #f)
-      (set! (-> obj rec rec-idx priority) 100000000.0)
-      (set! (-> obj rec rec-idx owner) (the-as uint #f))
+      (set! (-> obj rec rec-idx priority) SPOOL_PRIORITY_LOWEST)
+      (set! (-> obj rec rec-idx owner) (the-as handle #f))
       )
     ;; set up defaults.
-    (set! (-> obj spool-lock) (the-as uint #f))
+    (set! (-> obj spool-lock) (the-as handle #f))
     (set! (-> obj reserve-buffer) #f)
     (set! (-> obj active-stream) #f)
     (set! (-> obj preload-stream name) #f)
-    (set! (-> obj preload-stream priority) 100000000.0)
-    (set! (-> obj preload-stream owner) (the-as uint #f))
+    (set! (-> obj preload-stream priority) SPOOL_PRIORITY_LOWEST)
+    (set! (-> obj preload-stream owner) (the-as handle #f))
     (set! (-> obj last-preload-stream name) #f)
-    (set! (-> obj last-preload-stream priority) 100000000.0)
-    (set! (-> obj last-preload-stream owner) (the-as uint #f))
+    (set! (-> obj last-preload-stream priority) SPOOL_PRIORITY_LOWEST)
+    (set! (-> obj last-preload-stream owner) (the-as handle #f))
     obj
     )
   )
+
+
+(define-extern *art-control* external-art-control)
+(defun-extern art-group-load-check string kheap int art-group)
+
+

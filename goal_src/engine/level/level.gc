@@ -382,7 +382,7 @@
            )
          )
         (('loading-bt)
-         ;; finished loading the background!
+         ;; finished loading the last object!
          (level-status-set! obj 'loading-done)
          (level-status-set! obj 'loaded)
          )
@@ -406,7 +406,7 @@
            ;; something has finished loading!
            (cond
              ((not last-obj)
-              ;; not the last object, so it's some non-background file. start linking
+              ;; not the last object. start linking
               (cond
                 ((dgo-load-link (the-as dgo-header a0-15) (-> obj heap) *print-login* #f)
                  ;; linking finished (that was fast)
@@ -421,7 +421,7 @@
                 )
               )
              (else
-              ;; the background is always the last object, so we're loading the background now
+              ;; we're loading the last object now, which has different rules
               (set! (-> obj heap top) (-> obj heap top-base))
               (level-status-set! obj 'loading-bt)
               )
@@ -434,7 +434,7 @@
      (level-update-after-load obj *login-state*)
      )
     (('loading-bt)
-     ;; link the bt object
+     ;; link the last object
      (let ((a0-26 (align64 (-> obj heap current))))
          (cond
            ((dgo-load-link (the-as dgo-header a0-26) (-> obj heap) *print-login* #t)
@@ -452,7 +452,7 @@
   )
 
 (defmethod load-begin level ((obj level))
-  "Start loading the level. Uses 2 megabyte heaps for loading each non-bt object."
+  "Start loading the level. Uses 2 megabyte heaps for loading each object."
 
   (set! loading-level (-> obj heap))
   (set! (-> *level* loading-level) obj)
@@ -1200,12 +1200,12 @@
   0
   )
 
-(defun play ((use-vis symbol) (arg1 symbol))
+(defun play ((use-vis symbol) (init-game symbol))
   "The entry point to the actual game! This allocates the level heaps, loads some data, sets some default parameters and sets the startup level."
 
   ;; temp
-  (format #t "(play ~A ~A) has been called!~%" use-vis arg1)
-  (format 0 "(play ~A ~A) has been called!~%" use-vis arg1)
+  (format #t "(play :use-vis ~A :init-game ~A) has been called!~%" use-vis init-game)
+  (format  0 "(play :use-vis ~A :init-game ~A) has been called!~%" use-vis init-game)
   ;;(kernel-shutdown)
 
   (let ((startup-level (case *kernel-boot-message*
@@ -1260,8 +1260,8 @@
   (load-dbg "Load complete. Level: ~A. Now starting display!~%" (-> *level* level0))
   (on #t)
   (load-dbg "Display started: ~A~%" *dproc*)
-  (when arg1
-    ;; (dummy-9 *game-info* 'game #f (the-as string #f)) TODO
+  (when init-game
+    (initialize! *game-info* 'game #f (the-as string #f))
     )
   0
   )
@@ -1307,87 +1307,55 @@
      )
     )
    (when (and gp-0 (!= gp-0 *sound-bank-1*) (!= gp-0 *sound-bank-2*))
-    (if (not *sound-bank-1*)
-     (return (begin
-              (format 0 "Load soundbank ~A~%" gp-0)
-              (sound-bank-load (string->sound-name (symbol->string gp-0)))
-              (set! *sound-bank-1* gp-0)
-              0
-              )
-      )
+    (when (not *sound-bank-1*)
+     (format 0 "Load soundbank ~A~%" gp-0)
+     (sound-bank-load (string->sound-name (symbol->string gp-0)))
+     (set! *sound-bank-1* gp-0)
+     (return 0)
      )
-    (if (not *sound-bank-2*)
-     (return (begin
-              (format 0 "Load soundbank ~A~%" gp-0)
-              (sound-bank-load (string->sound-name (symbol->string gp-0)))
-              (set! *sound-bank-2* gp-0)
-              0
-              )
-      )
+    (when (not *sound-bank-2*)
+     (format 0 "Load soundbank ~A~%" gp-0)
+     (sound-bank-load (string->sound-name (symbol->string gp-0)))
+     (set! *sound-bank-2* gp-0)
+     (return 0)
      )
-    (if (!= *sound-bank-1* s5-0)
-     (return (begin
-              (format 0 "Unload soundbank ~A~%" *sound-bank-1*)
-              (sound-bank-unload
-               (string->sound-name (symbol->string *sound-bank-1*))
-               )
-              (set! *sound-bank-1* #f)
-              0
-              )
-      )
+    (when (!= *sound-bank-1* s5-0)
+     (format 0 "Unload soundbank ~A~%" *sound-bank-1*)
+     (sound-bank-unload (string->sound-name (symbol->string *sound-bank-1*)))
+     (set! *sound-bank-1* #f)
+     (return 0)
      )
-    (if (!= *sound-bank-2* s5-0)
-     (return (begin
-              (format 0 "Unload soundbank ~A~%" *sound-bank-2*)
-              (sound-bank-unload
-               (string->sound-name (symbol->string *sound-bank-2*))
-               )
-              (set! *sound-bank-2* #f)
-              0
-              )
-      )
+    (when (!= *sound-bank-2* s5-0)
+     (format 0 "Unload soundbank ~A~%" *sound-bank-2*)
+     (sound-bank-unload (string->sound-name (symbol->string *sound-bank-2*)))
+     (set! *sound-bank-2* #f)
+     (return 0)
      )
     )
    (when (and s5-0 (!= s5-0 *sound-bank-1*) (!= s5-0 *sound-bank-2*))
-    (if (not *sound-bank-1*)
-     (return (begin
-              (format 0 "Load soundbank ~A~%" s5-0)
-              (sound-bank-load (string->sound-name (symbol->string s5-0)))
-              (set! *sound-bank-1* s5-0)
-              0
-              )
-      )
+    (when (not *sound-bank-1*)
+     (format 0 "Load soundbank ~A~%" s5-0)
+     (sound-bank-load (string->sound-name (symbol->string s5-0)))
+     (set! *sound-bank-1* s5-0)
+     (return 0)
      )
-    (if (not *sound-bank-2*)
-     (return (begin
-              (format 0 "Load soundbank ~A~%" s5-0)
-              (sound-bank-load (string->sound-name (symbol->string s5-0)))
-              (set! *sound-bank-2* s5-0)
-              0
-              )
-      )
+    (when (not *sound-bank-2*)
+     (format 0 "Load soundbank ~A~%" s5-0)
+     (sound-bank-load (string->sound-name (symbol->string s5-0)))
+     (set! *sound-bank-2* s5-0)
+     (return 0)
      )
-    (if (!= *sound-bank-1* gp-0)
-     (return (begin
-              (format 0 "Unload soundbank ~A~%" *sound-bank-1*)
-              (sound-bank-unload
-               (string->sound-name (symbol->string *sound-bank-1*))
-               )
-              (set! *sound-bank-1* #f)
-              0
-              )
-      )
+    (when (!= *sound-bank-1* gp-0)
+     (format 0 "Unload soundbank ~A~%" *sound-bank-1*)
+     (sound-bank-unload (string->sound-name (symbol->string *sound-bank-1*)))
+     (set! *sound-bank-1* #f)
+     (return 0)
      )
-    (if (!= *sound-bank-2* gp-0)
-     (return (begin
-              (format 0 "Unload soundbank ~A~%" *sound-bank-2*)
-              (sound-bank-unload
-               (string->sound-name (symbol->string *sound-bank-2*))
-               )
-              (set! *sound-bank-2* #f)
-              0
-              )
-      )
+    (when (!= *sound-bank-2* gp-0)
+     (format 0 "Unload soundbank ~A~%" *sound-bank-2*)
+     (sound-bank-unload (string->sound-name (symbol->string *sound-bank-2*)))
+     (set! *sound-bank-2* #f)
+     (return 0)
      )
     )
    )

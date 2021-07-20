@@ -5,3 +5,65 @@
 ;; name in dgo: memory-usage
 ;; dgos: GAME, ENGINE
 
+(when *debug-segment*
+
+(defmethod inspect memory-usage-block ((obj memory-usage-block))
+  (format #t "-------------------------------------------------------------~%")
+  (format #t " #                 name    count    bytes used   aligned bytes~%")
+  (format #t "-------------------------------------------------------------~%")
+  (let ((s5-0 0)
+        (s4-0 0)
+        )
+   (dotimes (s3-0 (-> obj length))
+    (let ((v1-2 (-> obj data s3-0)))
+     (+! s5-0 (-> v1-2 used))
+     (+! s4-0 (-> v1-2 total))
+     (format #t "~3D: ~20S ~7D     ~8D       ~8D~%" s3-0 (-> v1-2 name) (-> v1-2 count) (-> v1-2 used) (-> v1-2 total))
+     )
+    )
+   (format #t "total:                               ~8D       ~8D~%" s5-0 s4-0)
+   )
+  (format #t "-------------------------------------------------------------~%")
+  obj
+  )
+
+(defmethod mem-usage object ((obj object) (arg0 memory-usage-block) (arg1 int))
+  (if obj
+    (format #t "WARNING: mem-usage called on object, probably not what was wanted for ~A~%" obj)
+    )
+  obj
+  )
+
+(defmethod calculate-total memory-usage-block ((obj memory-usage-block))
+  (let ((v0-0 0))
+   (dotimes (v1-0 (-> obj length))
+    (+! v0-0 (-> obj data v1-0 total))
+    )
+   v0-0
+   )
+  )
+
+(defmethod reset! memory-usage-block ((obj memory-usage-block))
+  (set! (-> obj length) 0)
+  (dotimes (v1-0 109)
+   (set! (-> obj data v1-0 used) 0)
+   (set! (-> obj data v1-0 total) 0)
+   (set! (-> obj data v1-0 count) 0)
+   )
+  obj
+  )
+
+(defun mem-size ((arg0 basic) (arg1 symbol) (arg2 int))
+  (let ((gp-0 (new 'stack 'memory-usage-block)))
+   (mem-usage arg0 gp-0 arg2)
+   (if arg1
+    (inspect gp-0)
+    )
+   (calculate-total gp-0)
+   )
+  )
+
+
+)
+
+

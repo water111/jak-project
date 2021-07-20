@@ -15,7 +15,8 @@ TypeState construct_initial_typestate(const TypeSpec& f_ts, const Env& env) {
   }
 
   // todo, more specific process types for behaviors.
-  result.get(Register(Reg::GPR, Reg::S6)) = TP_Type::make_from_ts(TypeSpec("process"));
+  result.get(Register(Reg::GPR, Reg::S6)) =
+      TP_Type::make_from_ts(TypeSpec(f_ts.try_get_tag("behavior").value_or("process")));
 
   // initialize stack slots as uninitialized
   for (auto slot_info : env.stack_spills().map()) {

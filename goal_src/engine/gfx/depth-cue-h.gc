@@ -5,7 +5,7 @@
 ;; name in dgo: depth-cue-h
 ;; dgos: GAME, ENGINE
 
-;; depth-cue-h
+
 (deftype depth-cue-data (structure)
   ((data      vector :inline :offset-assert 0)
    (sharpness float          :offset 0)
@@ -18,7 +18,6 @@
   :flag-assert         #x900000010
   )
 
-;; depth-cue-h
 (deftype depth-cue-work (structure)
   ((texture-strip-tmpl dma-gif-packet :inline :offset-assert 0)
    (temp-strip-tmpl    dma-gif-packet :inline :offset-assert 32)

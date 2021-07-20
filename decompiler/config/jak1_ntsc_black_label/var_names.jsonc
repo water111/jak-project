@@ -2392,6 +2392,24 @@
     }
   },
 
+  "(method 13 art-group)": {
+    "vars":{
+      "s3-0":"art-elt",
+      "s4-0":"janim",
+      "v1-9":"janim-group",
+      "s2-0":"success"
+    }
+  },
+
+  "(method 14 art-group)": {
+    "vars":{
+      "s3-0":"art-elt",
+      "s4-0":"janim",
+      "v1-9":"janim-group",
+      "s3-1":"success"
+    }
+  },
+  
   "(method 16 process-drawable)" : {
     "vars": {
       "s3-0":"body-T-world",
@@ -2411,5 +2429,7 @@
       "f0-6":"abs-vel-limit",
       "f0-10":"dpos"
     }
-  }
+  },
+  
+  "aaaaaaaaaaaaaaaaaaaaaaa" : {}
 }

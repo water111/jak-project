@@ -505,17 +505,17 @@
 
 (defun vector-seconds ((arg0 vector) (arg1 vector))
   "Convert from actual seconds to the seconds unit."
-  (set! (-> arg0 data 0) (seconds (-> arg1 data 0)))
-  (set! (-> arg0 data 1) (seconds (-> arg1 data 1)))
-  (set! (-> arg0 data 2) (seconds (-> arg1 data 2)))
+  (set! (-> arg0 data 0) (fsec (-> arg1 data 0)))
+  (set! (-> arg0 data 1) (fsec (-> arg1 data 1)))
+  (set! (-> arg0 data 2) (fsec (-> arg1 data 2)))
   arg0
   )
 
 (defun vector-seconds! ((arg0 vector))
   "Convert from actual seconds to seconds, in place"
-  (set! (-> arg0 data 0) (seconds (-> arg0 data 0)))
-  (set! (-> arg0 data 1) (seconds (-> arg0 data 1)))
-  (set! (-> arg0 data 2) (seconds (-> arg0 data 2)))
+  (set! (-> arg0 data 0) (fsec (-> arg0 data 0)))
+  (set! (-> arg0 data 1) (fsec (-> arg0 data 1)))
+  (set! (-> arg0 data 2) (fsec (-> arg0 data 2)))
   arg0
   )
 

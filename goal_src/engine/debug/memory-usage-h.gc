@@ -157,3 +157,5 @@
 (defmacro mem-usage-id-int (kind)
   `(the int (mem-usage-id ,kind))
   )
+
+(defun-extern mem-size basic symbol int int)

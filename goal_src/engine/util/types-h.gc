@@ -33,7 +33,8 @@
 (defmacro meters (x)
   "Convert number to meters.
    If the input is a constant float or integer, the result will be a
-   compile time constant float. Otherwise, it will not be constant."
+   compile time constant float. Otherwise, it will not be constant.
+   Returns float."
 
   ;; we don't have enough constant propagation for the compiler to figure this out.
   (cond
@@ -55,6 +56,7 @@
 ;; quickly by converting to an int, masking, and back to float
 (defglobalconstant DEGREES_PER_ROT 65536.0)
 
+;; this was deg in GOAL
 (defmacro degrees (x)
   "Convert number to degrees unit.
    Will keep a constant float/int constant."
@@ -76,14 +78,26 @@
 ;; an unsigned 32-bit integer can store about 150 days
 (defglobalconstant TICKS_PER_SECOND 300) ;; 5 t/frame @ 60fps, 6 t/frame @ 50fps
 
+;; this was usec in GOAL
 (defmacro seconds (x)
-  "Convert number to seconds unit."
+  "Convert number to seconds unit.
+   Returns uint."
   (cond
-    ((float? x)
-     (* 1.0 TICKS_PER_SECOND x)
-     )
-    ((integer? x)
+    ((or (integer? x) (float? x))
      (* TICKS_PER_SECOND x)
+     )
+    (#t
+     `(the uint (* TICKS_PER_SECOND ,x))
+     )
+    )
+  )
+
+(defmacro fsec (x)
+  "Convert number to seconds unit.
+   Returns float."
+  (cond
+    ((or (integer? x) (float? x))
+     (* 1.0 TICKS_PER_SECOND x)
      )
     (#t
      `(* 1.0 TICKS_PER_SECOND ,x)

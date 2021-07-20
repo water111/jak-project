@@ -571,3 +571,21 @@
       `(define ,name (lambda :name ,name :behavior ,process-type ,bindings ,@body))
       )
   )
+
+(defmacro handle->name (handle)
+  "get the name of a process using a handle. #f is the result if the handle was invalid."
+
+  (with-gensyms (proc)
+    `(let ((proc (handle->process ,handle)))
+        (if proc
+            (-> proc name)
+            )
+          )
+    )
+  )
+
+
+(defmacro with-sp (&rest body)
+  `(rlet ((sp :reg rsp :reset-here #t :type pointer))
+         ,@body)
+  )

@@ -241,9 +241,6 @@
     "sp-process-block-2d",
     "sp-get-particle",
 
-    // loader BUG
-    "(method 10 external-art-buffer)",
-
     // game-info BUG
     "(method 11 fact-info-target)",
 
@@ -469,7 +466,9 @@
     "debug-menu-send-msg",
     "debug-menu-find-from-template",
     "build-continue-menu",
-    "(method 8 process-tree)"
+    "(method 8 process-tree)",
+    "(method 16 load-state)",
+    "(method 15 load-state)"
   ],
 
   // If format is used with the wrong number of arguments,
@@ -495,7 +494,8 @@
     "  pris-anim ~192H~5DK ~280Hpris-generic~456H~5DK~%": 2,
     "  textures ~192H~5DK ~280Htextures~456H~5DK~%": 2,
     "  entity ~192H~5DK~%": 2,
-    "  misc ~192H~5DK ~280Hsprite~456H~5DK~%": 2
+    "  misc ~192H~5DK ~280Hsprite~456H~5DK~%": 2,
+    "ERROR: <asg> ~A in spool anim loop for ~A ~D, but not loaded.~": 3
   },
 
   "blocks_ending_in_asm_branch": {
